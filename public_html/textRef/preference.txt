@@ -1,0 +1,58 @@
+<html>
+<head>
+       <title>jdenckla 415 Final Project</title>
+</head>
+
+<body bgcolor="white">
+
+<h4><i>Connecting to 'activities' DB using MySQL/PHP</i></h4>
+
+<h2>Search based on prefered entertainment</h2>
+
+<a href="preference.html"><b>Preference (Home)</b></a>
+<a href="projects.html">Projects</a>
+<a href="ownership.html">Ownership</a>
+<a href="participants.html">Participants</a>
+
+
+<hr>
+
+<p>
+Please enter participants by ID separated by commas (ex: 1, 2, 4)
+<p>
+
+<form action="preferAllByID.php" method="POST">
+<input type="text" name="state"> <br>
+<input type="submit" value="submit">
+<input type="reset" value="erase">
+</form>
+<br>
+
+Curious about the options? You can look up all shows, movies, and games <form action="allEntertainment.php" method="POST"><input type="submit" value="here"></form>
+
+<br>
+Other usage tips:
+<br>
+- Want more information on projects, (ie who is working on what)? Try <a href="projects.html">projects lookup page</a>
+<br>
+- Want to search based on games or services each participant owns? Try <a href="ownership.html">ownership based searches</a>
+<br>
+- Looking for more information on the participants, like reference ID's, timezones, or their associated work? Try <a href="participants.html">participant lookup</a>
+
+
+<hr>
+
+<p>
+<a href="textRef/preference.txt" >Contents</a>
+of this page.
+
+<p>
+<a href="textRef/preferAllByIDPHP.txt" >Contents</a>
+of the PHP page for 'search using participant ID's'.
+
+<p>
+<a href="textRef/allEntertainmentPHP.txt" >Contents</a>
+of the PHP page for 'all shows, movies, and games'.
+
+</body>
+</html>

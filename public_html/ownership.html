@@ -1,0 +1,71 @@
+
+<html>
+<head>
+       <title>jdenckla 415 Final Project</title>
+</head>
+
+<body bgcolor="white">
+
+<h4><i>Connecting to 'activities' DB using MySQL/PHP</i></h4>
+
+<h2>Search based on game or service ownership</h2>
+
+<a href="preference.html">Preference (Home)</a>
+<a href="projects.html">Projects</a>
+<a href="ownership.html"><b>Ownership</b></a>
+<a href="participants.html">Participants</a>
+
+
+<hr>
+
+<p>
+Please enter the name of the service or platform to view all owners associated (ex: Hooli)
+<p>
+<form action="ownBySvcPlat.php" method="POST">
+<input type="text" name="state"> <br>
+<input type="submit" value="submit">
+<input type="reset" value="erase">
+</form>
+<br>
+Or search by game title (ex: Ringworld)
+<p>
+<form action="ownByGame.php" method="POST">
+<input type="text" name="state"> <br>
+<input type="submit" value="submit">
+<input type="reset" value="erase">
+</form>
+<br>
+You may also search by a user's ID to view all services/games/platforms they own (ex: 7)
+<p>
+<form action="ownInCommon.php" method="POST">
+<input type="text" name="state"> <br>
+<input type="submit" value="submit">
+<input type="reset" value="erase">
+</form>
+<br>
+Unsure of what you're looking for? You can look up all games, platforms, and services <form action="allOwnable.php" method="POST"><input type="submit" value="here"></form>
+
+<hr>
+
+<p>
+<a href="textRef/ownership.txt" >Contents</a>
+of this page.
+
+<p>
+<a href="textRef/ownBySvcPlatPHP.txt" >Contents</a>
+of the PHP page for 'by svc/plat'. 
+
+<p>
+<a href="textRef/ownByGamePHP.txt" >Contents</a>
+of the PHP page for 'by game'. 
+
+<p>
+<a href="textRef/ownInCommonPHP.txt" >Contents</a>
+of the PHP page for 'users ID (all items owned)'. 
+
+<p>
+<a href="textRef/allOwnablePHP.txt" >Contents</a>
+of the PHP page for 'games, platforms, and services'.
+
+</body>
+</html>

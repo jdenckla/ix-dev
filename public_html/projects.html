@@ -1,0 +1,72 @@
+
+<html>
+<head>
+       <title>jdenckla 415 Final Project</title>
+</head>
+
+<body bgcolor="white">
+
+<h4><i>Connecting to 'activities' DB using MySQL/PHP</i></h4>
+
+<h2>Search based on active projects</h2>
+
+<a href="preference.html">Preference (Home)</a>
+<a href="projects.html"><b>Projects</b></a>
+<a href="ownership.html">Ownership</a>
+<a href="participants.html">Participants</a>
+
+
+<hr>
+
+<p>
+Please enter project ID to find it's associated information (ex: 2)
+<p>
+
+<form action="projectByID.php" method="POST">
+<input type="text" name="state"> <br>
+<input type="submit" value="submit">
+<input type="reset" value="erase">
+</form>
+
+<br>
+Or if ID is unknown, use project name in the search box below (ex: Stubbs)
+<p>
+<form action="projectByName.php" method="POST">
+<input type="text" name="state"> <br>
+<input type="submit" value="submit">
+<input type="reset" value="erase">
+</form>
+<br>
+You may also search for projects based on the ID of the owner (ex: 3)
+<p>
+<form action="projectByOwner.php" method="POST">
+<input type="text" name="state"> <br>
+<input type="submit" value="submit">
+<input type="reset" value="erase">
+</form>
+<br>
+Unsure of what you're looking for? You can look up all of our active projects listed <form action="allProjects.php" method="POST"><input type="submit" value="here"></form>
+<hr>
+
+<p>
+<a href="textRef/projects.txt" >Contents</a>
+of this page.
+
+<p>
+<a href="textRef/projectByIDPHP.txt" >Contents</a>
+of the PHP page for 'by project ID'. 
+
+<p>
+<a href="textRef/projectByNamePHP.txt" >Contents</a>
+of the PHP page for 'by project name'. 
+
+<p>
+<a href="textRef/projectByOwnerPHP.txt" >Contents</a>
+of the PHP page for 'by owner ID'. 
+
+<p>
+<a href="textRef/allProjectsPHP.txt" >Contents</a>
+of the PHP page for 'all active projects'.
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+<?php
+
+$server = "ix-dev.cs.uoregon.edu";
+$dbname ="activities";
+$user = "guest";
+$pass = "guest";
+$port="3054";
+
+?>

@@ -1,0 +1,58 @@
+
+<html>
+<head>
+       <title>jdenckla 415 Final Project</title>
+</head>
+
+<body bgcolor="white">
+
+<h4><i>Connecting to 'activities' DB using MySQL/PHP</i></h4>
+
+<h2>Search based on participant list</h2>
+
+<a href="preference.html">Preference (Home)</a>
+<a href="projects.html">Projects</a>
+<a href="ownership.html">Ownership</a>
+<a href="participants.html"><b>Participants</b></a>
+
+
+<hr>
+
+<p>
+Please enter the participants ID to find associated information.
+<p>
+<form action="partInfoByID.php" method="POST">
+<input type="text" name="state"> <br>
+<input type="submit" value="submit">
+<input type="reset" value="erase">
+</form>
+<br>
+Or search by participants name here, (ex: Victoria Chapman)
+<p>
+<form action="partInfoByName.php" method="POST">
+<input type="text" name="state"> <br>
+<input type="submit" value="submit">
+<input type="reset" value="erase">
+</form>
+<br>
+You may also view a list of basic information for all participants <form action="allParticipants.php" method="POST"><input type="submit" value="here"></form>
+<hr>
+
+<p>
+<a href="textRef/participants.txt" >Contents</a>
+of this page.
+
+<p>
+<a href="textRef/partInfoByIDPHP.txt" >Contents</a>
+of the PHP page for 'participants by ID'. 
+
+<p>
+<a href="textRef/partInfoByNamePHP.txt" >Contents</a>
+of the PHP page for 'participants by name'. 
+
+<p>
+<a href="textRef/allParticipantsPHP.txt" >Contents</a>
+of the PHP page for 'all participants'. 
+
+</body>
+</html>

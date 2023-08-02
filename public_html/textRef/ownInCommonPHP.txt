@@ -1,0 +1,143 @@
+<?php
+
+include('connectionData.txt');
+
+$conn = mysqli_connect($server, $user, $pass, $dbname, $port)
+or die('Error connecting to MySQL server.');
+
+?>
+
+<html>
+<head>
+<style>
+table, th, td {
+border-collapse: collapse;
+border-style:solid;
+border-width:1px;
+border-color:black;
+padding: 5px;
+}
+</style>
+  <title>jdenckla 415 Final Project</title>
+  </head>
+  
+  <body bgcolor="white">
+  
+  
+  <hr>
+  
+  
+<?php
+  
+$state = $_POST['state'];
+
+$state = mysqli_real_escape_string($conn, $state);
+// this is a small attempt to avoid SQL injection
+// better to use prepared statements
+
+$query = "SELECT svcName, fname, lname, ownerID ";
+$query = $query."FROM participants p ";
+$query = $query."LEFT JOIN svcOwnership so on so.ownerID = p.ID ";
+$query = $query."WHERE ownerID IN (".$state.") ";
+
+
+$sqlNext = "SELECT title, fname, lname, ownerID ";
+$sqlNext = $sqlNext."FROM participants p ";
+$sqlNext = $sqlNext."LEFT JOIN gameOwnership go on go.ownerID = p.ID ";
+$sqlNext = $sqlNext."JOIN games g on go.gameEID = g.eID ";
+$sqlNext = $sqlNext."WHERE ownerID IN (".$state.") ";
+
+$sqlLast = "SELECT pName, fname, lname, ownerID ";
+$sqlLast = $sqlLast."FROM participants p ";
+$sqlLast = $sqlLast."LEFT JOIN platformOwnership po on po.ownerID = p.ID ";
+$sqlLast = $sqlLast."WHERE ownerID IN (".$state.") ";
+
+
+?>
+
+<p>
+The query:
+<p>
+<?php
+print $query;
+?>
+
+<hr>
+<p>
+Result of query:
+<p>
+
+<?php
+/*
+$resultPrev = mysql_query($sqlPrev);
+
+*/
+$result = mysqli_query($conn, $query)
+or die(mysqli_error($conn));
+$resultNext = mysqli_query($conn, $sqlNext)
+or die(mysqli_error($conn));
+$resultLast = mysqli_query($conn, $sqlLast)
+or die(mysqli_error($conn));
+
+echo "<b>Services</b>";
+echo "<table>";
+echo "<tr><td>Service Name</td><td>Owner Name</td><td>Owner ID</td></tr>";
+while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+  $svcName   = $row['svcName'];
+  $fname = $row['fname'];
+  $lname = $row['lname'];
+  $ownerID = $row['ownerID'];
+  echo "<tr><td>".$svcName."</td><td>".$fname.' '.$lname."</td><td>".$ownerID."</td></tr>";
+}
+echo "</table>";
+echo "<br>";
+echo "<br>";
+
+
+echo "<b>Games</b>";
+echo "<table>";
+echo "<tr><td>Game Title</td><td>Owner Name</td><td>Owner ID</td></tr>";
+while ($nrow = mysqli_fetch_array($resultNext, MYSQLI_ASSOC)) {
+  $title   = $nrow['title'];
+  $fname = $nrow['fname'];
+  $lname = $nrow['lname'];
+  $ownerID = $nrow['ownerID'];
+  echo "<tr><td>".$title."</td><td>".$fname.' '.$lname."</td><td>".$ownerID."</td></tr>";
+}
+echo "</table>";
+echo "<br>";
+echo "<br>";
+
+echo "<b>Platforms</b>";
+echo "<table>";
+echo "<tr><td>Platform Name</td><td>Owner Name</td><td>Owner ID</td></tr>";
+while ($lrow = mysqli_fetch_array($resultLast, MYSQLI_ASSOC)) {
+  $pName   = $lrow['pName'];
+  $fname = $lrow['fname'];
+  $lname = $lrow['lname'];
+  $ownerID = $lrow['ownerID'];
+  echo "<tr><td>".$pName."</td><td>".$fname.' '.$lname."</td><td>".$ownerID."</td></tr>";
+}
+echo "</table>";
+
+
+
+mysqli_free_result($result);
+mysqli_free_result($resultNext);
+mysqli_free_result($resultLast);
+
+mysqli_close($conn);
+
+?>
+
+<p>
+<hr>
+
+<p>
+
+<a href="ownership.html">Return to Ownership Lookup</a>
+
+
+ 
+</body>
+</html>
