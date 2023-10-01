@@ -25,7 +25,21 @@ int count_token (char* buf, const char* delim)
 	*			c.	account NULL for the last token
 	*	#3. return the number of token (note not number of delimeter)
 	*/
-}
+	// rather than use the character buffer directly, make temporary copies
+	int count = 0;
+	char* token;
+	char* rest = buf;
+	if(strlen(buf) == 0) {
+		return 0;
+	} else {
+		//iterate
+			while ((token = strtok_r(rest, " ", &rest))) {
+				count++;
+				//printf("%s\n", token);
+			}
+			return count;
+		}
+	}
 
 command_line str_filler (char* buf, const char* delim)
 {
