@@ -1,0 +1,41 @@
+Line 1:
+3
+	Line segment 1:
+1
+		Token 1: pwd
+Line 2:
+4
+	Line segment 1:
+1
+		Token 1: sfjlksagjlks
+Line 3:
+3
+	Line segment 1:
+2
+		Token 1: cd
+Line 4:
+3
+	Line segment 1:
+3
+		Token 1: cp
+Line 5:
+3
+	Line segment 1:
+3
+		Token 1: mv
+Line 6:
+2
+	Line segment 1:
+2
+		Token 1: rm
+Line 7:
+2
+	Line segment 1:
+2
+		Token 1: cd
+Line 8:
+1
+	Line segment 1:
+1
+		Token 1: ls
+
