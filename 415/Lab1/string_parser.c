@@ -27,33 +27,28 @@ int count_token (char* buf, const char* delim)
 	*/
 	// rather than use the character buffer directly, make temporary copies
 	// please see https://www.geeksforgeeks.org/strtok-strtok_r-functions-c-examples/ for referenced code
+	
+	char* string = strdup(buf);
 	int count = 0;
+	char* pointer;
 	char* token;
-	char* rest = buf;
 
-	// null check b/c while loop isn't giving accurate count yet
-
-	// || (buf[0] == '\0')
-	//return 0;
-	if(strlen(buf) == 0) {
-		printf("%s\n", "lack of buf");
-		return count;
-		//return 0;
-	//	return 0;
-	} else if (buf[0] == '\0') {
-		printf("%s\n", "null character found");
-		count++;
-	} else {
-		//iterate
-		while (token = strtok_r(rest, delim, &rest)) {
+	do {
+		pointer = NULL;
+		token = strtok_r(string, delim, &pointer);
+		while (token != NULL) {
+			//printf( "Token #%d: %s\n", count, token );
+			token = strtok_r(NULL, delim, &pointer);
 			count++;
-			//printf("%s\n", token);
-			// this may only be counting delims - adjust if necessary (null check it) ^ see above about null at last token
-			}
-		}
-		printf("%d\n", count);
-		return count;
 	}
+	return count;
+	}
+	
+	while (string[0] != '\0');
+	
+	
+}
+	
 
 command_line str_filler (char* buf, const char* delim)
 {
@@ -72,15 +67,17 @@ command_line str_filler (char* buf, const char* delim)
 	command_line var;
 	var.num_token = count_token(buf, delim);;
 	char* token;
-	char* rest = buf;
+	char* string = buf;
 	int i = 0;
 	//num_token = count_token(buf, delim);
 	var.command_list = malloc(var.num_token * sizeof(char*));
 	//for (int i = 0, i < num_token, i++) {
-	while (token = strtok_r(rest, delim, &rest)) {
+	token = strtok_r(string, delim, &string);
+	while (token != NULL) {
 		var.command_list[i] = malloc(strlen(token) * sizeof(char));
 		var.command_list[i] = token;
 		i++;
+		token = strtok_r(string, delim, &string);
 	}
 	var.command_list[i] = NULL;
 	return var;
