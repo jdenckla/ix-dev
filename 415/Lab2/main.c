@@ -26,6 +26,7 @@ int main(int argc, char const *argv[])
 			break;
 		} else if (strcmp("lfcat",userInput) == 0) {
 			lfcat();
+			return 0;
 		} else {
 			printf("%s\n","Error: Unrecognized command!");
 		}

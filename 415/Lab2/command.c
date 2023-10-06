@@ -11,32 +11,77 @@ void lfcat()
 {
 	char cwd[PATH_MAX];
 	if (getcwd(cwd, sizeof(cwd)) != NULL) {
-		printf("Current working dir: %s\n", cwd);
+		//printf("Current working dir: %s\n", cwd);
 		DIR *pDir;
+		FILE *freOp;
 		FILE *fp;
+		int fd;
+		char *fileName;
+		char *fileAdd;
 		char *buf;
+		char *tempLine;
 		size_t bufsize = 255;
 		size_t charCount;
 		buf = (char *)malloc(bufsize * sizeof(char));
-		if (buf == NULL)
+		tempLine = (char *)malloc(bufsize * sizeof(char));
+		if ((buf == NULL) || (tempLine == NULL))
 		{
 			perror("Unable to allocate buffer");
 			return;
 		}
 		pDir = opendir(cwd);
 		struct dirent *dp;
+		freOp = freopen("../output.txt","w",stdout);
 		// struct dirent *readdir(DIR *dirp);
 		while ((dp = readdir(pDir)) != NULL){
-		//while (((dp = readdir(pDir)) != NULL) && (strcmp(".",dp->d_name) != 0) && (strcmp("..",dp->d_name) != 0)){
-			// unsure of entry and pattern... 
 			// see ref https://www.appsloveworld.com/c/100/356/while-loop-and-if-not-getting-along-with-readdir-in-c?expand_article=1
 			// or see ref https://stackoverflow.com/questions/39651705/while-loop-and-if-not-getting-along-with-readdir-in-c
 			// pos debug here by printing out file names...
-			printf("%s%s\n", "File: ", dp->d_name);
-			// potentially find a way to exclude files by type...
-			freopen("output.txt","w",stdout);
-			int fd = open(dp->d_name, O_RDONLY, 0644);
+			if(dp->d_name[0] != '.') {
+			if (freOp != NULL){
+				//fd = open(fileName,O_RDONLY);
+				fileName = "File: ";
+				write(1, fileName, strlen(fileName));
+				fileName = dp->d_name;
+				write(1, fileName, strlen(fileName));
+				fileName = "\n";			
+				write(1, fileName, strlen(fileName));
+				//close(fd);
+				//printf("%s%s\n", "File: ", dp->d_name);
+				
+				fp = fopen(dp->d_name, "r");
+				//fd = open(fileName,O_RDONLY);
+				if (fp == NULL) {
+					exit(EXIT_FAILURE);
+				} else {
+					while((charCount = getline(&buf,&bufsize,fp)) != -1){
+						printf("%s",buf);
+						//strncpy(tempLine,buf,255);
+						//strcpy(tempLine, buf);
+						//write(fd, &buf, charCount);
+						//printf("%zu characters read\n", charCount);
+						//printf("%s%zd\n", "Line Len:", strlen(tempLine));
+					
+					}
+				}
+				fclose(fp);
+			}
+			
+
+			//
+			
+			//printf("%s\n",dp->d_name);
+			//printf("%s\n", "A test message - one line per file");
+			
+			
+			
+			//fclose(fp);
+			//fclose(dp->d_name);
+
+			
+			//int fd = open(dp->d_name, O_RDONLY, 0644);
 			//fp = fopen(dp->d_name, "r");
+			/*
 			if(fd < 0){
 				perror("Error opening file!");
 				return;
@@ -50,15 +95,22 @@ void lfcat()
 				}
 				fclose(stdout);
 			}
+			*/
+			printf("\n%s\n", "----------------------------------------------------------------------------------------------------");
+			}
+
 			//open the file for reading...
 
 			//use getline to read the current file..
 			//close the file with fclose(), potentially "null assigning your buffer/file descriptors"
 			//write 80 "-" characters before repeating the loop 
-    }
+    	}
 	// pos put this in the loop, or remove it..
 	//fclose(stdout);
+	//free(buf);
+	buf = NULL;
 	closedir(pDir);
+	//printf(">>>:");
 		
 	} else {
 		// perror? potentially find alternative error
