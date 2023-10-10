@@ -1,8 +1,8 @@
-all : project1
+all : pseudo-shell
 	
 	
-project1: main.o command.o
-	gcc -o project1 main.o command.o
+pseudo-shell: main.o command.o
+	gcc -o pseudo-shell main.o command.o
 
 command.o: command.c command.h
 	gcc -c command.c	
@@ -11,4 +11,4 @@ main.o: main.c
 	gcc -c main.c
 	
 clean:
-	rm -f core *.o project1
+	rm -f core *.o pseudo-shell

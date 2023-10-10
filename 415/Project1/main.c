@@ -19,21 +19,21 @@ int main(int argc, char const *argv[])
 		if (strcmp("exit",userInput) == 0) {
 			break;
 		} else if (strcmp("ls",userInput) == 0) {
-			listDir();
+			//listDir();
 		} else if (strcmp("pwd",userInput) == 0) {
-			showCurrentDir();
+			//showCurrentDir();
 		} else if (strcmp("mkdir",userInput) == 0) {
-			makeDir();
+			//makeDir();
 		} else if (strcmp("cd",userInput) == 0) {
-			changeDir();
+			//changeDir();
 		} else if (strcmp("cp",userInput) == 0) {
-			copyFile();
+			//copyFile();
 		} else if (strcmp("mv",userInput) == 0) {
-			moveFile();
+			//moveFile();
 		} else if (strcmp("rm",userInput) == 0) {
-			deleteFile();
+			//deleteFile();
 		} else if (strcmp("cat",userInput) == 0) {
-			displayFile();
+			//displayFile();
 		} else {
 			printf("%s\n","Error: Unrecognized command!");
 			// print user input as well
