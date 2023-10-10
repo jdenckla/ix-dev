@@ -100,6 +100,9 @@ void copyFile(char *sourcePath, char *destinationPath)
 {
 	printf("%s%s%s%s\n","Copy ",sourcePath," to ",destinationPath);
 	return;
+    // consider making token from input using '/' in case of dir's
+    // this would involve reading a file from one dir, and creating one in another dir
+    // then getting lines to place in this new file...
 }  
 
 /*for the mv command*/
@@ -116,6 +119,7 @@ void deleteFile(char *filename)
 {
 	printf("%s%s\n","Remove ",filename);
 	return;
+    // should be able to navigate to directory as well - consider token like copyFile above
 }  
 
 /*for the cat command*/
