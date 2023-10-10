@@ -28,6 +28,8 @@ int count_token (char* buf, const char* delim)
 	// rather than use the character buffer directly, make temporary copies
 	// please see https://www.geeksforgeeks.org/strtok-strtok_r-functions-c-examples/ for referenced code
 	
+	char* save;
+	strtok_r(buf,"\n",&save);
 	char* string = strdup(buf);
 	int count = 0;
 	char* pointer;
