@@ -55,48 +55,26 @@ void lfcat()
 					exit(EXIT_FAILURE);
 				} else {
 					while((charCount = getline(&buf,&bufsize,fp)) != -1){
-						printf("%s",buf);
+						//printf("%s",buf);
 						//strncpy(tempLine,buf,255);
 						//strcpy(tempLine, buf);
-						//write(fd, &buf, charCount);
+						write(1, buf, charCount);
 						//printf("%zu characters read\n", charCount);
 						//printf("%s%zd\n", "Line Len:", strlen(tempLine));
 					
 					}
+					write(1, "\n", 1);
 				}
 				fclose(fp);
+				//printf("\n%s\n", "----------------------------------------------------------------------------------------------------");
+				//write(1, "\n", 2);
+				write(1, "----------------------------------------------------------------------------------------------------", 80);
+				write(1, "\n", 1);
+				//write(1, "\n", 2);
 			}
 			
 
-			//
-			
-			//printf("%s\n",dp->d_name);
-			//printf("%s\n", "A test message - one line per file");
-			
-			
-			
-			//fclose(fp);
-			//fclose(dp->d_name);
-
-			
-			//int fd = open(dp->d_name, O_RDONLY, 0644);
-			//fp = fopen(dp->d_name, "r");
-			/*
-			if(fd < 0){
-				perror("Error opening file!");
-				return;
-			} else {
-				charCount = getline(&buf,&bufsize,stdin);
-				printf("%zu characters read\n", charCount);
-				printf("buf: %s\n", buf);
-				while(charCount != -1){
-					//stdout << buf << endl;
-					write(1, &buf, charCount);
-				}
-				fclose(stdout);
-			}
-			*/
-			printf("\n%s\n", "----------------------------------------------------------------------------------------------------");
+			//printf("\n%s\n", "----------------------------------------------------------------------------------------------------");
 			}
 
 			//open the file for reading...
