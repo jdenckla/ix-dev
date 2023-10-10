@@ -33,18 +33,22 @@ int count_token (char* buf, const char* delim)
 	char* pointer;
 	char* token;
 
-	do {
-		pointer = NULL;
-		token = strtok_r(string, delim, &pointer);
-		while (token != NULL) {
-			//printf( "Token #%d: %s\n", count, token );
-			token = strtok_r(NULL, delim, &pointer);
-			count++;
-	}
-	return count;
+	//do {
+	pointer = NULL;
+	token = strtok_r(string, delim, &pointer);
+	while (token != NULL) {
+		//printf( "Token #%d: %s\n", count, token );
+		if ((string[0] != '\0') || (string[0] != '\n')) {
+		token = strtok_r(NULL, delim, &pointer);
+		count++;
+		}
 	}
 	
-	while (string[0] != '\0');
+	//}
+	
+	//while (string[0] != '\0');
+	//count++;
+	return count;
 	
 	
 }
@@ -66,6 +70,7 @@ command_line str_filler (char* buf, const char* delim)
 	*/
 	command_line var;
 	var.num_token = count_token(buf, delim);;
+	//printf("%d\n", var.num_token);
 	char* token;
 	char* string = buf;
 	int i = 0;
@@ -76,8 +81,8 @@ command_line str_filler (char* buf, const char* delim)
 	while (token != NULL) {
 		var.command_list[i] = malloc(strlen(token) * sizeof(char));
 		var.command_list[i] = token;
+		token = strtok_r(NULL, delim, &string);
 		i++;
-		token = strtok_r(string, delim, &string);
 	}
 	var.command_list[i] = NULL;
 	return var;
