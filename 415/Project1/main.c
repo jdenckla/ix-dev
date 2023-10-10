@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "command.h"
+#include "string_parser.h"
 
 #define _GNU_SOURCE
 
@@ -11,6 +12,34 @@
 int main(int argc, char const *argv[])
 {
 	char userInput[255];
+	// getopt ref: https://www.gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
+	int flag = 0;
+	char *fname = NULL;
+	int opt;
+
+	//opterr = 0;
+
+	while ((opt = getopt (argc, argv, "f:")) != -1) 
+	switch (opt)
+	{
+		case 'f':
+		flag = 1;
+		if (argc != 2)
+		{
+			printf ("Usage ./pseudo-shell -f filename\n");
+			return 1;
+		}
+		fname = optarg;
+		break;
+		case '?':
+		if (optopt == 'f')
+		fprintf(stderr, "Option -%c requires a filename as an argument.\n",optopt);
+		else {
+			fprintf(stderr, "Unknown option/argument");
+		}
+	}
+
+	
 	
 	do {
 		printf(">>>:");
