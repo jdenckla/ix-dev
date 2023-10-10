@@ -80,6 +80,14 @@ command_line str_filler (char* buf, const char* delim)
 	var.command_list = malloc(var.num_token * sizeof(char*));
 	//for (int i = 0, i < num_token, i++) {
 	token = strtok_r(string, delim, &string);
+	for (int j = 0; j < var.num_token; j++) {
+		var.command_list[j] = malloc(strlen(token) * sizeof(char));
+		var.command_list[j] = token;
+		token = strtok_r(NULL, delim, &string);
+		i++;
+	}
+	var.command_list[i] = NULL;
+	/*
 	while (token != NULL) {
 		var.command_list[i] = malloc(strlen(token) * sizeof(char));
 		var.command_list[i] = token;
@@ -87,6 +95,7 @@ command_line str_filler (char* buf, const char* delim)
 		i++;
 	}
 	var.command_list[i] = NULL;
+	*/
 	return var;
 	//}
 }
@@ -98,9 +107,23 @@ void free_command_line(command_line* command)
 	/*
 	*	#1.	free the array base num_token
 	*/
-	//for (int i = 0; i <= command->num_token; i++) {
-	//	free(command->command_list[i]);
+
+	//size_t size = sizeof(command->command_list) / sizeof(char*);
+	//size_t len = strlen(command->command_list);
+
+	/*
+	int num = command->num_token;
+	for (int i = 0; i < num; i++) {
+		if (command->command_list[i] != NULL) {
+			free(command->command_list[i]);
+		}
+	}
+	*/
+	
+	//if (command->command_list != NULL) {
+	//free(command->command_list);
 	//}
+
 	free(command->command_list);
 	
 }
