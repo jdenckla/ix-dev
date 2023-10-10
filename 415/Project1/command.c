@@ -1,8 +1,10 @@
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <dirent.h>
-#include <fcntl.h>  
+//#include <fcntl.h>  
 #include <string.h>
 
 /*for the ls command*/
@@ -38,16 +40,58 @@ void showCurrentDir()
 // create dir in current directory
 void makeDir(char *dirName)
 {
-	printf("%s%s\n","Create ",dirName);
+    /*
+    char cwd[PATH_MAX];
+    dirName[strcspn(dirName, "\r\n")] = 0;
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+		//printf("Current working dir: %s\n", cwd);
+		DIR *pDir;
+		pDir = opendir(cwd);
+		struct dirent *dp;
+		while ((dp = readdir(pDir)) != NULL){
+            //write(1,dp->d_name,strlen(dp->d_name));
+            //write(1,"\n",1);
+            if (dp->d_name == dirName) {
+                write(1,"Error: ",7);
+                write(1,dirName,strlen(dirName));
+                write(1,"Already Exists!",15);
+                write(1,"\n",1);
+                return;
+            }
+    	}
+	closedir(pDir);
+	} 
+    */
+    struct stat st = {0};
+    if (stat(dirName, &st) == -1) {
+        mkdir(dirName,0700);
+    } else {
+        write(1,"Error: ",7);
+        write(1,dirName,strlen(dirName));
+        write(1," already exists!",15);
+        write(1,"\n",1);
+        return;
+    }
 	return;
+    // should this move the user into the new directory? Or maybe print current?
 } 
 
 /*for the cd command*/
 // find dir (?), then chane current to this
 void changeDir(char *dirName)
 {
-	printf("%s%s\n","Relocate ",dirName);
+    struct stat st = {0};
+    if (stat(dirName, &st) != -1) {
+        chdir(dirName);
+    } else {
+        write(1,"Error: ",7);
+        write(1,dirName,strlen(dirName));
+        write(1," does not exist!",16);
+        write(1,"\n",1);
+        return;
+    }
 	return;
+    // consider printing current directory for feedback's sake
 }  
 
 /*for the cp command*/
