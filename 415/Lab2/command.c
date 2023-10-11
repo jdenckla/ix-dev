@@ -19,12 +19,10 @@ void lfcat()
 		char *fileName;
 		char *fileAdd;
 		char *buf;
-		char *tempLine;
 		size_t bufsize = 255;
 		size_t charCount;
 		buf = (char *)malloc(bufsize * sizeof(char));
-		tempLine = (char *)malloc(bufsize * sizeof(char));
-		if ((buf == NULL) || (tempLine == NULL))
+		if (buf == NULL)
 		{
 			perror("Unable to allocate buffer");
 			return;
@@ -85,7 +83,7 @@ void lfcat()
     	}
 	// pos put this in the loop, or remove it..
 	//fclose(stdout);
-	//free(buf);
+	free(buf);
 	buf = NULL;
 	closedir(pDir);
 	//printf(">>>:");
