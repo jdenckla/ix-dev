@@ -35,24 +35,14 @@ int count_token (char* buf, const char* delim)
 	char* pointer;
 	char* token;
 
-	//do {
 	pointer = NULL;
 	token = strtok_r(string, delim, &pointer);
 	while (token != NULL) {
-		//printf( "Token #%d: %s\n", count, token );
-		if ((string[0] != '\0') || (string[0] != '\n')) {
 		token = strtok_r(NULL, delim, &pointer);
 		count++;
-		}
 	}
-	
-	//}
-	
-	//while (string[0] != '\0');
-	//count++;
+	free(string);
 	return count;
-	
-	
 }
 	
 
@@ -70,34 +60,22 @@ command_line str_filler (char* buf, const char* delim)
 	*			fill command_list array with tokens, and fill last spot with NULL.
 	*	#6. return the variable.
 	*/
+	
 	command_line var;
-	var.num_token = count_token(buf, delim);;
+	var.num_token = count_token(buf, delim);
 	//printf("%d\n", var.num_token);
 	char* token;
 	char* string = buf;
-	int i = 0;
-	//num_token = count_token(buf, delim);
-	var.command_list = malloc(var.num_token * sizeof(char*));
-	//for (int i = 0, i < num_token, i++) {
+	var.command_list = (char **)malloc((var.num_token + 1) * (sizeof(char*)));
 	token = strtok_r(string, delim, &string);
 	for (int j = 0; j < var.num_token; j++) {
-		var.command_list[j] = malloc(strlen(token) * sizeof(char));
-		var.command_list[j] = token;
+		//var.command_list[j] = malloc((strlen(token) + 1) * (sizeof(char) + 1));
+		//var.command_list[j] = token;
+		var.command_list[j] = strdup(token);
 		token = strtok_r(NULL, delim, &string);
-		i++;
 	}
-	var.command_list[i] = NULL;
-	/*
-	while (token != NULL) {
-		var.command_list[i] = malloc(strlen(token) * sizeof(char));
-		var.command_list[i] = token;
-		token = strtok_r(NULL, delim, &string);
-		i++;
-	}
-	var.command_list[i] = NULL;
-	*/
+	var.command_list[var.num_token] = NULL;
 	return var;
-	//}
 }
 
 
@@ -107,23 +85,13 @@ void free_command_line(command_line* command)
 	/*
 	*	#1.	free the array base num_token
 	*/
-
 	//size_t size = sizeof(command->command_list) / sizeof(char*);
 	//size_t len = strlen(command->command_list);
-
-	/*
-	int num = command->num_token;
-	for (int i = 0; i < num; i++) {
-		if (command->command_list[i] != NULL) {
-			free(command->command_list[i]);
-		}
+	
+	
+	for (int i = 0; (i < command->num_token + 1); i++) {
+		free(command->command_list[i]);
 	}
-	*/
 	
-	//if (command->command_list != NULL) {
-	//free(command->command_list);
-	//}
-
 	free(command->command_list);
-	
 }
