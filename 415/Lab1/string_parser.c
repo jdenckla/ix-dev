@@ -89,7 +89,7 @@ void free_command_line(command_line* command)
 	//size_t len = strlen(command->command_list);
 	
 	
-	for (int i = 0; (i < command->num_token + 1); i++) {
+	for (int i = 0; (i < command->num_token); i++) {
 		free(command->command_list[i]);
 	}
 	
