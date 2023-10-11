@@ -98,7 +98,31 @@ void changeDir(char *dirName)
 // find file (open/close?) (or err/fail), find dest (?), cp file to dest
 void copyFile(char *sourcePath, char *destinationPath)
 {
-	printf("%s%s%s%s\n","Copy ",sourcePath," to ",destinationPath);
+	//printf("%s%s%s%s\n","Copy ",sourcePath," to ",destinationPath);
+    char prev[PATH_MAX];
+    char *msg;
+    /* continue, as we have a reference point
+    - determine whether the passed in source and dest have dir's
+    - determine how to separate dir from file.. do we need to?
+    - open each to ensure they are valid, otherwise err. Go to source.
+    Use Lab 2 code to:
+    Open specified file, or err
+    Copy to specified dest
+    - return to reference point ('prev' dir)
+    */
+
+    // lookup 'unlink'
+    getcwd(prev, sizeof(prev)); /*POSIX.1-2001: will malloc enough memory*/
+    if (prev == NULL){
+        msg = "Error - failed to allocate mem for current directory";
+        write(1,msg,strlen(msg));
+        return;
+    }
+
+
+    /*fail if prev is NULL, do something*/
+    chdir(prev);
+    //free(prev);
 	return;
     // consider making token from input using '/' in case of dir's
     // this would involve reading a file from one dir, and creating one in another dir

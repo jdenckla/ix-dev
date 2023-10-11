@@ -75,6 +75,11 @@ int main(int argc, char const *argv[])
 			//iterate through each smaller token to print
 
 			if (strcmp("exit",small_token_buffer.command_list[0]) == 0) {
+				free_command_line(&small_token_buffer);
+				memset (&small_token_buffer, 0, 0);
+				free_command_line (&large_token_buffer);
+				memset (&large_token_buffer, 0, 0);
+				free (userInput);
 				return 0;
 			} else if (strcmp("ls",small_token_buffer.command_list[0]) == 0) {
 				if (small_token_buffer.command_list[1] != NULL) {
