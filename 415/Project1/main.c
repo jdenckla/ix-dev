@@ -11,40 +11,9 @@
 
 int main(int argc, char const *argv[])
 {
+	// look at argc and argv to determine flag (strcmp) and file (attempt read), enforce <= 2 or 3 in argv
 	
-	// getopt ref: https://www.gnu.org/software/libc/manual/html_node/Example-of-Getopt.html#Example-of-Getopt
-	
-	/*
-	int flag = 0;
-	char *fname = NULL;
-	int opt;
-	//opterr = 0;
-
-	while ((opt = getopt (argc, argv, "f:")) != -1) 
-	switch (opt)
-	{
-		case 'f':
-		flag = 1;
-		if (argc != 2)
-		{
-			printf ("Usage ./pseudo-shell -f filename\n");
-			return 1;
-		}
-		fname = optarg;
-		break;
-		case '?':
-		if (optopt == 'f')
-		fprintf(stderr, "Option -%c requires a filename as an argument.\n",optopt);
-		else {
-			fprintf(stderr, "Unknown option/argument");
-		}
-	}
-	*/
-
-	
-	
-	
-	
+	// reminder -> set printf's to 'write' as they need to go to the file as well (-f mode)
 	do {
 		size_t size = 128;
 		char *userInput = malloc (size);
@@ -132,17 +101,8 @@ int main(int argc, char const *argv[])
 				}
 			} else {
 				printf("%s\n","Error: Unrecognized command!");
-				// print user input as well
+				// print user input as well?
 			}
-
-			//for (int j = 0; small_token_buffer.command_list[j] != NULL; j++)
-			//{
-				//printf ("\t\tToken %d: %s\n", j + 1, small_token_buffer.command_list[j]);
-				// here we can interpret each part of a command (based on spaces)...
-			//}
-
-
-			//free smaller tokens and reset variable
 			free_command_line(&small_token_buffer);
 			memset (&small_token_buffer, 0, 0);
 		}
@@ -150,30 +110,6 @@ int main(int argc, char const *argv[])
 		memset (&large_token_buffer, 0, 0);
 		free (userInput);
 
-		/*
-		if (strcmp("exit",userInput) == 0) {
-			break;
-		} else if (strcmp("ls",userInput) == 0) {
-			listDir();
-		} else if (strcmp("pwd",userInput) == 0) {
-			showCurrentDir();
-		} else if (strcmp("mkdir",userInput) == 0) {
-			//makeDir();
-		} else if (strcmp("cd",userInput) == 0) {
-			//changeDir();
-		} else if (strcmp("cp",userInput) == 0) {
-			//copyFile();
-		} else if (strcmp("mv",userInput) == 0) {
-			//moveFile();
-		} else if (strcmp("rm",userInput) == 0) {
-			//deleteFile();
-		} else if (strcmp("cat",userInput) == 0) {
-			//displayFile();
-		} else {
-			printf("%s\n","Error: Unrecognized command!");
-			// print user input as well
-		}
-		*/
 	} while(1);
 
 	return 0;

@@ -4,8 +4,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <dirent.h>
-//#include <fcntl.h>  
+#include <fcntl.h>  
 #include <string.h>
+#include "string_parser.h"
 
 /*for the ls command*/
 void listDir()
@@ -40,28 +41,6 @@ void showCurrentDir()
 // create dir in current directory
 void makeDir(char *dirName)
 {
-    /*
-    char cwd[PATH_MAX];
-    dirName[strcspn(dirName, "\r\n")] = 0;
-    if (getcwd(cwd, sizeof(cwd)) != NULL) {
-		//printf("Current working dir: %s\n", cwd);
-		DIR *pDir;
-		pDir = opendir(cwd);
-		struct dirent *dp;
-		while ((dp = readdir(pDir)) != NULL){
-            //write(1,dp->d_name,strlen(dp->d_name));
-            //write(1,"\n",1);
-            if (dp->d_name == dirName) {
-                write(1,"Error: ",7);
-                write(1,dirName,strlen(dirName));
-                write(1,"Already Exists!",15);
-                write(1,"\n",1);
-                return;
-            }
-    	}
-	closedir(pDir);
-	} 
-    */
     struct stat st = {0};
     if (stat(dirName, &st) == -1) {
         mkdir(dirName,0700);
@@ -99,8 +78,6 @@ void changeDir(char *dirName)
 void copyFile(char *sourcePath, char *destinationPath)
 {
 	//printf("%s%s%s%s\n","Copy ",sourcePath," to ",destinationPath);
-    char prev[PATH_MAX];
-    char *msg;
     /* continue, as we have a reference point
     - determine whether the passed in source and dest have dir's
     - determine how to separate dir from file.. do we need to?
@@ -110,30 +87,124 @@ void copyFile(char *sourcePath, char *destinationPath)
     Copy to specified dest
     - return to reference point ('prev' dir)
     */
+    // consider readdir
 
     // lookup 'unlink'
-    getcwd(prev, sizeof(prev)); /*POSIX.1-2001: will malloc enough memory*/
-    if (prev == NULL){
-        msg = "Error - failed to allocate mem for current directory";
-        write(1,msg,strlen(msg));
+    
+    //char cwd[PATH_MAX];
+	//if (getcwd(cwd, sizeof(cwd)) != NULL) {
+    char *buf;
+    size_t bufsize = 255;
+    size_t charCount;
+    buf = (char *)malloc(bufsize * sizeof(char));
+    if (buf == NULL)
+    {
+        perror("Unable to allocate buffer");
         return;
     }
-
-
-    /*fail if prev is NULL, do something*/
-    chdir(prev);
-    //free(prev);
-	return;
-    // consider making token from input using '/' in case of dir's
-    // this would involve reading a file from one dir, and creating one in another dir
-    // then getting lines to place in this new file...
+    FILE *freOp;
+    FILE *fp;
+    //DIR *pDir;
+    size_t size = 128;
+	char *msg = malloc (size);
+    msg = strdup(sourcePath);
+    char *filenameSrc;
+    char *filenameDest;
+    filenameDest = strdup(destinationPath);
+    command_line filename_buffer;
+    filename_buffer = str_filler (msg, "/");
+    //filename = strdup(sourcePath);
+    filenameSrc = filename_buffer.command_list[filename_buffer.num_token - 1];
+    //pDir = opendir(cwd);
+    char *err1;
+    char *err2;
+    char *err3;
+    char *err4;
+    char *err5;
+    //mode_t mode = S_IWOTH;
+    int fe;
+    char *trailingDestCharacter = &filenameDest[strlen(filenameDest) - 1];
+    //char dir = "/";
+    
+    //if (getcwd(prev, sizeof(prev)) != NULL) {
+        err2 = "Error - failed to open source file: ";
+        int fd = open(filenameSrc, O_RDONLY);
+        if (fd == -1) {
+            write(1,err2,strlen(err2));
+            write(1,filenameSrc,strlen(filenameSrc));
+            write(1,"\n",1);
+        } else {
+            //changeDir(destinationPath);
+            //changeDir(prev);
+            //printf("%s%s\n","Src file: ",filenameSrc);
+            if (strcmp("/", trailingDestCharacter)  != 0){
+                strcat(filenameDest,"/");
+            }
+            strcat(filenameDest,filenameSrc);
+            //printf("%s%s\n","Dest file: ",filenameDest);
+            err3 = "Error - failed to create dest file: ";
+            struct dirent *dp;
+            freOp = freopen(filenameDest,"w+",stdout);
+            fp = fopen(filenameSrc, "r");
+            if (fp == NULL) {
+					write(1,err2,strlen(err2));
+                    write(1,filenameSrc,strlen(filenameSrc));
+                    write(1,"\n",1);
+            }
+            if (freOp != NULL) {
+				while((charCount = getline(&buf,&bufsize,fp)) != -1){
+						write(1, buf, charCount);
+					}
+				write(1, "\n", 1);
+            }
+            int r;
+            r = chmod(filenameDest, S_IRWXU );
+            err5 = "Error - failed to modify permissions on dest file: ";
+            if (r != 0) {
+                write(1,err5,strlen(err5));
+                write(1,filenameDest,strlen(filenameDest));
+                write(1,"\n",1);
+            }
+            
+            fclose(fp);
+            //fclose(freOp);
+            //close(fd);
+            err4 = "Error - failed to close source file: ";
+            if (close(fd) < 0) { 
+                //perror("c1"); 
+                //exit(1); 
+                write(1,err4,strlen(err4));
+                write(1,filenameSrc,strlen(filenameSrc));
+                write(1,"\n",1);
+            } 
+            // have not yet found how to use getline without fopen (needing a file pointer)
+        }
+        
+    //} else {
+    //    err1 = "Error - failed to allocate mem for current directory";
+    //    write(1,err1,strlen(err1));
+    //}
+    free(filenameDest);
+    free(msg);
+    free(buf);  
+    buf = NULL;  
 }  
 
 /*for the mv command*/
 // pos perform copyFile command, then deleteFile command
 void moveFile(char *sourcePath, char *destinationPath)
 {
-	printf("%s%s%s%s\n","Move ",sourcePath," to ",destinationPath);
+    char *err1;
+	copyFile(sourcePath,destinationPath);
+    err1 = "Error - failed to find source file: ";
+    int fd = open(sourcePath, O_RDONLY);
+    if (fd == -1) {
+        write(1,err1,strlen(err1));
+        write(1,sourcePath,strlen(sourcePath));
+        write(1,"\n",1);
+    } else {
+        unlink(sourcePath);
+    }
 	return;
 }  
 
@@ -141,15 +212,73 @@ void moveFile(char *sourcePath, char *destinationPath)
 // find file (open/close?) (or err/fail), delete it
 void deleteFile(char *filename)
 {
-	printf("%s%s\n","Remove ",filename);
+    char *filenameSrc;
+    filenameSrc = strdup(filename);
+    char *err1;
+	//printf("%s%s\n","Remove ",filename);
+    err1 = "Error - failed to find source file: ";
+    int fd = open(filenameSrc, O_RDONLY);
+    if (fd == -1) {
+        write(1,err1,strlen(err1));
+        write(1,filenameSrc,strlen(filenameSrc));
+        write(1,"\n",1);
+    } else {
+        unlink(filenameSrc);
+    }
 	return;
     // should be able to navigate to directory as well - consider token like copyFile above
 }  
+
+
 
 /*for the cat command*/
 // enter a file (or err/fail), read each line (getline), and print to stdout (write(1,buf,buflen))
 void displayFile(char *filename)
 {
-	printf("%s%s\n","Print ",filename);
+	char *buf;
+    size_t bufsize = 255;
+    size_t charCount;
+    buf = (char *)malloc(bufsize * sizeof(char));
+    if (buf == NULL)
+    {
+        perror("Unable to allocate buffer");
+        return;
+    }
+    FILE *freOp;
+    FILE *fp;
+    size_t size = 128;
+    char *filenameSrc;
+    filenameSrc = strdup(filename);
+    char *err2;
+    char *err4;
+    err2 = "Error - failed to open source file: ";
+    int fd = open(filenameSrc, O_RDONLY);
+    if (fd == -1) {
+        write(1,err2,strlen(err2));
+        write(1,filenameSrc,strlen(filenameSrc));
+        write(1,"\n",1);
+    } else {
+        fp = fopen(filenameSrc, "r");
+        if (fp == NULL) {
+                write(1,err2,strlen(err2));
+                write(1,filenameSrc,strlen(filenameSrc));
+                write(1,"\n",1);
+        }
+        if (freOp != NULL) {
+            while((charCount = getline(&buf,&bufsize,fp)) != -1){
+                    write(1, buf, charCount);
+                }
+            write(1, "\n", 1);
+        }
+        fclose(fp);
+        err4 = "Error - failed to close source file: ";
+        if (close(fd) < 0) { 
+            write(1,err4,strlen(err4));
+            write(1,filenameSrc,strlen(filenameSrc));
+            write(1,"\n",1);
+        } 
+    }
+    free(buf);  
+    buf = NULL; 
 	return;
 }  
