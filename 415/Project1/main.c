@@ -76,9 +76,15 @@ int main(int argc, char const *argv[])
 		//chars_read = getline(&userInput, &size, stdin);
 		//userInput[strcspn(userInput, "\r\n")] = 0;
 		if (chars_read < 0){
-			puts("Err - no input. Exiting.");
-			free(userInput);
-			return 1;
+			if (flagSet == 1) {
+				printf("%s\n","End of file - exiting.");
+				break;
+			} else {
+				printf("%s\n","Error - no input. Exiting.");
+				printf("%s\n","Goodbye!");
+				free(userInput);
+				return 1;
+			}
 		}
 		//scanf("%s", userInput);
 		large_token_buffer = str_filler (userInput, ";");
@@ -114,7 +120,6 @@ int main(int argc, char const *argv[])
 					showCurrentDir();
 				}
 			} else if (strcmp("mkdir",small_token_buffer.command_list[0]) == 0) {
-				//makeDir();
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
 					printf("%s\n", "Error - mkdir takes one additional parameter.");
 				} else {
@@ -151,8 +156,7 @@ int main(int argc, char const *argv[])
 					displayFile(small_token_buffer.command_list[1]);
 				}
 			} else {
-				printf("%s\n","Error: Unrecognized command!");
-				// print user input as well?
+				printf("%s%s\n","Error - Unrecognized command: ",small_token_buffer.command_list[0]);
 			}
 			free_command_line(&small_token_buffer);
 			memset (&small_token_buffer, 0, 0);
@@ -160,8 +164,7 @@ int main(int argc, char const *argv[])
 		free_command_line (&large_token_buffer);
 		memset (&large_token_buffer, 0, 0);
 		free (userInput);
-
 	} while(1);
-
+	printf("%s\n","Goodbye!");
 	return 0;
 }

@@ -10,7 +10,14 @@
 
 #include <stdlib.h>
 
-
+// via https://www.includehelp.com/c-programs/check-a-given-filename-is-a-directory-or-not.aspx
+// 0 is dir, 1 is file (according to documentation above)
+int isDir(const char* fileName)
+{
+    struct stat path;
+    stat(fileName, &path);
+    return S_ISDIR(path.st_mode);
+}
 
 /*for the ls command*/
 void listDir()
@@ -22,8 +29,10 @@ void listDir()
 		struct dirent *dp;
 		while ((dp = readdir(pDir)) != NULL){
             write(1,dp->d_name,strlen(dp->d_name));
-            write(1,"\n",1);
+            //write(1,"\n",1);
+            write(1," ",1);
     	}
+        write(1,"\n",1);
 	closedir(pDir);
 	} 
 	return;
@@ -48,9 +57,9 @@ void makeDir(char *dirName)
     if (stat(dirName, &st) == -1) {
         mkdir(dirName,0700);
     } else {
-        write(1,"Error: ",7);
+        write(1,"Error - Directory '",19);
         write(1,dirName,strlen(dirName));
-        write(1," already exists!",15);
+        write(1,"' already exists!",17);
         write(1,"\n",1);
         return;
     }
@@ -64,8 +73,11 @@ void changeDir(char *dirName)
     struct stat st = {0};
     if (stat(dirName, &st) != -1) {
         chdir(dirName);
+        //write(1,"\n",1);
+        //write(1,"dir changed",11);
+        //write(1,"\n",1);
     } else {
-        write(1,"Error: ",7);
+        write(1,"Error - ",8);
         write(1,dirName,strlen(dirName));
         write(1," does not exist!",16);
         write(1,"\n",1);
@@ -102,7 +114,7 @@ void copyFile(char *sourcePath, char *destinationPath)
     char *err4;
     char *err5;
     char *err6;
-    char *trailingDestCharacter = &filenameDest[strlen(filenameDest) - 1];
+    //char *trailingDestCharacter = &filenameDest[strlen(filenameDest) - 1];
 
     
     err2 = "Error - failed to open source file: ";
@@ -122,11 +134,16 @@ void copyFile(char *sourcePath, char *destinationPath)
             write(1,err6,strlen(err6));
             write(1,"\n",1);
         } else {
+            /*
             if (strcmp("/", trailingDestCharacter)  != 0){
                 strcat(filenameDest,"/");
                 // mem issue, possibly toss this
             }
-            strcat(filenameDest,filenameSrc);
+            */
+            if (isDir(filenameDest) == 1) {
+                strcat(filenameDest,"/");
+                strcat(filenameDest,filenameSrc);
+            }
             err3 = "Error - failed to open/create dest file: ";
             outFile = open(filenameDest, O_WRONLY | O_CREAT, 0666);
             if (outFile == -1) {
@@ -183,17 +200,8 @@ void copyFile(char *sourcePath, char *destinationPath)
 // pos perform copyFile command, then deleteFile command
 void moveFile(char *sourcePath, char *destinationPath)
 {
-    char *err1;
 	copyFile(sourcePath,destinationPath);
-    err1 = "Error - failed to find source file: ";
-    int fd = open(sourcePath, O_RDONLY);
-    if (fd == -1) {
-        write(1,err1,strlen(err1));
-        write(1,sourcePath,strlen(sourcePath));
-        write(1,"\n",1);
-    } else {
-        unlink(sourcePath);
-    }
+    unlink(sourcePath);
 	return;
 }  
 
@@ -276,6 +284,7 @@ void displayFile(char *filename)
             }
         }
     }
+    write(1,"\n",1);
     free(buf);  
     free(filenameSrc);
     close(inFile);
