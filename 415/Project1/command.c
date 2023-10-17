@@ -81,7 +81,6 @@ void copyFile(char *sourcePath, char *destinationPath)
     //char cwd[255];
 	//if (getcwd(cwd, sizeof(cwd)) != NULL) {
     size_t bufsize = 1024;
-    size_t altBuf = 2048;
     char *buf;
     char *ptr;
     char *eof;
@@ -89,7 +88,6 @@ void copyFile(char *sourcePath, char *destinationPath)
     int iter;
     int outFile;
 
-    //char *msg = malloc (altBuf);
     char *msg;
     msg = strdup(sourcePath);
     char *filenameSrc;

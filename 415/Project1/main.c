@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <dirent.h>
 #include <string.h>
 #include "command.h"
 #include "string_parser.h"
@@ -14,10 +16,41 @@ int main(int argc, char const *argv[])
 	// look at argc and argv to determine flag (strcmp) and file (attempt read), enforce <= 2 or 3 in argv
 	// can probably use fopen in this case, but how to apply that to the getline below... 
 	// likely read the file's lines as stdin, and/or freopen here
-	
+	FILE *inFile;
+	FILE *freOp;
+	char *filenameSrc;
+	int flagSet = 0;
+	if (argc > 4) {
+		printf("%s\n%s\n", "Error - too many arguments given.", "Usage: './pseudo-shell -f yourFilename.txt' or './pseudo-shell'");
+		return 1;
+	} else if (argc == 3) {
+		if (strcmp(argv[1],"-f") == 0) {
+			flagSet = 1;
+			filenameSrc = strdup(argv[2]);
+			freOp = freopen("output.txt","w",stdout);
+			if (freOp == NULL) {
+				printf("%s\n","Error - failed to redirect output.");
+				free(filenameSrc);
+				return 1;
+            }
+			inFile = fopen(filenameSrc, "r");
+			if (inFile == NULL) {
+                printf("Error - failed to open input file.");
+				free(filenameSrc);
+				return 1;
+			}
+			//printf("%s","debug - ready to stream input..");
+			//return 1;
+			
+			//printf("%s%s\n","Flag accepted, filename: ",filenameSrc);
+		} else {
+			printf("%s%s\n%s\n", "Error - incorrect argument flag provided: ", argv[1], "Usage: './pseudo-shell -f yourFilename.txt' or './pseudo-shell'");
+			return 1;
+		}
+	}
 	// reminder -> set printf's to 'write' as they need to go to the file as well (-f mode)
 	do {
-		size_t size = 128;
+		size_t size = 1024;
 		char *userInput = malloc (size);
 		ssize_t chars_read;
 
@@ -26,10 +59,22 @@ int main(int argc, char const *argv[])
 
 		command_line large_token_buffer;
 		command_line small_token_buffer;
-		printf(">>>:");
+		
 		// pos have file pass to stdin, or swap stdin stream for variable set by flag
-		chars_read = getline(&userInput, &size, stdin);
-		userInput[strcspn(userInput, "\r\n")] = 0;
+		if (flagSet == 1) {		
+			chars_read = getline(&userInput, &size, inFile);
+			//while((charCount = getline(&buf,&bufsize,fp)) != -1){
+				//chars_read = getline(&userInput, &size, stdin);
+				//write(1, buf, charCount);
+			//}
+			//write(1, "\n", 1);
+		} else {
+			printf(">>>:");
+			chars_read = getline(&userInput, &size, stdin);
+			userInput[strcspn(userInput, "\r\n")] = 0;
+		}
+		//chars_read = getline(&userInput, &size, stdin);
+		//userInput[strcspn(userInput, "\r\n")] = 0;
 		if (chars_read < 0){
 			puts("Err - no input. Exiting.");
 			free(userInput);
@@ -51,6 +96,10 @@ int main(int argc, char const *argv[])
 				free_command_line (&large_token_buffer);
 				memset (&large_token_buffer, 0, 0);
 				free (userInput);
+				if (flagSet == 1) {
+					fclose(inFile);
+					free(filenameSrc);
+				}
 				return 0;
 			} else if (strcmp("ls",small_token_buffer.command_list[0]) == 0) {
 				if (small_token_buffer.command_list[1] != NULL) {
