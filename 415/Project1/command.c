@@ -81,6 +81,7 @@ void copyFile(char *sourcePath, char *destinationPath)
     //char cwd[255];
 	//if (getcwd(cwd, sizeof(cwd)) != NULL) {
     size_t bufsize = 1024;
+    size_t altBuf = 2048;
     char *buf;
     char *ptr;
     char *eof;
@@ -88,7 +89,8 @@ void copyFile(char *sourcePath, char *destinationPath)
     int iter;
     int outFile;
 
-    char *msg = malloc (bufsize);
+    //char *msg = malloc (altBuf);
+    char *msg;
     msg = strdup(sourcePath);
     char *filenameSrc;
     char *filenameDest;
@@ -124,6 +126,7 @@ void copyFile(char *sourcePath, char *destinationPath)
         } else {
             if (strcmp("/", trailingDestCharacter)  != 0){
                 strcat(filenameDest,"/");
+                // mem issue, possibly toss this
             }
             strcat(filenameDest,filenameSrc);
             err3 = "Error - failed to open/create dest file: ";
@@ -168,6 +171,7 @@ void copyFile(char *sourcePath, char *destinationPath)
 
     free_command_line (&filename_buffer);
 	memset (&filename_buffer, 0, 0);
+    //free(filenameSrc);
     free(filenameDest);
     free(msg);
     free(buf);  
@@ -275,6 +279,7 @@ void displayFile(char *filename)
         }
     }
     free(buf);  
+    free(filenameSrc);
     close(inFile);
 	return;
 }  
