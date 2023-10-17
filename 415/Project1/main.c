@@ -12,6 +12,8 @@
 int main(int argc, char const *argv[])
 {
 	// look at argc and argv to determine flag (strcmp) and file (attempt read), enforce <= 2 or 3 in argv
+	// can probably use fopen in this case, but how to apply that to the getline below... 
+	// likely read the file's lines as stdin, and/or freopen here
 	
 	// reminder -> set printf's to 'write' as they need to go to the file as well (-f mode)
 	do {
