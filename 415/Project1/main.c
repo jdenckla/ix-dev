@@ -21,11 +21,13 @@ int main(int argc, char const *argv[])
 	FILE *freOp;
 	char *filenameSrc;
 	int flagSet = 0;
-	char *exitText = "Goodbye!";
+	char *exitText = "Bye Bye!";
+	char *errCmd = "Error! Unrecognized command: ";
+	char *errParam = "Error! Unrecognized parameters for command: ";
 
 	char *errRedirOut;
 	if (argc > 3) {
-		char *errArgs1 = "Error - too many arguments given.";
+		char *errArgs1 = "Error! Too many arguments given.";
 		char *errArgs2 = "Usage: './pseudo-shell -f yourFilename.txt' or './pseudo-shell'";
 		write(1,errArgs1,strlen(errArgs1));
         write(1,"\n",1);
@@ -38,7 +40,7 @@ int main(int argc, char const *argv[])
 			filenameSrc = strdup(argv[2]);
 			freOp = freopen("output.txt","w",stdout);
 			if (freOp == NULL) {
-				char *errRedirOut = "Error - failed to redirect output.";
+				char *errRedirOut = "Error! Failed to redirect output.";
 				write(1,errRedirOut,strlen(errRedirOut));
         		write(1,"\n",1);
 				free(filenameSrc);
@@ -46,14 +48,14 @@ int main(int argc, char const *argv[])
             }
 			inFile = fopen(filenameSrc, "r");
 			if (inFile == NULL) {
-				char *errOpenInput = "Error - failed to open input file.";
+				char *errOpenInput = "Error! Failed to open input file.";
 				write(1,errOpenInput,strlen(errOpenInput));
         		write(1,"\n",1);
 				free(filenameSrc);
 				return 1;
 			}
 		} else {
-			char *errFlag = "Error - incorrect argument flag provided: ";
+			char *errFlag = "Error! Incorrect argument flag provided: ";
 			write(1,errFlag,strlen(errFlag));
 			write(1,argv[1],strlen(argv[1]));
 			write(1,"\n",1);
@@ -80,12 +82,12 @@ int main(int argc, char const *argv[])
 		}
 		if (chars_read < 0){
 			if (flagSet == 1) {
-				char *EOFtext = "End of file - exiting.";
+				char *EOFtext = "End of file";
 				write(1,EOFtext,strlen(EOFtext));
 				write(1,"\n",1);
 				break;
 			} else {
-				char *errNoInput = "Error - no input. Exiting.";
+				char *errNoInput = "Error! No input - exiting.";
 				write(1,errNoInput,strlen(errNoInput));
 				write(1,"\n",1);
 				write(1,exitText,strlen(exitText));
@@ -113,7 +115,8 @@ int main(int argc, char const *argv[])
 				return 0;
 			} else if (strcmp("ls",small_token_buffer.command_list[0]) == 0) {
 				if (small_token_buffer.command_list[1] != NULL) {
-					char *errLSparams = "Error - ls takes no additional parameters.";
+					char *errLSparams = "ls";
+					write(1,errParam,strlen(errParam));
 					write(1,errLSparams,strlen(errLSparams));
 					write(1,"\n",1);
 				} else {
@@ -121,7 +124,8 @@ int main(int argc, char const *argv[])
 				}
 			} else if (strcmp("pwd",small_token_buffer.command_list[0]) == 0) {
 				if (small_token_buffer.command_list[1] != NULL) {
-					char *errPWDparams = "Error - pwd takes no additional parameters.";
+					char *errPWDparams = "pwd";
+					write(1,errParam,strlen(errParam));
 					write(1,errPWDparams,strlen(errPWDparams));
 					write(1,"\n",1);
 				} else {
@@ -129,7 +133,8 @@ int main(int argc, char const *argv[])
 				}
 			} else if (strcmp("mkdir",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					char *errMKDIRparams = "Error - mkdir takes one additional parameter.";
+					char *errMKDIRparams = "mkdir";
+					write(1,errParam,strlen(errParam));
 					write(1,errMKDIRparams,strlen(errMKDIRparams));
 					write(1,"\n",1);
 				} else {
@@ -137,7 +142,8 @@ int main(int argc, char const *argv[])
 				}
 			} else if (strcmp("cd",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					char *errCDparams = "Error - cd takes one additional parameter.";
+					char *errCDparams = "cd";
+					write(1,errParam,strlen(errParam));
 					write(1,errCDparams,strlen(errCDparams));
 					write(1,"\n",1);
 				} else {
@@ -145,7 +151,8 @@ int main(int argc, char const *argv[])
 				}
 			} else if (strcmp("cp",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] == NULL) || (small_token_buffer.command_list[3] != NULL)) {
-					char *errCPparams = "Error - cp takes two additional parameters.";
+					char *errCPparams = "cp";
+					write(1,errParam,strlen(errParam));
 					write(1,errCPparams,strlen(errCPparams));
 					write(1,"\n",1);
 				} else {
@@ -153,7 +160,8 @@ int main(int argc, char const *argv[])
 				}
 			} else if (strcmp("mv",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] == NULL) || (small_token_buffer.command_list[3] != NULL)) {
-					char *errMVparams = "Error - mv takes two additional parameters.";
+					char *errMVparams = "mv";
+					write(1,errParam,strlen(errParam));
 					write(1,errMVparams,strlen(errMVparams));
 					write(1,"\n",1);
 				} else {
@@ -161,7 +169,8 @@ int main(int argc, char const *argv[])
 				}
 			} else if (strcmp("rm",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					char *errRMparams = "Error - rm takes one additional parameter.";
+					char *errRMparams = "rm";
+					write(1,errParam,strlen(errParam));
 					write(1,errRMparams,strlen(errRMparams));
 					write(1,"\n",1);
 				} else {
@@ -169,15 +178,15 @@ int main(int argc, char const *argv[])
 				}
 			} else if (strcmp("cat",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					char *errCATparams = "Error - cat takes one additional parameter.";
+					char *errCATparams = "ls";
+					write(1,errParam,strlen(errParam));
 					write(1,errCATparams,strlen(errCATparams));
 					write(1,"\n",1);
 				} else {
 					displayFile(small_token_buffer.command_list[1]);
 				}
 			} else {
-				char *errUnkCmd = "Error - Unrecognized command: ";
-				write(1,errUnkCmd,strlen(errUnkCmd));
+				write(1,errCmd,strlen(errCmd));
 				write(1,small_token_buffer.command_list[0],strlen(small_token_buffer.command_list[0]));
 				write(1,"\n",1);
 			}

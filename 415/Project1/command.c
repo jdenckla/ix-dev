@@ -57,9 +57,10 @@ void makeDir(char *dirName)
     if (stat(dirName, &st) == -1) {
         mkdir(dirName,0700);
     } else {
-        write(1,"Error - Directory '",19);
-        write(1,dirName,strlen(dirName));
-        write(1,"' already exists!",17);
+        char *dirExists = "Directory already exists!";
+        write(1,dirExists,strlen(dirExists));
+        //write(1,dirName,strlen(dirName));
+        //write(1,"' already exists!",17);
         write(1,"\n",1);
         return;
     }
@@ -77,9 +78,13 @@ void changeDir(char *dirName)
         //write(1,"dir changed",11);
         //write(1,"\n",1);
     } else {
-        write(1,"Error - ",8);
+        char *noDir = "Error! Could not find directory";
+        write(1,noDir,strlen(noDir));
+        /*
+        write(1,"Error! ",7);
         write(1,dirName,strlen(dirName));
         write(1," does not exist!",16);
+        */
         write(1,"\n",1);
         return;
     }
@@ -117,7 +122,7 @@ void copyFile(char *sourcePath, char *destinationPath)
     //char *trailingDestCharacter = &filenameDest[strlen(filenameDest) - 1];
 
     
-    err2 = "Error - failed to open source file: ";
+    err2 = "Error! Failed to open source file: ";
     int inFile = open(filenameSrc, O_RDONLY);
     if (inFile == -1) {
         write(1,err2,strlen(err2));
@@ -128,7 +133,7 @@ void copyFile(char *sourcePath, char *destinationPath)
         //changeDir(prev);
         // test the dirs above!!!
         buf = (char *)malloc(bufsize * sizeof(char));
-        err6 = "Error - unable to allocate buffer for file copy.";
+        err6 = "Error! Unable to allocate buffer for file copy.";
         if (buf == NULL)
         {
             write(1,err6,strlen(err6));
@@ -144,7 +149,7 @@ void copyFile(char *sourcePath, char *destinationPath)
                 strcat(filenameDest,"/");
                 strcat(filenameDest,filenameSrc);
             }
-            err3 = "Error - failed to open/create dest file: ";
+            err3 = "Error! Failed to open/create dest file: ";
             outFile = open(filenameDest, O_WRONLY | O_CREAT, 0666);
             if (outFile == -1) {
                     write(1,err3,strlen(err3));
@@ -175,7 +180,7 @@ void copyFile(char *sourcePath, char *destinationPath)
 
             int r;
             r = chmod(filenameDest, S_IRWXU );
-            err5 = "Error - failed to modify permissions on dest file: ";
+            err5 = "Error! Failed to modify permissions on dest file: ";
             if (r != 0) {
                 write(1,err5,strlen(err5));
                 write(1,filenameDest,strlen(filenameDest));
@@ -212,7 +217,7 @@ void deleteFile(char *filename)
     char *filenameSrc;
     filenameSrc = strdup(filename);
     char *err1;
-    err1 = "Error - failed to find source file: ";
+    err1 = "Error! Failed to find source file: ";
     int fd = open(filenameSrc, O_RDONLY);
     if (fd == -1) {
         write(1,err1,strlen(err1));
@@ -243,7 +248,7 @@ void displayFile(char *filename)
     char *err3;
     char *err4;
     char *err6;
-    err2 = "Error - failed to open source file: ";
+    err2 = "Error! Failed to open source file: ";
     int inFile = open(filenameSrc, O_RDONLY);
     if (inFile == -1) {
         write(1,err2,strlen(err2));
@@ -261,7 +266,7 @@ void displayFile(char *filename)
             write(1,err6,strlen(err6));
             write(1,"\n",1);
         } else {
-            err3 = "Error - failed to read source file";
+            err3 = "Error! Failed to read source file";
             while(1) {
                 dataRead = read(inFile,buf,bufsize);
                 if (dataRead < 0) {
