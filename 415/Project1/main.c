@@ -1,3 +1,4 @@
+#include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -20,8 +21,16 @@ int main(int argc, char const *argv[])
 	FILE *freOp;
 	char *filenameSrc;
 	int flagSet = 0;
-	if (argc > 4) {
-		printf("%s\n%s\n", "Error - too many arguments given.", "Usage: './pseudo-shell -f yourFilename.txt' or './pseudo-shell'");
+	char *exitText = "Goodbye!";
+
+	char *errRedirOut;
+	if (argc > 3) {
+		char *errArgs1 = "Error - too many arguments given.";
+		char *errArgs2 = "Usage: './pseudo-shell -f yourFilename.txt' or './pseudo-shell'";
+		write(1,errArgs1,strlen(errArgs1));
+        write(1,"\n",1);
+        write(1,errArgs2,strlen(errArgs2));
+        write(1,"\n",1);
 		return 1;
 	} else if (argc == 3) {
 		if (strcmp(argv[1],"-f") == 0) {
@@ -29,59 +38,58 @@ int main(int argc, char const *argv[])
 			filenameSrc = strdup(argv[2]);
 			freOp = freopen("output.txt","w",stdout);
 			if (freOp == NULL) {
-				printf("%s\n","Error - failed to redirect output.");
+				char *errRedirOut = "Error - failed to redirect output.";
+				write(1,errRedirOut,strlen(errRedirOut));
+        		write(1,"\n",1);
 				free(filenameSrc);
 				return 1;
             }
 			inFile = fopen(filenameSrc, "r");
 			if (inFile == NULL) {
-                printf("Error - failed to open input file.");
+				char *errOpenInput = "Error - failed to open input file.";
+				write(1,errOpenInput,strlen(errOpenInput));
+        		write(1,"\n",1);
 				free(filenameSrc);
 				return 1;
 			}
-			//printf("%s","debug - ready to stream input..");
-			//return 1;
-			
-			//printf("%s%s\n","Flag accepted, filename: ",filenameSrc);
 		} else {
-			printf("%s%s\n%s\n", "Error - incorrect argument flag provided: ", argv[1], "Usage: './pseudo-shell -f yourFilename.txt' or './pseudo-shell'");
+			char *errFlag = "Error - incorrect argument flag provided: ";
+			write(1,errFlag,strlen(errFlag));
+			write(1,argv[1],strlen(argv[1]));
+			write(1,"\n",1);
+			char *errUsage = "Usage: './pseudo-shell -f yourFilename.txt' or './pseudo-shell'";
+			write(1,errUsage,strlen(errUsage));
+			write(1,"\n",1);
 			return 1;
 		}
 	}
-	// reminder -> set printf's to 'write' as they need to go to the file as well (-f mode)
 	do {
 		size_t size = 1024;
 		char *userInput = malloc (size);
 		ssize_t chars_read;
 
-		//size_t len = 128;
-		//char* line_buf = malloc (len);
-
 		command_line large_token_buffer;
 		command_line small_token_buffer;
 		
-		// pos have file pass to stdin, or swap stdin stream for variable set by flag
 		if (flagSet == 1) {		
 			chars_read = getline(&userInput, &size, inFile);
-			//while((charCount = getline(&buf,&bufsize,fp)) != -1){
-				//chars_read = getline(&userInput, &size, stdin);
-				//write(1, buf, charCount);
-			//}
-			//write(1, "\n", 1);
 		} else {
-			printf(">>>:");
+			write(1,">>>:",4);
 			chars_read = getline(&userInput, &size, stdin);
 			userInput[strcspn(userInput, "\r\n")] = 0;
 		}
-		//chars_read = getline(&userInput, &size, stdin);
-		//userInput[strcspn(userInput, "\r\n")] = 0;
 		if (chars_read < 0){
 			if (flagSet == 1) {
-				printf("%s\n","End of file - exiting.");
+				char *EOFtext = "End of file - exiting.";
+				write(1,EOFtext,strlen(EOFtext));
+				write(1,"\n",1);
 				break;
 			} else {
-				printf("%s\n","Error - no input. Exiting.");
-				printf("%s\n","Goodbye!");
+				char *errNoInput = "Error - no input. Exiting.";
+				write(1,errNoInput,strlen(errNoInput));
+				write(1,"\n",1);
+				write(1,exitText,strlen(exitText));
+				write(1,"\n",1);
 				free(userInput);
 				return 1;
 			}
@@ -90,11 +98,7 @@ int main(int argc, char const *argv[])
 		large_token_buffer = str_filler (userInput, ";");
 		for (int i = 0; large_token_buffer.command_list[i] != NULL; i++)
 		{
-			//printf ("\tLine segment %d:\n", i + 1);
-			//tokenize large buffer
-			//smaller token is seperated by " "(space bar)
 			small_token_buffer = str_filler (large_token_buffer.command_list[i], " ");
-			//iterate through each smaller token to print
 
 			if (strcmp("exit",small_token_buffer.command_list[0]) == 0) {
 				free_command_line(&small_token_buffer);
@@ -109,54 +113,73 @@ int main(int argc, char const *argv[])
 				return 0;
 			} else if (strcmp("ls",small_token_buffer.command_list[0]) == 0) {
 				if (small_token_buffer.command_list[1] != NULL) {
-					printf("%s\n", "Error - ls takes no additional parameters.");
+					char *errLSparams = "Error - ls takes no additional parameters.";
+					write(1,errLSparams,strlen(errLSparams));
+					write(1,"\n",1);
 				} else {
 					listDir();
 				}
 			} else if (strcmp("pwd",small_token_buffer.command_list[0]) == 0) {
 				if (small_token_buffer.command_list[1] != NULL) {
-					printf("%s\n", "Error - pwd takes no additional parameters.");
+					char *errPWDparams = "Error - pwd takes no additional parameters.";
+					write(1,errPWDparams,strlen(errPWDparams));
+					write(1,"\n",1);
 				} else {
 					showCurrentDir();
 				}
 			} else if (strcmp("mkdir",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					printf("%s\n", "Error - mkdir takes one additional parameter.");
+					char *errMKDIRparams = "Error - mkdir takes one additional parameter.";
+					write(1,errMKDIRparams,strlen(errMKDIRparams));
+					write(1,"\n",1);
 				} else {
 					makeDir(small_token_buffer.command_list[1]);
 				}
 			} else if (strcmp("cd",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					printf("%s\n", "Error - cd takes one additional parameter.");
+					char *errCDparams = "Error - cd takes one additional parameter.";
+					write(1,errCDparams,strlen(errCDparams));
+					write(1,"\n",1);
 				} else {
 					changeDir(small_token_buffer.command_list[1]);
 				}
 			} else if (strcmp("cp",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] == NULL) || (small_token_buffer.command_list[3] != NULL)) {
-					printf("%s\n", "Error - cp takes two additional parameters.");
+					char *errCPparams = "Error - cp takes two additional parameters.";
+					write(1,errCPparams,strlen(errCPparams));
+					write(1,"\n",1);
 				} else {
 					copyFile(small_token_buffer.command_list[1], small_token_buffer.command_list[2]);
 				}
 			} else if (strcmp("mv",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] == NULL) || (small_token_buffer.command_list[3] != NULL)) {
-					printf("%s\n", "Error - mv takes two additional parameters.");
+					char *errMVparams = "Error - mv takes two additional parameters.";
+					write(1,errMVparams,strlen(errMVparams));
+					write(1,"\n",1);
 				} else {
 					moveFile(small_token_buffer.command_list[1], small_token_buffer.command_list[2]);
 				}
 			} else if (strcmp("rm",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					printf("%s\n", "Error - rm takes one additional parameter.");
+					char *errRMparams = "Error - rm takes one additional parameter.";
+					write(1,errRMparams,strlen(errRMparams));
+					write(1,"\n",1);
 				} else {
 					deleteFile(small_token_buffer.command_list[1]);
 				}
 			} else if (strcmp("cat",small_token_buffer.command_list[0]) == 0) {
 				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					printf("%s\n", "Error - cat takes one additional parameter.");
+					char *errCATparams = "Error - cat takes one additional parameter.";
+					write(1,errCATparams,strlen(errCATparams));
+					write(1,"\n",1);
 				} else {
 					displayFile(small_token_buffer.command_list[1]);
 				}
 			} else {
-				printf("%s%s\n","Error - Unrecognized command: ",small_token_buffer.command_list[0]);
+				char *errUnkCmd = "Error - Unrecognized command: ";
+				write(1,errUnkCmd,strlen(errUnkCmd));
+				write(1,small_token_buffer.command_list[0],strlen(small_token_buffer.command_list[0]));
+				write(1,"\n",1);
 			}
 			free_command_line(&small_token_buffer);
 			memset (&small_token_buffer, 0, 0);
@@ -165,6 +188,7 @@ int main(int argc, char const *argv[])
 		memset (&large_token_buffer, 0, 0);
 		free (userInput);
 	} while(1);
-	printf("%s\n","Goodbye!");
+	write(1,exitText,strlen(exitText));
+	write(1,"\n",1);
 	return 0;
 }
