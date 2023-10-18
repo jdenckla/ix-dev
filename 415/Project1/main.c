@@ -197,6 +197,7 @@ int main(int argc, char const *argv[])
 		memset (&large_token_buffer, 0, 0);
 		free (userInput);
 	} while(1);
+	free(filenameSrc);
 	write(1,exitText,strlen(exitText));
 	write(1,"\n",1);
 	return 0;
