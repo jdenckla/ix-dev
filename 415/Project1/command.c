@@ -224,6 +224,7 @@ void deleteFile(char *filename)
         write(1,filenameSrc,strlen(filenameSrc));
         write(1,"\n",1);
     } else {
+        free(filenameSrc);
         unlink(filenameSrc);
     }
 	return;
