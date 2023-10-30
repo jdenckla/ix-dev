@@ -13,11 +13,6 @@ int main(int argc,char*argv[])
 		printf ("Wrong number of arguments\n");
 		exit (0);
 	} 
-	
-	if (typeof(argv[1]) != int)
-	{
-		printf ("Passed in argument must be of type int\n")
-	}
 
 	/*
 	*	TODO
@@ -31,7 +26,7 @@ int main(int argc,char*argv[])
 	*/
 
 	// define n
-	int n = argv[1];
+	int n = atoi(argv[1]);
 	// define process array
 	pid_t procArray[n];
 	int pid = 0;
@@ -44,6 +39,7 @@ int main(int argc,char*argv[])
 		if (pid > 0) {
 			// same fork as in lab 4
 			// child process
+			//printf("%s\n","Parent Process");
 		}
 
 		if(pid == 0)
@@ -54,13 +50,18 @@ int main(int argc,char*argv[])
 			//pause();
 			// print: Child Process: <pid> - Received signal: SIGUSR1 - Calling exec().
 			// call execvp with ./iobound like in lab 4
-			execvp(./iobound -seconds 5);
-			pause();
+			//printf("%s\n","Child Process");
+			char * arg[3];
+			arg[1] = "-seconds";
+			arg[2] = "5";
+			execvp("./iobound", arg);
 			script_print(procArray,i);
-
+			pause();
 		}
 		if (pid < 0) {
 			// fork failed error
+			perror("Forking Failed");
+			exit(1);
 		}
 	}
 	// free memory
