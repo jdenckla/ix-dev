@@ -29,9 +29,18 @@ int main(int argc,char*argv[])
 	int n = atoi(argv[1]);
 	// define process array
 	pid_t procArray[n];
-	int pid = 0;
-	
 
+	char * arg[3];
+	arg[0] = "./iobound";
+	arg[1] = "-seconds";
+	arg[2] = "5";
+
+	int pid = 0;
+	procArray[0] = fork();
+	execvp("./iobound", arg);
+	//pause();
+
+	/*
 	for(int i = 0; i < n; i++)
 	{
 		procArray[i] = fork();
@@ -51,9 +60,7 @@ int main(int argc,char*argv[])
 			// print: Child Process: <pid> - Received signal: SIGUSR1 - Calling exec().
 			// call execvp with ./iobound like in lab 4
 			//printf("%s\n","Child Process");
-			char * arg[3];
-			arg[1] = "-seconds";
-			arg[2] = "5";
+			
 			execvp("./iobound", arg);
 			script_print(procArray,i);
 			pause();
@@ -64,6 +71,7 @@ int main(int argc,char*argv[])
 			exit(1);
 		}
 	}
+	*/
 	// free memory
 
 	return 0;
