@@ -28,30 +28,34 @@ int main(int argc,char*argv[])
 	// define n
 	int n = atoi(argv[1]);
 	// define process array
-	pid_t procArray[n];
+	//pid_t procArray[n];
+	pid_t *procArray;
+	procArray = (pid_t*)malloc(sizeof(pid_t) * n);
 
-	char * arg[3];
+	char * arg[4];
 	arg[0] = "./iobound";
 	arg[1] = "-seconds";
 	arg[2] = "5";
+	arg[3] = NULL;
 
 	int pid = 0;
-	procArray[0] = fork();
-	execvp("./iobound", arg);
+	
+	//procArray[0] = fork();
+	//execvp("./iobound", arg);
 	//pause();
 
-	/*
+	
 	for(int i = 0; i < n; i++)
 	{
 		procArray[i] = fork();
 		pid = procArray[i];
+		
 		if (pid > 0) {
-			// same fork as in lab 4
-			// child process
 			//printf("%s\n","Parent Process");
+			;
 		}
 
-		if(pid == 0)
+		else if(pid == 0)
 		{
 			// print: Child Process: <pid> - Waiting for SIGUSR1…
 			// wait for the signal
@@ -60,18 +64,28 @@ int main(int argc,char*argv[])
 			// print: Child Process: <pid> - Received signal: SIGUSR1 - Calling exec().
 			// call execvp with ./iobound like in lab 4
 			//printf("%s\n","Child Process");
+			if (execvp("./iobound", arg) == -1) {
+				perror("iobound Failed");
+				exit(1);
+			}
 			
-			execvp("./iobound", arg);
-			script_print(procArray,i);
-			pause();
+			//pause();
 		}
-		if (pid < 0) {
+		else if (pid < 0) {
 			// fork failed error
 			perror("Forking Failed");
 			exit(1);
 		}
+		//close(&pid);
 	}
-	*/
+
+	script_print(procArray,n);
+	for (int j = 0; j < n; j++) {
+		waitpid(procArray[j],NULL,0);
+	}
+
+	free(procArray);
+	
 	// free memory
 
 	return 0;
