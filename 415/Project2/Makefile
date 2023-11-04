@@ -1,14 +1,11 @@
 CC = gcc
 CFLAGS = -g
-DEPS = hellomake.h
-OBJ = hellomake.o hellofunc.o
-NAME = hello
 
-%.o: %.c $(DEPS)
-	$(CC) $< $(CFLAGS) -c -o $@
+cpubound: cpubound.c
+	$(CC) $(CFLAGS) cpubound.c -o cpubound
 
-$(NAME) : $(OBJ)
-	$(CC) $(CFLAGS) -o $@ $^
+iobound: iobound.c
+	$(CC) $(CFLAGS) iobound.c -o iobound
 
 clean:
-	rm -f *.o $(NAME)
+	rm -f cpubound.o iobound.o cpubound iobound
