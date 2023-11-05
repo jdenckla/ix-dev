@@ -11,6 +11,7 @@
 
 // line counter sourced from: https://stackoverflow.com/questions/30432856/best-way-to-get-number-of-lines-in-a-file-c
 int countLines(char *filename) {
+	//printf("Begin counting lines\n");
 	int counter = 0;
 	FILE *fp;
 	char c;
@@ -22,27 +23,27 @@ int countLines(char *filename) {
 		while (EOF != (fscanf(fp, "%*[^\n]"), fscanf(fp,"%*c")))
         	++counter;
 	}
-	flcose(fp);
+	fclose(fp);
+	//printf("End counting lines\n");
 	return counter;
 }
 
 int main(int argc, char const *argv[])
 {
-	// look at argc and argv to determine flag (strcmp) and file (attempt read), enforce <= 2 or 3 in argv
-	// can probably use fopen in this case, but how to apply that to the getline below... 
-	// likely read the file's lines as stdin, and/or freopen here
+	//printf("Start the program\n");
 	FILE *inFile;
 	FILE *freOp;
 	char *filenameSrc;
 	int flagSet = 0;
-	char *exitText = "Bye Bye!";
+	//char *exitText = "Bye Bye!";
 	char *errCmd = "Error! Unrecognized command: ";
 	char *errParam = "Error! Unrecognized parameters for command: ";
 
 	char *errRedirOut;
 
 	flagSet = 1;
-	filenameSrc = strdup(argv[2]);
+	//printf("Grab the filename\n");
+	filenameSrc = strdup(argv[1]);
 	int numLines = countLines(filenameSrc);
 	/*
 	freOp = freopen("output.txt","w",stdout);
@@ -62,6 +63,7 @@ int main(int argc, char const *argv[])
 		free(filenameSrc);
 		return 1;
 	}
+	//printf("File opened\n");
 		
 	
 	do {
@@ -69,13 +71,12 @@ int main(int argc, char const *argv[])
 		char *userInput = malloc (size);
 		ssize_t chars_read;
 
-		// Problem - we cannot alloc a process array without knowing number of proc
-		// potential solution - count number of lines in a file, alloc a proc for each
 		pid_t *pid_array;
 		pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
 
 		command_line large_token_buffer;
 		command_line small_token_buffer;
+		
 			
 		chars_read = getline(&userInput, &size, inFile);
 		
@@ -85,13 +86,15 @@ int main(int argc, char const *argv[])
 			write(1,"\n",1);
 			break;
 		}
-		//scanf("%s", userInput);
 		large_token_buffer = str_filler (userInput, ";");
+		//printf("Reading lines...\n");
 		for (int i = 0; i < numLines; i++)
 		{
 			if (large_token_buffer.command_list[i] != NULL) {
 				small_token_buffer = str_filler (large_token_buffer.command_list[i], " ");
-				pid_array[i] = fork();
+				//pid_array[i] = fork();
+				//printf("Index pid array\n");
+				pid_array[i] = 0;
 				if (pid_array[i] < 0)
 				{
 					//error handling
@@ -100,15 +103,16 @@ int main(int argc, char const *argv[])
 				}
 				if (pid_array[i] == 0)
 				{
-					path = small_token_buffer[0];
-					arg = small_token_buffer[0] + 1;
-					if (execvp (path, arg) == -1)
+					//char *path = small_token_buffer.command_list[0];
+					//char * const arg[] = small_token_buffer.command_list + 1;
+					//printf("Read command\n");
+					if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
 					{
 						//error handling
-						perror("iobound Failed");
+						perror("Execution Failed");
 						exit(1);
 					}
-					//
+					printf("A poor exit..\n");
 					exit(-1);
 				}
 			}		
@@ -120,7 +124,7 @@ int main(int argc, char const *argv[])
 		free (userInput);
 	} while(1);
 	free(filenameSrc);
-	write(1,exitText,strlen(exitText));
-	write(1,"\n",1);
+	//write(1,exitText,strlen(exitText));
+	//write(1,"\n",1);
 	return 0;
 }
