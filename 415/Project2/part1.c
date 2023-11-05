@@ -54,59 +54,60 @@ int main(int argc, char const *argv[])
 	}
 		
 	
-	do {
-		size_t size = 1024;
-		char *userInput = malloc (size);
-		ssize_t chars_read;
+	//do {
+	size_t size = 1024;
+	char *userInput = malloc (size);
+	ssize_t chars_read;
 
-		pid_t *pid_array;
-		pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
+	pid_t *pid_array;
+	pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
 
-		command_line large_token_buffer;
-		command_line small_token_buffer;
+	command_line large_token_buffer;
+	command_line small_token_buffer;
+	
 		
-			
-		chars_read = getline(&userInput, &size, inFile);
-		
-		if (chars_read < 0){
-			char *EOFtext = "End of file";
-			write(1,EOFtext,strlen(EOFtext));
-			write(1,"\n",1);
-			break;
-		}
-		large_token_buffer = str_filler (userInput, "\n");
-		//printf("Reading lines...\n");
-		for (int i = 0; i < numLines; i++)
+	chars_read = getline(&userInput, &size, inFile);
+	
+	if (chars_read < 0){
+		return 0;
+		//char *EOFtext = "End of file";
+		//write(1,EOFtext,strlen(EOFtext));
+		//write(1,"\n",1);
+		//break;
+	}
+	large_token_buffer = str_filler (userInput, "\n");
+	//printf("Reading lines...\n");
+	for (int i = 0; i < numLines; i++)
+	{
+		//if (large_token_buffer.command_list[i] != NULL) {
+		small_token_buffer = str_filler (large_token_buffer.command_list[i], " ");
+		//pid_array[i] = fork();
+		pid_array[i] = 0;
+		if (pid_array[i] < 0)
 		{
-			if (large_token_buffer.command_list[i] != NULL) {
-				small_token_buffer = str_filler (large_token_buffer.command_list[i], " ");
-				//pid_array[i] = fork();
-				pid_array[i] = 0;
-				if (pid_array[i] < 0)
-				{
-					//error handling
-					perror("Forking Failed");
-					exit(1);
-				}
-				if (pid_array[i] == 0)
-				{
-					if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
-					{
-						//error handling
-						perror("Execution Failed");
-						exit(1);
-					}
-					//printf("A poor exit..\n");
-					//exit(-1);
-				}
-			}
+			//error handling
+			perror("Forking Failed");
+			exit(1);
 		}
-		free_command_line(&small_token_buffer);
-		memset (&small_token_buffer, 0, 0);
-		free_command_line (&large_token_buffer);
-		memset (&large_token_buffer, 0, 0);
-		free (userInput);
-	} while(1);
+		if (pid_array[i] == 0)
+		{
+			if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
+			{
+				//error handling
+				perror("Execution Failed");
+				exit(1);
+			}
+			//printf("A poor exit..\n");
+			//exit(-1);
+		}
+		//}
+	}
+	free_command_line(&small_token_buffer);
+	memset (&small_token_buffer, 0, 0);
+	free_command_line (&large_token_buffer);
+	memset (&large_token_buffer, 0, 0);
+	free (userInput);
+	//} while(1);
 	free(filenameSrc);
 	return 0;
 }
