@@ -1,170 +1,198 @@
-#include <stdio.h>
-#include <sys/types.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <string.h>
 
-void signaler(pid_t* pid_ary, int size, int signal);
 
-int main(int argc, char* argv[])
+
+#define _GNU_SOURCE
+
+// Note - there should be a file mode if prog is started with '-f'
+
+
+int main(int argc, char const *argv[])
 {
-	
-	// initialization of pid etc. like lab 4
-	if (argc != 2)
-	{
-		printf ("Wrong number of arguments\n");
-		exit (0);
-	} 
+	// look at argc and argv to determine flag (strcmp) and file (attempt read), enforce <= 2 or 3 in argv
+	// can probably use fopen in this case, but how to apply that to the getline below... 
+	// likely read the file's lines as stdin, and/or freopen here
+	FILE *inFile;
+	FILE *freOp;
+	char *filenameSrc;
+	int flagSet = 0;
+	char *exitText = "Bye Bye!";
+	char *errCmd = "Error! Unrecognized command: ";
+	char *errParam = "Error! Unrecognized parameters for command: ";
 
-	// define n
-	int n = atoi(argv[1]);
-	// define process array
-	//pid_t procArray[n];
-	pid_t *procArray;
-	procArray = (pid_t*)malloc(sizeof(pid_t) * n);
-
-	char * arg[4];
-	arg[0] = "./iobound";
-	arg[1] = "-seconds";
-	arg[2] = "5";
-	arg[3] = NULL;
-
-	int pid = 0;
-
-	// initialize sigset
-	sigset_t sigset;
-	int sig;
-
-	// create an empty sigset_t
-	sigemptyset(&sigset);
-
-	// use sigaddset() to add the SIGUSR1 signal to the set
-	sigaddset(&sigset,SIGUSR1);
-
-	// use sigprocmask() to add the signal set in the sigset for blocking
-	sigprocmask(SIG_BLOCK,&sigset,NULL);
-	
-
-	for(int i = 0; i < n; i++)
-	{
-		procArray[i] = fork();
-		pid = procArray[i];
-		if (pid > 0) {
-			// same fork as in lab 4
-			;
-		}
-
-		if(pid == 0)
-		{
-			// print: Child Process: <pid> - Waiting for SIGUSR1…
-			// wait for the signal
-			printf("%s%d%s\n","Child Proccess: ",pid," - Waiting for SIGUSR1");
-			//waitpid(procArray[pid],NULL,0);
-			int signalInt = sigwait(&sigset,&sig);
-			//sigwait(&sigset,&sig);
-			//if (sig == SIGUSR1) {
-			if (signalInt == 0) {
-				printf("%s%d%s\n","Child Proccess: ",pid," - Received signal: SIGUSR1 - Calling exec()");
-				if (execvp("./iobound", arg) == -1) {
-					perror("iobound Failed");
-					exit(1);
-				}
+	char *errRedirOut;
+	if (argc > 3) {
+		char *errArgs1 = "Error! Too many arguments given.";
+		char *errArgs2 = "Usage: './pseudo-shell -f yourFilename.txt' or './pseudo-shell'";
+		write(1,errArgs1,strlen(errArgs1));
+        write(1,"\n",1);
+        write(1,errArgs2,strlen(errArgs2));
+        write(1,"\n",1);
+		return 1;
+	} else if (argc == 3) {
+		if (strcmp(argv[1],"-f") == 0) {
+			flagSet = 1;
+			filenameSrc = strdup(argv[2]);
+			freOp = freopen("output.txt","w",stdout);
+			if (freOp == NULL) {
+				char *errRedirOut = "Error! Failed to redirect output.";
+				write(1,errRedirOut,strlen(errRedirOut));
+        		write(1,"\n",1);
+				free(filenameSrc);
+				return 1;
+            }
+			inFile = fopen(filenameSrc, "r");
+			if (inFile == NULL) {
+				char *errOpenInput = "Error! Failed to open input file.";
+				write(1,errOpenInput,strlen(errOpenInput));
+        		write(1,"\n",1);
+				free(filenameSrc);
+				return 1;
 			}
-			
-			// print: Child Process: <pid> - Received signal: SIGUSR1 - Calling exec().
-			// call execvp with ./iobound like in lab 4
-			
-		}
-		if (pid < 0) {
-			// fork failed error
-			perror("Forking Failed");
-			exit(1);
+		} else {
+			char *errFlag = "Error! Incorrect argument flag provided: ";
+			write(1,errFlag,strlen(errFlag));
+			write(1,argv[1],strlen(argv[1]));
+			write(1,"\n",1);
+			char *errUsage = "Usage: './pseudo-shell -f yourFilename.txt' or './pseudo-shell'";
+			write(1,errUsage,strlen(errUsage));
+			write(1,"\n",1);
+			return 1;
 		}
 	}
-	
-	// send SIGUSR1 
-	signaler(procArray,n,SIGUSR1);
+	do {
+		size_t size = 1024;
+		char *userInput = malloc (size);
+		ssize_t chars_read;
 
-	// send SIGSTOP 
-	signaler(procArray,n,SIGSTOP);
+		command_line large_token_buffer;
+		command_line small_token_buffer;
+		
+		if (flagSet == 1) {		
+			chars_read = getline(&userInput, &size, inFile);
+		} else {
+			write(1,">>>:",4);
+			chars_read = getline(&userInput, &size, stdin);
+			userInput[strcspn(userInput, "\r\n")] = 0;
+		}
+		if (chars_read < 0){
+			if (flagSet == 1) {
+				char *EOFtext = "End of file";
+				write(1,EOFtext,strlen(EOFtext));
+				write(1,"\n",1);
+				break;
+			} else {
+				char *errNoInput = "Error! No input - exiting.";
+				write(1,errNoInput,strlen(errNoInput));
+				write(1,"\n",1);
+				write(1,exitText,strlen(exitText));
+				write(1,"\n",1);
+				free(userInput);
+				return 1;
+			}
+		}
+		//scanf("%s", userInput);
+		large_token_buffer = str_filler (userInput, ";");
+		for (int i = 0; large_token_buffer.command_list[i] != NULL; i++)
+		{
+			small_token_buffer = str_filler (large_token_buffer.command_list[i], " ");
 
-	// send SIGCONT
-	signaler(procArray,n,SIGCONT);
-
-	// send SIGINT
-	signaler(procArray,n,SIGINT);
-
-	//script_print(procArray,n);
-	//for (int j = 0; j < n; j++) {
-	//	waitpid(procArray[j],NULL,0);
-	//}
-
-	free(procArray);
-
+			if (strcmp("exit",small_token_buffer.command_list[0]) == 0) {
+				free_command_line(&small_token_buffer);
+				memset (&small_token_buffer, 0, 0);
+				free_command_line (&large_token_buffer);
+				memset (&large_token_buffer, 0, 0);
+				free (userInput);
+				if (flagSet == 1) {
+					fclose(inFile);
+					free(filenameSrc);
+				}
+				return 0;
+			} else if (strcmp("ls",small_token_buffer.command_list[0]) == 0) {
+				if (small_token_buffer.command_list[1] != NULL) {
+					char *errLSparams = "ls";
+					write(1,errParam,strlen(errParam));
+					write(1,errLSparams,strlen(errLSparams));
+					write(1,"\n",1);
+				} else {
+					listDir();
+				}
+			} else if (strcmp("pwd",small_token_buffer.command_list[0]) == 0) {
+				if (small_token_buffer.command_list[1] != NULL) {
+					char *errPWDparams = "pwd";
+					write(1,errParam,strlen(errParam));
+					write(1,errPWDparams,strlen(errPWDparams));
+					write(1,"\n",1);
+				} else {
+					showCurrentDir();
+				}
+			} else if (strcmp("mkdir",small_token_buffer.command_list[0]) == 0) {
+				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
+					char *errMKDIRparams = "mkdir";
+					write(1,errParam,strlen(errParam));
+					write(1,errMKDIRparams,strlen(errMKDIRparams));
+					write(1,"\n",1);
+				} else {
+					makeDir(small_token_buffer.command_list[1]);
+				}
+			} else if (strcmp("cd",small_token_buffer.command_list[0]) == 0) {
+				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
+					char *errCDparams = "cd";
+					write(1,errParam,strlen(errParam));
+					write(1,errCDparams,strlen(errCDparams));
+					write(1,"\n",1);
+				} else {
+					changeDir(small_token_buffer.command_list[1]);
+				}
+			} else if (strcmp("cp",small_token_buffer.command_list[0]) == 0) {
+				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] == NULL) || (small_token_buffer.command_list[3] != NULL)) {
+					char *errCPparams = "cp";
+					write(1,errParam,strlen(errParam));
+					write(1,errCPparams,strlen(errCPparams));
+					write(1,"\n",1);
+				} else {
+					copyFile(small_token_buffer.command_list[1], small_token_buffer.command_list[2]);
+				}
+			} else if (strcmp("mv",small_token_buffer.command_list[0]) == 0) {
+				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] == NULL) || (small_token_buffer.command_list[3] != NULL)) {
+					char *errMVparams = "mv";
+					write(1,errParam,strlen(errParam));
+					write(1,errMVparams,strlen(errMVparams));
+					write(1,"\n",1);
+				} else {
+					moveFile(small_token_buffer.command_list[1], small_token_buffer.command_list[2]);
+				}
+			} else if (strcmp("rm",small_token_buffer.command_list[0]) == 0) {
+				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
+					char *errRMparams = "rm";
+					write(1,errParam,strlen(errParam));
+					write(1,errRMparams,strlen(errRMparams));
+					write(1,"\n",1);
+				} else {
+					deleteFile(small_token_buffer.command_list[1]);
+				}
+			} else if (strcmp("cat",small_token_buffer.command_list[0]) == 0) {
+				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
+					char *errCATparams = "ls";
+					write(1,errParam,strlen(errParam));
+					write(1,errCATparams,strlen(errCATparams));
+					write(1,"\n",1);
+				} else {
+					displayFile(small_token_buffer.command_list[1]);
+				}
+			} else {
+				write(1,errCmd,strlen(errCmd));
+				write(1,small_token_buffer.command_list[0],strlen(small_token_buffer.command_list[0]));
+				write(1,"\n",1);
+			}
+			free_command_line(&small_token_buffer);
+			memset (&small_token_buffer, 0, 0);
+		}
+		free_command_line (&large_token_buffer);
+		memset (&large_token_buffer, 0, 0);
+		free (userInput);
+	} while(1);
+	free(filenameSrc);
+	write(1,exitText,strlen(exitText));
+	write(1,"\n",1);
 	return 0;
-}
-
-void signaler(pid_t* pid_ary, int size, int signal)
-{
-	// sleep for three seconds
-	pid_t pid;
-	sleep(3);
-
-	for(int i = 0; i < size; i++)
-	{
-		pid = pid_ary[i];
-		//printf("In loop\n");
-		//if (pid > 0) {
-		//parent = pid;
-		//printf("In parent\n");
-		//} else if (pid == 0) {
-		//printf("In child\n");
-		//child = pid;
-		// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
-		printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
-		// send the signal 
-		kill(pid, signal);
-
-		//}
-		//kill(pid,signal);
-	}
-}
-
-
-// Instructions: 
-/*
-
-Read from a file, each line is a command and its args
-
-For each command, MCP must launch a separate process to run the command:
-fork() the proc
-an exec() variant to run it
-
-Once all proc's are running, MCP should wait for each to terminate
-using a wait() variant
-
-After all proc's termainate, MCP must use exit()
-
-*/
-
-// Pseudo from project description
-
-for (int i = 0; i < line_number; i++)
-{
-pid_array[i] = fork();
-if (pid_array[i] < 0)
-{
-//error handling
-}
-if (pid_array[i] == 0)
-{
-if (execvp (path, arg) == -1)
-{
-error handling
-}
-//
-exit(-1);
-}
 }
