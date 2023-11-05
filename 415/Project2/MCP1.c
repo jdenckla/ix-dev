@@ -1,10 +1,30 @@
-
-
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <string.h>
+//#include "command.h"
+#include "string_parser.h"
 
 #define _GNU_SOURCE
 
-// Note - there should be a file mode if prog is started with '-f'
-
+// line counter sourced from: https://stackoverflow.com/questions/30432856/best-way-to-get-number-of-lines-in-a-file-c
+int countLines(char *filename) {
+	int counter = 0;
+	FILE *fp;
+	char c;
+	fp = fopen(filename,"r");
+	if (fp == NULL) {
+		perror("Error opening file");
+		return -1;
+	} else {
+		while (EOF != (fscanf(fp, "%*[^\n]"), fscanf(fp,"%*c")))
+        	++counter;
+	}
+	flcose(fp);
+	return counter;
+}
 
 int main(int argc, char const *argv[])
 {
@@ -20,170 +40,78 @@ int main(int argc, char const *argv[])
 	char *errParam = "Error! Unrecognized parameters for command: ";
 
 	char *errRedirOut;
-	if (argc > 3) {
-		char *errArgs1 = "Error! Too many arguments given.";
-		char *errArgs2 = "Usage: './pseudo-shell -f yourFilename.txt' or './pseudo-shell'";
-		write(1,errArgs1,strlen(errArgs1));
-        write(1,"\n",1);
-        write(1,errArgs2,strlen(errArgs2));
-        write(1,"\n",1);
+
+	flagSet = 1;
+	filenameSrc = strdup(argv[2]);
+	int numLines = countLines(filenameSrc);
+	/*
+	freOp = freopen("output.txt","w",stdout);
+	if (freOp == NULL) {
+		char *errRedirOut = "Error! Failed to redirect output.";
+		write(1,errRedirOut,strlen(errRedirOut));
+		write(1,"\n",1);
+		free(filenameSrc);
 		return 1;
-	} else if (argc == 3) {
-		if (strcmp(argv[1],"-f") == 0) {
-			flagSet = 1;
-			filenameSrc = strdup(argv[2]);
-			freOp = freopen("output.txt","w",stdout);
-			if (freOp == NULL) {
-				char *errRedirOut = "Error! Failed to redirect output.";
-				write(1,errRedirOut,strlen(errRedirOut));
-        		write(1,"\n",1);
-				free(filenameSrc);
-				return 1;
-            }
-			inFile = fopen(filenameSrc, "r");
-			if (inFile == NULL) {
-				char *errOpenInput = "Error! Failed to open input file.";
-				write(1,errOpenInput,strlen(errOpenInput));
-        		write(1,"\n",1);
-				free(filenameSrc);
-				return 1;
-			}
-		} else {
-			char *errFlag = "Error! Incorrect argument flag provided: ";
-			write(1,errFlag,strlen(errFlag));
-			write(1,argv[1],strlen(argv[1]));
-			write(1,"\n",1);
-			char *errUsage = "Usage: './pseudo-shell -f yourFilename.txt' or './pseudo-shell'";
-			write(1,errUsage,strlen(errUsage));
-			write(1,"\n",1);
-			return 1;
-		}
 	}
+	*/
+	inFile = fopen(filenameSrc, "r");
+	if (inFile == NULL) {
+		char *errOpenInput = "Error! Failed to open input file.";
+		write(1,errOpenInput,strlen(errOpenInput));
+		write(1,"\n",1);
+		free(filenameSrc);
+		return 1;
+	}
+		
+	
 	do {
 		size_t size = 1024;
 		char *userInput = malloc (size);
 		ssize_t chars_read;
 
+		// Problem - we cannot alloc a process array without knowing number of proc
+		// potential solution - count number of lines in a file, alloc a proc for each
+		pid_t *pid_array;
+		pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
+
 		command_line large_token_buffer;
 		command_line small_token_buffer;
+			
+		chars_read = getline(&userInput, &size, inFile);
 		
-		if (flagSet == 1) {		
-			chars_read = getline(&userInput, &size, inFile);
-		} else {
-			write(1,">>>:",4);
-			chars_read = getline(&userInput, &size, stdin);
-			userInput[strcspn(userInput, "\r\n")] = 0;
-		}
 		if (chars_read < 0){
-			if (flagSet == 1) {
-				char *EOFtext = "End of file";
-				write(1,EOFtext,strlen(EOFtext));
-				write(1,"\n",1);
-				break;
-			} else {
-				char *errNoInput = "Error! No input - exiting.";
-				write(1,errNoInput,strlen(errNoInput));
-				write(1,"\n",1);
-				write(1,exitText,strlen(exitText));
-				write(1,"\n",1);
-				free(userInput);
-				return 1;
-			}
+			char *EOFtext = "End of file";
+			write(1,EOFtext,strlen(EOFtext));
+			write(1,"\n",1);
+			break;
 		}
 		//scanf("%s", userInput);
 		large_token_buffer = str_filler (userInput, ";");
-		for (int i = 0; large_token_buffer.command_list[i] != NULL; i++)
+		for (int i = 0; i < numLines; i++)
 		{
-			small_token_buffer = str_filler (large_token_buffer.command_list[i], " ");
-
-			if (strcmp("exit",small_token_buffer.command_list[0]) == 0) {
-				free_command_line(&small_token_buffer);
-				memset (&small_token_buffer, 0, 0);
-				free_command_line (&large_token_buffer);
-				memset (&large_token_buffer, 0, 0);
-				free (userInput);
-				if (flagSet == 1) {
-					fclose(inFile);
-					free(filenameSrc);
+			if (large_token_buffer.command_list[i] != NULL) {
+				small_token_buffer = str_filler (large_token_buffer.command_list[i], " ");
+				pid_array[i] = fork();
+				if (pid_array[i] < 0)
+				{
+					//error handling
+					perror("Forking Failed");
+					exit(1);
 				}
-				return 0;
-			} else if (strcmp("ls",small_token_buffer.command_list[0]) == 0) {
-				if (small_token_buffer.command_list[1] != NULL) {
-					char *errLSparams = "ls";
-					write(1,errParam,strlen(errParam));
-					write(1,errLSparams,strlen(errLSparams));
-					write(1,"\n",1);
-				} else {
-					listDir();
+				if (pid_array[i] == 0)
+				{
+					path = small_token_buffer[0];
+					arg = small_token_buffer[0] + 1;
+					if (execvp (path, arg) == -1)
+					{
+						//error handling
+						perror("iobound Failed");
+						exit(1);
+					}
+					//
+					exit(-1);
 				}
-			} else if (strcmp("pwd",small_token_buffer.command_list[0]) == 0) {
-				if (small_token_buffer.command_list[1] != NULL) {
-					char *errPWDparams = "pwd";
-					write(1,errParam,strlen(errParam));
-					write(1,errPWDparams,strlen(errPWDparams));
-					write(1,"\n",1);
-				} else {
-					showCurrentDir();
-				}
-			} else if (strcmp("mkdir",small_token_buffer.command_list[0]) == 0) {
-				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					char *errMKDIRparams = "mkdir";
-					write(1,errParam,strlen(errParam));
-					write(1,errMKDIRparams,strlen(errMKDIRparams));
-					write(1,"\n",1);
-				} else {
-					makeDir(small_token_buffer.command_list[1]);
-				}
-			} else if (strcmp("cd",small_token_buffer.command_list[0]) == 0) {
-				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					char *errCDparams = "cd";
-					write(1,errParam,strlen(errParam));
-					write(1,errCDparams,strlen(errCDparams));
-					write(1,"\n",1);
-				} else {
-					changeDir(small_token_buffer.command_list[1]);
-				}
-			} else if (strcmp("cp",small_token_buffer.command_list[0]) == 0) {
-				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] == NULL) || (small_token_buffer.command_list[3] != NULL)) {
-					char *errCPparams = "cp";
-					write(1,errParam,strlen(errParam));
-					write(1,errCPparams,strlen(errCPparams));
-					write(1,"\n",1);
-				} else {
-					copyFile(small_token_buffer.command_list[1], small_token_buffer.command_list[2]);
-				}
-			} else if (strcmp("mv",small_token_buffer.command_list[0]) == 0) {
-				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] == NULL) || (small_token_buffer.command_list[3] != NULL)) {
-					char *errMVparams = "mv";
-					write(1,errParam,strlen(errParam));
-					write(1,errMVparams,strlen(errMVparams));
-					write(1,"\n",1);
-				} else {
-					moveFile(small_token_buffer.command_list[1], small_token_buffer.command_list[2]);
-				}
-			} else if (strcmp("rm",small_token_buffer.command_list[0]) == 0) {
-				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					char *errRMparams = "rm";
-					write(1,errParam,strlen(errParam));
-					write(1,errRMparams,strlen(errRMparams));
-					write(1,"\n",1);
-				} else {
-					deleteFile(small_token_buffer.command_list[1]);
-				}
-			} else if (strcmp("cat",small_token_buffer.command_list[0]) == 0) {
-				if ((small_token_buffer.command_list[1] == NULL) || (small_token_buffer.command_list[2] != NULL)) {
-					char *errCATparams = "ls";
-					write(1,errParam,strlen(errParam));
-					write(1,errCATparams,strlen(errCATparams));
-					write(1,"\n",1);
-				} else {
-					displayFile(small_token_buffer.command_list[1]);
-				}
-			} else {
-				write(1,errCmd,strlen(errCmd));
-				write(1,small_token_buffer.command_list[0],strlen(small_token_buffer.command_list[0]));
-				write(1,"\n",1);
-			}
+			}		
 			free_command_line(&small_token_buffer);
 			memset (&small_token_buffer, 0, 0);
 		}
