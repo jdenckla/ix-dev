@@ -1,13 +1,13 @@
 CC = gcc
 CFLAGS = -g
 
-all: MCP1
+all: part1
 
-MCP1: MCP1.o string_parser.o
-	$(CC) $(CFLAGS) -o MCP1 MCP1.o string_parser.o
+part1: part1.o string_parser.o
+	$(CC) $(CFLAGS) -o part1 part1.o string_parser.o
 
-MCP1.o: MCP1.c
-	$(CC) $(CFLAGS) -c MCP1.c
+part1.o: part1.c
+	$(CC) $(CFLAGS) -c part1.c
 
 string_parser.o: string_parser.c string_parser.h
 	$(CC) $(CFLAGS) -c string_parser.c
@@ -19,4 +19,4 @@ iobound: iobound.c
 	$(CC) $(CFLAGS) iobound.c -o
 
 clean:
-	rm -f MCP1.o MCP1 string_parser.o
+	rm -f part1.o part1 string_parser.o
