@@ -8,23 +8,34 @@
 #include "string_parser.h"
 
 #define _GNU_SOURCE
+#define SIZE 1024
 
-// line counter sourced from: https://stackoverflow.com/questions/30432856/best-way-to-get-number-of-lines-in-a-file-c
-int countLines(char *filename) {
+int countLines(char *filename)
+{
+// line counter sourced from: https://codereview.stackexchange.com/questions/156477/c-program-to-count-number-of-lines-in-a-file
 	//printf("Begin counting lines\n");
 	int counter = 0;
 	FILE *fp;
-	char c;
+	//char c;
 	fp = fopen(filename,"r");
+	char buffer[SIZE + 1], lastchar = '\n';
+	size_t bytes;
 	if (fp == NULL) {
 		perror("Error opening file");
 		return -1;
 	} else {
-		while (EOF != (fscanf(fp, "%*[^\n]"), fscanf(fp,"%*c")))
-        	++counter;
+		while ((bytes = fread(buffer, 1, sizeof(buffer) - 1, fp))) {
+			lastchar = buffer[bytes - 1];
+			for (char *c = buffer; (c = memchr(c, '\n', bytes - (c - buffer))); c++) {
+				counter++;
+			}
+		}
+		if (lastchar != '\n') {
+			counter++;  /* Count the last line even if it lacks a newline */
+		}
 	}
 	fclose(fp);
-	//printf("End counting lines\n");
+	printf("End counting lines - %d\n",counter);
 	return counter;
 }
 
