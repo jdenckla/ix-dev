@@ -57,32 +57,52 @@ int main(int argc, char const *argv[])
 	//do {
 	size_t size = 1024;
 	char *userInput = malloc (size);
-	ssize_t chars_read;
+	ssize_t read;
 
 	pid_t *pid_array;
 	pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
 
-	command_line large_token_buffer;
+	char **comm_array;
+	comm_array = (char**)malloc(sizeof(char*) * numLines);
+	for (int a = 0; a < numLines; a++){
+		comm_array[a] = (char*)malloc(sizeof(char) * size);
+	}
+
+	char * line = NULL;
+    size_t len = 0;
+	int iter = 0;
+	while ((read = getline(&line, &len, inFile)) != -1) {
+        //printf("%s", line);
+		comm_array[iter] = strdup(line);
+		iter++;
+    }
+	fclose(inFile);
+
+	//command_line large_token_buffer;
 	command_line small_token_buffer;
 	
 		
-	chars_read = getline(&userInput, &size, inFile);
+	//chars_read = getline(&userInput, &size, inFile);
 	
-	if (chars_read < 0){
-		return 0;
+	//if (chars_read < 0){
+		//return 0;
 		//char *EOFtext = "End of file";
 		//write(1,EOFtext,strlen(EOFtext));
 		//write(1,"\n",1);
 		//break;
-	}
-	large_token_buffer = str_filler (userInput, "\n");
+	//}
+	//large_token_buffer = str_filler (userInput, "\n");
 	//printf("Reading lines...\n");
+	//printf("Test line %s\n",comm_array[0]);
+	//printf("Test line %s\n",comm_array[1]);
 	for (int i = 0; i < numLines; i++)
 	{
 		//if (large_token_buffer.command_list[i] != NULL) {
-		small_token_buffer = str_filler (large_token_buffer.command_list[i], " ");
-		//pid_array[i] = fork();
-		pid_array[i] = 0;
+		small_token_buffer = str_filler (comm_array[i], " ");
+		
+		//printf("Test line %s",comm_array[i]);
+		pid_array[i] = fork();
+		//pid_array[i] = 0;
 		if (pid_array[i] < 0)
 		{
 			//error handling
@@ -91,23 +111,35 @@ int main(int argc, char const *argv[])
 		}
 		if (pid_array[i] == 0)
 		{
+			//printf("%d : %s\n",i, comm_array[i]);
+			//printf("%s\n",small_token_buffer.command_list[0]);
+			
+			
 			if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
 			{
 				//error handling
 				perror("Execution Failed");
 				exit(1);
 			}
+			
 			//printf("A poor exit..\n");
 			//exit(-1);
 		}
 		//}
 	}
+	for (int b = 0; b < numLines; b++){
+		free(comm_array[b]);
+	}
+	free(comm_array);
 	free_command_line(&small_token_buffer);
 	memset (&small_token_buffer, 0, 0);
-	free_command_line (&large_token_buffer);
-	memset (&large_token_buffer, 0, 0);
+	//free_command_line (&large_token_buffer);
+	//memset (&large_token_buffer, 0, 0);
 	free (userInput);
 	//} while(1);
 	free(filenameSrc);
+	free(pid_array);
+	//pid_t *pid_array;
+	//pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
 	return 0;
 }
