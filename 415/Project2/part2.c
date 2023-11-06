@@ -5,6 +5,7 @@
 #include <dirent.h>
 // possibly verify the need for each of the above...
 #include <string.h>
+#include <signal.h>
 #include <sys/wait.h>
 #include "MCP.h"
 
@@ -84,21 +85,7 @@ int countLines(char *filename)
 	return counter;
 }
 
-void signaler(pid_t* pid_ary, int size, int signal)
-{
-	// sleep for one seconds
-	pid_t pid;
-	sleep(1);
-
-	for(int i = 0; i < size; i++)
-	{
-		pid = pid_ary[i];
-		// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
-		printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
-		// send the signal 
-		kill(pid, signal);
-	}
-}
+void signaler(pid_t* pid_ary, int size, int signal);
 
 int main(int argc, char const *argv[])
 {
@@ -155,10 +142,10 @@ int main(int argc, char const *argv[])
 
 	for (int i = 0; i < numLines; i++)
 	{
-		pid = pid_array[i];
 		small_token_buffer = str_filler (comm_array[i], " ");
 		pid_array[i] = fork();
 		//pid_array[i] = 0;
+		pid = pid_array[i];
 		if (pid < 0)
 		{
 			//error handling
@@ -182,13 +169,13 @@ int main(int argc, char const *argv[])
 	}
 
 	// send SIGUSR1 
-	signaler(procArray,n,SIGUSR1);
+	signaler(pid_array,numLines,SIGUSR1);
 
 	// send SIGSTOP 
-	signaler(procArray,n,SIGSTOP);
+	signaler(pid_array,numLines,SIGSTOP);
 
 	// send SIGCONT
-	signaler(procArray,n,SIGCONT);
+	signaler(pid_array,numLines,SIGCONT);
 
 	// send SIGINT
 	// signaler(procArray,n,SIGINT);
@@ -207,4 +194,20 @@ int main(int argc, char const *argv[])
 	free(pid_array);
 	exit(1);
 	return 0;
+}
+
+void signaler(pid_t* pid_ary, int size, int signal)
+{
+	// sleep for one seconds
+	pid_t pid;
+	sleep(1);
+
+	for(int i = 0; i < size; i++)
+	{
+		pid = pid_ary[i];
+		// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
+		printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
+		// send the signal 
+		kill(pid, signal);
+	}
 }
