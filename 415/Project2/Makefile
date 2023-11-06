@@ -3,8 +3,8 @@ CFLAGS = -g
 
 all: part1 cpubound iobound
 
-part1: part1.o string_parser.o MCP.h
-	$(CC) $(CFLAGS) -o part1 part1.o string_parser.o
+part1: part1.o MCP.h
+	$(CC) $(CFLAGS) -o part1 part1.o
 
 part1.o: part1.c
 	$(CC) $(CFLAGS) -c part1.c
