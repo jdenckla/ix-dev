@@ -147,5 +147,6 @@ int main(int argc, char const *argv[])
 	free(pid_array);
 	//pid_t *pid_array;
 	//pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
+	exit(1);
 	return 0;
 }
