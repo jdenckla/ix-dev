@@ -1,8 +1,9 @@
 /*
- * string_parser.h
+ * string_parser.h, now MCP.h
  *
  *  Created on: Nov 8, 2020
  *      Author: gguan, Monil
+ *  Modified by John Dencklau, as of Nov 5, 2023
  *
  *	Purpose: The goal of this dynamic helper string struct is to reliably 
  *			 tokenize strings base on different delimeter. Following this structure
