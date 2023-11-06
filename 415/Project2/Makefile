@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -g
 
-all: part1
+all: part1 cpubound iobound
 
 part1: part1.o string_parser.o
 	$(CC) $(CFLAGS) -o part1 part1.o string_parser.o
@@ -13,10 +13,10 @@ string_parser.o: string_parser.c string_parser.h
 	$(CC) $(CFLAGS) -c string_parser.c
 
 cpubound: cpubound.c
-	$(CC) $(CFLAGS) -o cpubound.c -o
+	$(CC) $(CFLAGS) cpubound.c -o cpubound
 
 iobound: iobound.c
-	$(CC) $(CFLAGS) iobound.c -o
+	$(CC) $(CFLAGS) iobound.c -o iobound
 
 clean:
-	rm -f part1.o part1 string_parser.o
+	rm -f *.o part1 cpubound iobound

@@ -5,6 +5,7 @@
 #include <dirent.h>
 #include <string.h>
 //#include "command.h"
+#include <sys/wait.h>
 #include "string_parser.h"
 
 #define _GNU_SOURCE
@@ -64,9 +65,11 @@ int main(int argc, char const *argv[])
 
 	char **comm_array;
 	comm_array = (char**)malloc(sizeof(char*) * numLines);
+	/*
 	for (int a = 0; a < numLines; a++){
 		comm_array[a] = (char*)malloc(sizeof(char) * size);
 	}
+	*/
 
 	char * line = NULL;
     size_t len = 0;
@@ -123,9 +126,12 @@ int main(int argc, char const *argv[])
 			}
 			
 			//printf("A poor exit..\n");
-			//exit(-1);
+			exit(-1);
 		}
 		//}
+	}
+	for (int c = 0; c < numLines; c++){
+		waitpid(pid_array[c],NULL,0);
 	}
 	for (int b = 0; b < numLines; b++){
 		free(comm_array[b]);
