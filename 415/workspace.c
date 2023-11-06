@@ -32,7 +32,26 @@ After all proc's termainate, MCP must use exit()
 
 */
 
+///////////////////////////////////////////////////////
+
 /*
+
+Part 2:
+
+Between fork() and exec(), tell each process to stop and wait for SIGUSR1
+-> implement sigwait() as with lab5, which occurs immediately after fork()
+->> SIGUSR1 is the first signal to wait for
+
+Once each process is created, (and therefore waiting), send each child SIGUSR1 simultaneously
+-> This will allow each to reach exec() call, see lab5...
+
+Once each process begins executing, (after exec()), send each process SIGSTOP
+-> should be similar to the above...
+
+After all processes ahve been touched by SIGSTOP, send each SIGCONT
+-> ||
+
+After SIGCONT, wait for each process to finish, (same as part 1), then free associated memory
 
 */
 

@@ -84,6 +84,22 @@ int countLines(char *filename)
 	return counter;
 }
 
+void signaler(pid_t* pid_ary, int size, int signal)
+{
+	// sleep for one seconds
+	pid_t pid;
+	sleep(1);
+
+	for(int i = 0; i < size; i++)
+	{
+		pid = pid_ary[i];
+		// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
+		printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
+		// send the signal 
+		kill(pid, signal);
+	}
+}
+
 int main(int argc, char const *argv[])
 {
 	FILE *inFile;
@@ -122,29 +138,61 @@ int main(int argc, char const *argv[])
 
 	command_line small_token_buffer;
 
+	int pid = 0;
+
+	// initialize sigset
+	sigset_t sigset;
+	int sig;
+
+	// create an empty sigset_t
+	sigemptyset(&sigset);
+
+	// use sigaddset() to add the SIGUSR1 signal to the set
+	sigaddset(&sigset,SIGUSR1);
+
+	// use sigprocmask() to add the signal set in the sigset for blocking
+	sigprocmask(SIG_BLOCK,&sigset,NULL);
+
 	for (int i = 0; i < numLines; i++)
 	{
+		pid = pid_array[i];
 		small_token_buffer = str_filler (comm_array[i], " ");
-		
 		pid_array[i] = fork();
 		//pid_array[i] = 0;
-		if (pid_array[i] < 0)
+		if (pid < 0)
 		{
 			//error handling
 			perror("Forking Failed");
 			exit(1);
 		}
-		if (pid_array[i] == 0)
-		{		
-			if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
-			{
-				//error handling
-				perror("Execution Failed");
-				exit(1);
+		if (pid == 0)
+		{
+			printf("%s%d%s\n","Child Proccess: ",pid," - Waiting for SIGUSR1");
+			int signalInt = sigwait(&sigset,&sig);
+			if (signalInt == 0) {
+				printf("%s%d%s\n","Child Proccess: ",pid," - Received signal: SIGUSR1 - Calling exec()");
+				if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
+				{
+					//error handling
+					perror("Execution Failed");
+					exit(1);
+				}
 			}
-			exit(-1);
 		}
 	}
+
+	// send SIGUSR1 
+	signaler(procArray,n,SIGUSR1);
+
+	// send SIGSTOP 
+	signaler(procArray,n,SIGSTOP);
+
+	// send SIGCONT
+	signaler(procArray,n,SIGCONT);
+
+	// send SIGINT
+	// signaler(procArray,n,SIGINT);
+
 	for (int c = 0; c < numLines; c++){
 		waitpid(pid_array[c],NULL,0);
 	}
