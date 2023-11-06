@@ -5,6 +5,7 @@
 #include <dirent.h>
 // possibly verify the need for each of the above...
 #include <string.h>
+#include <signal.h>
 #include <sys/wait.h>
 #include "MCP.h"
 
@@ -84,21 +85,7 @@ int countLines(char *filename)
 	return counter;
 }
 
-void signaler(pid_t* pid_ary, int size, int signal)
-{
-	// sleep for one seconds
-	pid_t pid;
-	sleep(1);
-
-	for(int i = 0; i < size; i++)
-	{
-		pid = pid_ary[i];
-		// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
-		printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
-		// send the signal 
-		kill(pid, signal);
-	}
-}
+void signaler(pid_t* pid_ary, int size, int signal);
 
 int main(int argc, char const *argv[])
 {
@@ -149,16 +136,17 @@ int main(int argc, char const *argv[])
 
 	// use sigaddset() to add the SIGUSR1 signal to the set
 	sigaddset(&sigset,SIGUSR1);
+	// do we need to do this with each type of signal?
 
 	// use sigprocmask() to add the signal set in the sigset for blocking
 	sigprocmask(SIG_BLOCK,&sigset,NULL);
 
 	for (int i = 0; i < numLines; i++)
 	{
-		pid = pid_array[i];
 		small_token_buffer = str_filler (comm_array[i], " ");
 		pid_array[i] = fork();
 		//pid_array[i] = 0;
+		pid = pid_array[i];
 		if (pid < 0)
 		{
 			//error handling
@@ -182,18 +170,20 @@ int main(int argc, char const *argv[])
 	}
 
 	// send SIGUSR1 
-	signaler(procArray,n,SIGUSR1);
+	signaler(pid_array,numLines,SIGUSR1);
 
 	// send SIGSTOP 
-	signaler(procArray,n,SIGSTOP);
+	signaler(pid_array,numLines,SIGSTOP);
 
 	// send SIGCONT
-	signaler(procArray,n,SIGCONT);
+	signaler(pid_array,numLines,SIGCONT);
 
 	// send SIGINT
 	// signaler(procArray,n,SIGINT);
 
 	for (int c = 0; c < numLines; c++){
+		// alter to determine signal upon exit, pos use WIFEXITED and WEXITSTATUS: https://www.geeksforgeeks.org/exit-status-child-process-linux/
+		// see ref: https://stackoverflow.com/questions/47441871/why-should-we-check-wifexited-after-wait-in-order-to-kill-child-processes-in-lin
 		waitpid(pid_array[c],NULL,0);
 	}
 	for (int b = 0; b < numLines; b++){
@@ -207,4 +197,43 @@ int main(int argc, char const *argv[])
 	free(pid_array);
 	exit(1);
 	return 0;
+}
+
+void signaler(pid_t* pid_ary, int size, int signal)
+{
+	// sleep for one seconds
+	pid_t pid;
+	sleep(1);
+
+	// the following anticipates wanting to send a signal to all processes. 
+	for(int i = 0; i < size; i++)
+	{
+		pid = pid_ary[i];
+		// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
+		printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
+		// send the signal 
+		kill(pid, signal);
+	}
+	// potentially implement individual signal handlers below:
+	// note, we want to determine whether a process is still executing when triggering alarms..
+	/*
+	if (signal == SIGALRM) {
+		printf("Alarm triggered for proccess: %d\n",pid);
+		alarm(1);
+		// potentially set this value to something greater..
+	}
+	if (signal == SIGINT) {
+		printf("Interrupt triggered for proccess: %d\n",pid);
+		alarm(1);
+		// potentially set unique handler other than alarm
+	}
+	if (signal == SIGSTOP) {
+		printf("Stop triggered for proccess: %d\n",pid);
+		// potentially set unique handler
+	}
+	if (signal == SIGCONT) {
+		printf("Continue triggered for proccess: %d\n",pid);
+		// potentially set unique handler
+	}
+	*/
 }
