@@ -3,7 +3,7 @@
 // Instructions: 
 /*
 
-Part 1:
+Part 1: Lab 1
 
 Read from a file, each line is a command and its args
 
@@ -36,7 +36,7 @@ After all proc's termainate, MCP must use exit()
 
 /*
 
-Part 2:
+Part 2: Lab 2
 
 Between fork() and exec(), tell each process to stop and wait for SIGUSR1
 -> implement sigwait() as with lab5, which occurs immediately after fork()
@@ -55,3 +55,26 @@ After SIGCONT, wait for each process to finish, (same as part 1), then free asso
 
 */
 
+/*
+
+Part 3: No more labs to carry us..
+
+Use alarm(), (which delivers the SIGALARM signal), to effectively time each process
+-> Each process will only be given a time slice to execute in
+
+In using this alarm(), we will do the following:
+-> suspend current workload process using SIGSTOP
+->> Determine next workload process and send it SIGCONT
+->>> Reset the alarm and continue whatever else...
+
+Ensure that the above transitions output some kind of debug.
+
+Notes:
+
+Each workload process is a child of the MCP (aka part3). How do we know each has terminated?
+-> possibly modify the value inside of pid_array?
+-X Cannot use the return value of waitpid.
+
+Ensure output shows the steps above, (the start/stop, the alarm, possibly a process ending)
+
+*/
