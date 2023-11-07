@@ -155,11 +155,11 @@ int main(int argc, char const *argv[])
 		}
 		if (pid == 0)
 		{
-			printf("%s%d%s\n","Child Proccess: ",pid," - Waiting for SIGUSR1");
+			printf("%s%d%s\n","Child Proccess: ",getpid()," - Waiting for SIGUSR1");
 			int signalInt = sigwait(&sigset,&sig);
 			if (signalInt == 0) {
 				// possible place queue/dequeue here, based on SIGUSR1. We can use SIGSTOP/SIGCONT, but we need alarm somewhere too...
-				printf("%s%d%s\n","Child Proccess: ",pid," - Received signal: SIGUSR1 - Calling exec()");
+				printf("%s%d%s\n","Child Proccess: ",getpid()," - Received signal: SIGUSR1 - Calling exec()");
 				if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
 				{
 					//error handling
@@ -219,8 +219,8 @@ void signaler(pid_t* pid_ary, int size, int signal)
 		printf("Interrupt triggered for proccess: %d\n",getpid());
 		//alarm(1);
 		// potentially set unique handler functionality...
-	} else if (signal == SIGUSR1) {
-		printf("SIGUSR1 triggered by proccess: %d\n",getpid());
+	//} else if (signal == SIGUSR1) {
+	//	printf("SIGUSR1 triggered by proccess: %d\n",getpid());
 		//alarm(1);
 		// potentially set unique handler functionality...
 	}
