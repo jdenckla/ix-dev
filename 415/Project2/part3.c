@@ -12,7 +12,7 @@
 
 #define _GNU_SOURCE
 #define SIZE 1024
-
+int sliceIter = 0;
 int count_token (char* buf, const char* delim)
 {
 	char* save;
@@ -157,9 +157,11 @@ int main(int argc, char const *argv[])
 		{
 			printf("%s%d%s\n","Child Proccess: ",getpid()," - Waiting for SIGUSR1");
 			int signalInt = sigwait(&sigset,&sig);
-			if (signalInt == 0) {
+			if (signalInt == SIGCONT) {
 				// possible place queue/dequeue here, based on SIGUSR1. We can use SIGSTOP/SIGCONT, but we need alarm somewhere too...
-				printf("%s%d%s\n","Child Proccess: ",getpid()," - Received signal: SIGUSR1 - Calling exec()");
+				//printf("%s%d%s\n","Child Proccess: ",getpid()," - Received signal: SIGUSR1 - Calling exec()");
+				printf("%s%d%s\n","Child Proccess: ",getpid()," - Received signal: SIGCONT - Calling exec()");
+				alarm(1);
 				if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
 				{
 					//error handling
@@ -212,6 +214,17 @@ void signaler(pid_t* pid_ary, int size, int signal)
 	
 	if (signal == SIGALRM) {
 		printf("Alarm triggered for proccess: %d\n",getpid());
+		kill(getpid(), SIGSTOP);
+		sliceIter--;
+		if (sliceIter < 0) {
+			sliceIter = size;
+		}
+		pid_t killReturn = kill(pid_ary[sliceIter], SIGCONT);
+		// Attempt to continue process aka if (killReturn != 0)
+		if (killReturn) { 
+			// no proc found
+			signaler(pid_array,numLines,SIGALARM);
+		}
 		//alarm(1);
 		// potentially set this value to something greater..
 	}
@@ -219,8 +232,9 @@ void signaler(pid_t* pid_ary, int size, int signal)
 		printf("Interrupt triggered for proccess: %d\n",getpid());
 		//alarm(1);
 		// potentially set unique handler functionality...
-	//} else if (signal == SIGUSR1) {
-	//	printf("SIGUSR1 triggered by proccess: %d\n",getpid());
+	} else if (signal == SIGUSR1) {
+		printf("SIGUSR1 triggered by proccess: %d, starting queue...\n",getpid());
+		kill(pid_ary[size], SIGCONT);
 		//alarm(1);
 		// potentially set unique handler functionality...
 	}
