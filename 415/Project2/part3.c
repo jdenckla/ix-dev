@@ -157,7 +157,7 @@ int main(int argc, char const *argv[])
 		{
 			printf("%s%d%s\n","Child Proccess: ",getpid()," - Waiting for SIGUSR1");
 			int signalInt = sigwait(&sigset,&sig);
-			if (signalInt == SIGCONT) {
+			if (signalInt == 0) {
 				// possible place queue/dequeue here, based on SIGUSR1. We can use SIGSTOP/SIGCONT, but we need alarm somewhere too...
 				//printf("%s%d%s\n","Child Proccess: ",getpid()," - Received signal: SIGUSR1 - Calling exec()");
 				printf("%s%d%s\n","Child Proccess: ",getpid()," - Received signal: SIGCONT - Calling exec()");
@@ -174,13 +174,14 @@ int main(int argc, char const *argv[])
 
 	// send SIGUSR1 
 	// alternatively, place queue checking here. At this point, each child should know it's PID
-	signaler(pid_array,numLines,SIGUSR1);
 
 	// send SIGSTOP 
 	signaler(pid_array,numLines,SIGSTOP);
 
+	signaler(pid_array,numLines,SIGUSR1);
+
 	// send SIGCONT
-	signaler(pid_array,numLines,SIGCONT);
+	// signaler(pid_array,numLines,SIGCONT);
 
 	// send SIGINT
 	// signaler(procArray,n,SIGINT);
@@ -223,7 +224,7 @@ void signaler(pid_t* pid_ary, int size, int signal)
 		// Attempt to continue process aka if (killReturn != 0)
 		if (killReturn) { 
 			// no proc found
-			signaler(pid_array,numLines,SIGALARM);
+			signaler(pid_ary,size,SIGALRM);
 		}
 		//alarm(1);
 		// potentially set this value to something greater..
@@ -233,8 +234,8 @@ void signaler(pid_t* pid_ary, int size, int signal)
 		//alarm(1);
 		// potentially set unique handler functionality...
 	} else if (signal == SIGUSR1) {
-		printf("SIGUSR1 triggered by proccess: %d, starting queue...\n",getpid());
-		kill(pid_ary[size], SIGCONT);
+		printf("SIGUSR1 triggered by proccess: %d, starting queue on %d...\n",getpid(),pid_ary[size-1]);
+		kill(pid_ary[size-1], SIGCONT);
 		//alarm(1);
 		// potentially set unique handler functionality...
 	}
