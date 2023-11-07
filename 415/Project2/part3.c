@@ -158,6 +158,7 @@ int main(int argc, char const *argv[])
 			printf("%s%d%s\n","Child Proccess: ",pid," - Waiting for SIGUSR1");
 			int signalInt = sigwait(&sigset,&sig);
 			if (signalInt == 0) {
+				// possible place queue/dequeue here, based on SIGUSR1. We can use SIGSTOP/SIGCONT, but we need alarm somewhere too...
 				printf("%s%d%s\n","Child Proccess: ",pid," - Received signal: SIGUSR1 - Calling exec()");
 				if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
 				{
@@ -170,6 +171,7 @@ int main(int argc, char const *argv[])
 	}
 
 	// send SIGUSR1 
+	// alternatively, place queue checking here. At this point, each child should know it's PID
 	signaler(pid_array,numLines,SIGUSR1);
 
 	// send SIGSTOP 
@@ -184,6 +186,7 @@ int main(int argc, char const *argv[])
 	for (int c = 0; c < numLines; c++){
 		// alter to determine signal upon exit, pos use WIFEXITED and WEXITSTATUS: https://www.geeksforgeeks.org/exit-status-child-process-linux/
 		// see ref: https://stackoverflow.com/questions/47441871/why-should-we-check-wifexited-after-wait-in-order-to-kill-child-processes-in-lin
+		// also, maybe https://stackoverflow.com/questions/60000733/how-to-check-if-all-child-processes-ended
 		waitpid(pid_array[c],NULL,0);
 	}
 	for (int b = 0; b < numLines; b++){
@@ -206,34 +209,35 @@ void signaler(pid_t* pid_ary, int size, int signal)
 	sleep(1);
 
 	// the following anticipates wanting to send a signal to all processes. 
-	for(int i = 0; i < size; i++)
-	{
-		pid = pid_ary[i];
-		// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
-		printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
-		// send the signal 
-		kill(pid, signal);
-	}
-	// potentially implement individual signal handlers below:
-	// note, we want to determine whether a process is still executing when triggering alarms..
-	/*
+	
 	if (signal == SIGALRM) {
-		printf("Alarm triggered for proccess: %d\n",pid);
-		alarm(1);
+		printf("Alarm triggered for proccess: %d\n",getpid());
+		//alarm(1);
 		// potentially set this value to something greater..
 	}
-	if (signal == SIGINT) {
-		printf("Interrupt triggered for proccess: %d\n",pid);
-		alarm(1);
-		// potentially set unique handler other than alarm
+	else if (signal == SIGINT) {
+		printf("Interrupt triggered for proccess: %d\n",getpid());
+		//alarm(1);
+		// potentially set unique handler functionality...
+	} else if (signal == SIGUSR1) {
+		printf("SIGUSR1 triggered by proccess: %d\n",getpid());
+		//alarm(1);
+		// potentially set unique handler functionality...
 	}
-	if (signal == SIGSTOP) {
-		printf("Stop triggered for proccess: %d\n",pid);
-		// potentially set unique handler
-	}
+	/*
 	if (signal == SIGCONT) {
-		printf("Continue triggered for proccess: %d\n",pid);
-		// potentially set unique handler
+		...
 	}
 	*/
+	else {
+		// send to all processes
+		for(int i = 0; i < size; i++)
+		{
+			pid = pid_ary[i];
+			// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
+			printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
+			// send the signal 
+			kill(pid, signal);
+		}
+	}
 }
