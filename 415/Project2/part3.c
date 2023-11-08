@@ -6,6 +6,7 @@
 // possibly verify the need for each of the above...
 #include <string.h>
 #include <signal.h>
+//#include <bool.h>
 #include <sys/wait.h>
 #include "MCP.h"
 
@@ -31,7 +32,7 @@ int arrayIsFull(struct ProcArray* procArray){
 }
 
 int arrayIsEmpty(struct ProcArray* procArray){
-	return (procArray->size == 0);
+	return (procArray->currentSize == 0);
 }
 
 void addToProcArray(struct ProcArray* procArray, pid_t procID){
@@ -51,6 +52,25 @@ void addToProcArray(struct ProcArray* procArray, pid_t procID){
 		procArray->currentSize = procArray->currentSize + 1;
 		printf("Process %d Added to Process Array\n", procID);
 	}
+}
+
+int getIndex(struct ProcArray* procArray)
+{
+    if (arrayIsEmpty(procArray))
+        return 0;
+    return procArray->array[procArray->index];
+}
+
+int getCurrentSize(struct ProcArray* procArray)
+{
+    if (arrayIsEmpty(procArray))
+        return 0;
+    return procArray->array[procArray->currentSize];
+}
+
+int getMaxSize(struct ProcArray* procArray)
+{
+    return procArray->array[procArray->maxSize];
 }
 //
 void removeFromProcArray(struct ProcArray* procArray, pid_t procID){
@@ -82,23 +102,26 @@ void removeFromProcArray(struct ProcArray* procArray, pid_t procID){
 // def global process array for future use...
 struct ProcArray procArray;
 
-volatile sig_atomic_t print_flag = false;
+volatile sig_atomic_t got_interrupt = 0;
 
 void handle_alarm( int sig ) {
+	//got_interrupt = 1;
     //print_flag = true;
 	//if (signal == SIGALRM) {
-	printf("Alarm Triggered, Stopping Proccess: %d\n",procArray[procArray->index]);
-	kill(procArray[procArray->index], SIGSTOP);
-	procArray->index = (procArray->index + 1) % procArray->currentSize;
+	printf("Alarm Triggered, Stopping Proccess: %d\n",procArray.array[getIndex(procArray)]);
+	kill(getIndex(procArray), SIGSTOP);
+	procArray.index = (getIndex(procArray) + 1) % getCurrentSize(procArray);
+	//procArray->index = (procArray->index + 1) % procArray->currentSize;
 	
-	printf("Starting Proccess: %d\n",procArray[procArray->index]);
-	kill(procArray[procArray->index], SIGCONT);
+	printf("Starting Proccess: %d\n",procArray.array[getIndex(procArray)]);
+	kill(procArray.array[getIndex(procArray)], SIGCONT);
 	
 	// Attempt to continue process aka if (killReturn != 0)
-	pid_t killReturn = kill(procArray[procArray->index], SIGCONT);
+	pid_t killReturn = kill(procArray.array[getIndex(procArray)], SIGCONT);
 	if (killReturn) { 
 		// no proc found
-		procArray.removeFromProcArray(procArray->index);
+		procArray.removeFromProcArray(getIndex(procArray));
+		//procArray->index = (procArray->index + 1) % procArray->currentSize;
 		//signaler(pid_ary,size,SIGALRM);
 	}
 	
@@ -250,7 +273,7 @@ int main(int argc, char const *argv[])
 		}
 		if (pid == 0)
 		{
-			procArray.addToProcArray(getpid());
+			addToProcArray(procArray,getpid());
 			printf("%s%d%s\n","Child Proccess: ",getpid()," - Added to Process Array");
 			//printf("%s%d%s\n","Child Proccess: ",pid," - Waiting for SIGUSR1");
 			printf("%s%d%s\n","Child Proccess: ",getpid()," - Waiting for SIGUSR1");
