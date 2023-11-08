@@ -19,131 +19,6 @@ pid_t *pid_array;
 int numLines;
 int procIndex = 0;
 
-/*
-ProcArray* createProcArray(int maxSize) {
-	ProcArray* procArray = (ProcArray*)malloc(sizeof(ProcArray));
-	procArray->maxSize = maxSize;
-	procArray->currentSize = procArray->index = 0;
-	procArray->array = (pid_t*)malloc(maxSize * sizeof(pid_t));
-	return procArray;
-}
-
-void destroyProcArray(ProcArray* procArray) {
-	free(procArray);
-	free(procArray->array);
-	return;
-}
-
-int arrayIsFull(ProcArray* procArray){
-	return (procArray->currentSize == procArray->maxSize);
-}
-
-int arrayIsEmpty(ProcArray* procArray){
-	return (procArray->currentSize == 0);
-}
-
-
-int getIndex(ProcArray* procArray)
-{
-    if (arrayIsEmpty(procArray))
-        return 0;
-    return procArray->array[procArray->index];
-}
-
-int getCurrentSize(ProcArray* procArray)
-{
-    if (arrayIsEmpty(procArray))
-        return 0;
-    //return procArray->array[procArray->currentSize];
-	return procArray->currentSize;
-}
-
-int getMaxSize(ProcArray* procArray)
-{
-    return procArray->array[procArray->maxSize];
-}
-
-void setMaxSize(ProcArray* procArray, int max)
-{
-	procArray->maxSize = max;
-	return;
-    //return procArray->array[procArray->maxSize];
-}
-
-void incrementCurrentSize(ProcArray* procArray)
-{
-	procArray->currentSize = (getCurrentSize(procArray) + 1);
-	return;
-    //return procArray->array[procArray->maxSize];
-}
-
-void addToProcArray(ProcArray* procArray, pid_t procID){
-	if (arrayIsFull(procArray)){
-		return;
-	} else {
-		// test to ensure PID isn't already in array!
-		
-		for (int i = 0; i < procArray->currentSize; i++){
-			if (procArray->array[i] == procID) {
-				printf("Process ID %d Already In ProcArray, Failed To Add!\n",procID);
-				return;
-			}
-		}
-		
-		procArray->array[procArray->index] = procID;
-		procArray->index = procArray->index + 1;
-		//procArray->index = (procArray->index + 1) % procArray->maxSize;
-		incrementCurrentSize(procArray);
-		printf("Process %d Added to Process Array\n", procID);
-	}
-}
-
-
-void printProcArray(ProcArray* procArray)
-{
-	printf("Printing Process Array\nCurrent Size: %d\nMax Size: %d\nActive Index: %d\n",procArray->currentSize, procArray->maxSize, procArray->index);
-	if (arrayIsEmpty(procArray)) {
-		printf("Error - Can't Print Empty Proc Array\n");
-		return;
-	} else {
-		printf("Process Array Index | PID\n");
-		for (int i = 0; i < procArray->currentSize; i++){
-			printf("%d | %d\n", i, procArray->array[i]);
-		}
-		return;
-	}
-}
-//
-void removeFromProcArray(ProcArray* procArray, pid_t procID){
-	if (arrayIsEmpty(procArray)){
-		return;
-	} else {
-		for (int i = 0; i < procArray->currentSize; i++) {
-			if (procArray->array[i] == procID) {
-				printf("Process ID %d Found In ProcArray, Removing...\n",procID);
-				for (int j = i; j < procArray->currentSize; j++) {
-					if (j != (procArray->currentSize - 1)) {
-						procArray->array[j] = procArray->array[j+1];
-					} else {
-						procArray->array[j] = -1;
-						// garbage value now at end of array
-					}
-				}
-				break;
-			} else {
-				printf("Process ID %d Not Found In ProcArray, Failed To Remove!\n",procID);
-				return;
-			}
-		}
-		procArray->currentSize = procArray->currentSize - 1;
-		printf("Process %d Removed From Process Array\n", procID);
-	}
-}
-
-// def global process array for future use...
-ProcArray* procArray;
-*/
-
 volatile sig_atomic_t got_interrupt = 0;
 
 void handle_alarm(int sig);
@@ -227,8 +102,6 @@ int main(int argc, char const *argv[])
 	
 	FILE *inFile;
 	char *filenameSrc;
-	//pid_t *pid_array;
-	//int numLines;
 
 	filenameSrc = strdup(argv[1]);
 	numLines = countLines(filenameSrc);
@@ -241,16 +114,11 @@ int main(int argc, char const *argv[])
 		return 1;
 	}
 		
-	
 	size_t size = 1024;
 	char *userInput = malloc (size);
 	ssize_t read;
 	procIndex = numLines - 1;
 	
-	//procArray = createProcArray(numLines);
-	//setMaxSize(procArray, numLines);
-	
-	//pid_t *pid_array;
 	pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
 
 	char **comm_array;
@@ -298,16 +166,10 @@ int main(int argc, char const *argv[])
 		}
 		if (pid == 0)
 		{
-			//printf("%s%d%s\n","Adding Child Proccess: ",getpid()," to Process Array...");
-			//addToProcArray(procArray,getpid());
-			//printf("%s%d%s\n","Child Proccess: ",pid," - Waiting for SIGUSR1");
 			printf("%s%d%s\n","Child Proccess: ",getpid()," - Waiting for SIGUSR1");
 			int signalInt = sigwait(&sigset,&sig);
 			if (signalInt == 0) {
-				// possible place queue/dequeue here, based on SIGUSR1. We can use SIGSTOP/SIGCONT, but we need alarm somewhere too...
-				//printf("%s%d%s\n","Child Proccess: ",getpid()," - Received signal: SIGUSR1 - Calling exec()");
 				printf("%s%d%s\n","Child Proccess: ",getpid()," - Received signal: SIGUSR1 - Calling exec()");
-				//alarm(1);
 				if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
 				{
 					//error handling
@@ -318,29 +180,14 @@ int main(int argc, char const *argv[])
 		}
 	}
 
-	// send SIGUSR1 
-	// alternatively, place queue checking here. At this point, each child should know it's PID
-
-	// send SIGSTOP 
-	 // signaler(pid_array,numLines,SIGSTOP);
-
 	signaler(pid_array,numLines,SIGUSR1);
 
 	signaler(pid_array,numLines,SIGSTOP);
-	//printf("Break One\n");
-	//printProcArray(procArray);
-	//printf("Break Two\n");
 
 	alarm(1);
 
-	// send SIGCONT
-	// signaler(pid_array,numLines,SIGCONT);
-
-	// send SIGINT
-	// signaler(procArray,n,SIGINT);
-
 	for (int c = 0; c < numLines; c++){
-		// alter to determine signal upon exit, pos use WIFEXITED and WEXITSTATUS: https://www.geeksforgeeks.org/exit-status-child-process-linux/
+		// possibly alter to determine signal upon exit, (likely) using WIFEXITED and WEXITSTATUS: https://www.geeksforgeeks.org/exit-status-child-process-linux/
 		// see ref: https://stackoverflow.com/questions/47441871/why-should-we-check-wifexited-after-wait-in-order-to-kill-child-processes-in-lin
 		// also, maybe https://stackoverflow.com/questions/60000733/how-to-check-if-all-child-processes-ended
 		waitpid(pid_array[c],NULL,0);
@@ -354,19 +201,17 @@ int main(int argc, char const *argv[])
 	free (userInput);
 	free(filenameSrc);
 	free(pid_array);
-	//destroyProcArray(procArray);
 	exit(1);
 	return 0;
 }
 
 void signaler(pid_t* pid_array, int size, int signal)
 {
-	// sleep for one seconds
+	// sleep for one second
 	pid_t pid;
 	sleep(1);
 
 	// the following anticipates wanting to send a signal to all processes. 
-
 	for(int i = 0; i < size; i++)
 	{
 		pid = pid_array[i];
@@ -376,24 +221,6 @@ void signaler(pid_t* pid_array, int size, int signal)
 		kill(pid, signal);
 	}
 }
-
-/*
-void handle_alarm( int sig ) {
-	printf("Alarm Triggered, Stopping Proccess: %d\n",procArray->array[getIndex(procArray)]);
-	kill(getIndex(procArray), SIGSTOP);
-	procArray->index = (getIndex(procArray) + 1) % getCurrentSize(procArray);
-
-	printf("Starting Proccess: %d\n",procArray->array[getIndex(procArray)]);
-	kill(procArray->array[getIndex(procArray)], SIGCONT);
-	
-	// Attempt to continue process aka if (killReturn != 0)
-	pid_t killReturn = kill(procArray->array[getIndex(procArray)], SIGCONT);
-	if (killReturn) { 
-		// no proc found
-		removeFromProcArray(procArray, getIndex(procArray));
-	}
-}
-*/
 
 void handle_alarm( int sig ) {
 	//got_interrupt = 1;

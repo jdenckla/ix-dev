@@ -36,35 +36,4 @@ command_line str_filler (char* buf, const char* delim);
 //this function safely free all the tokens within the array.
 void free_command_line(command_line* command);
 
-
-typedef struct
-{
-	pid_t* array;
-	int currentSize, maxSize, index;
-} ProcArray; 
-
-ProcArray* createProcArray(int maxSize);
-
-void destroyProcArray(ProcArray* procArray);
-
-int arrayIsFull(ProcArray* procArray);
-
-int arrayIsEmpty(ProcArray* procArray);
-
-int getIndex(ProcArray* procArray);
-
-int getCurrentSize(ProcArray* procArray);
-
-int getMaxSize(ProcArray* procArray);
-
-void setMaxSize(ProcArray* procArray, int max);
-
-void incrementCurrentSize(ProcArray* procArray);
-
-void addToProcArray(ProcArray* procArray, pid_t procID);
-
-void printProcArray(ProcArray* procArray);
-
-void removeFromProcArray(ProcArray* procArray, pid_t procID);
-
 #endif /* MCP_H_ */
