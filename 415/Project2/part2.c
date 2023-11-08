@@ -1,9 +1,8 @@
-#include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <dirent.h>
-// possibly verify the need for each of the above...
+// #include <dirent.h>
+// #include <sys/types.h>
 #include <string.h>
 #include <signal.h>
 #include <sys/wait.h>
