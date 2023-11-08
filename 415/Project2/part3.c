@@ -14,6 +14,10 @@
 #define _GNU_SOURCE
 #define SIZE 1024
 
+
+pid_t *pid_array;
+int numLines;
+
 /*
 struct ProcArray {
 	pid_t* array;
@@ -135,15 +139,15 @@ int procIndex = 0;
 void handle_alarm( int sig ) {
 	//got_interrupt = 1;
     //print_flag = true;
-	printf("Alarm Triggered, Stopping Proccess: %d\n",pid_ary[procIndex]);
-	kill(pid_ary[procIndex], SIGSTOP);
+	printf("Alarm Triggered, Stopping Proccess: %d\n",pid_array[procIndex]);
+	kill(pid_array[procIndex], SIGSTOP);
 	procIndex++;
 	if (procIndex >= numLines) {
 		procIndex = 0;
 	}
 	
-	printf("Starting Proccess: %d\n",(pid_ary[procIndex]);
-	kill(pid_ary[procIndex], SIGCONT);
+	printf("Starting Proccess: %d\n",(pid_array[procIndex]));
+	kill(pid_array[procIndex], SIGCONT);
 }
 
 int count_token (char* buf, const char* delim)
@@ -218,10 +222,7 @@ int countLines(char *filename)
 	return counter;
 }
 
-void signaler(pid_t* pid_ary, int size, int signal);
-
-pid_t *pid_array;
-int numLines;
+void signaler(pid_t* pid_array, int size, int signal);
 
 int main(int argc, char const *argv[])
 {
@@ -248,7 +249,7 @@ int main(int argc, char const *argv[])
 	//setMaxSize(procArray, numLines);
 	
 	//pid_t *pid_array;
-	pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
+	//pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
 
 	char **comm_array;
 	comm_array = (char**)malloc(sizeof(char*) * numLines);
@@ -352,7 +353,7 @@ int main(int argc, char const *argv[])
 	return 0;
 }
 
-void signaler(pid_t* pid_ary, int size, int signal)
+void signaler(pid_t* pid_array, int size, int signal)
 {
 	// sleep for one seconds
 	pid_t pid;
@@ -366,8 +367,8 @@ void signaler(pid_t* pid_ary, int size, int signal)
 		//alarm(1);
 		// potentially set unique handler functionality...
 	} else if (signal == SIGUSR1) {
-		printf("SIGUSR1 triggered by proccess: %d, starting queue on %d...\n",getpid(),pid_ary[size-1]);
-		kill(pid_ary[size-1], SIGUSR1);
+		printf("SIGUSR1 triggered by proccess: %d, starting queue on %d...\n",getpid(),pid_array[size-1]);
+		kill(pid_array[size-1], SIGUSR1);
 		//alarm(1);
 		// potentially set unique handler functionality...
 	}
@@ -381,7 +382,7 @@ void signaler(pid_t* pid_ary, int size, int signal)
 	// send to all processes
 	for(int i = 0; i < size; i++)
 	{
-		pid = pid_ary[i];
+		pid = pid_array[i];
 		// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
 		printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
 		// send the signal 
