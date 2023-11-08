@@ -12,28 +12,96 @@
 
 #define _GNU_SOURCE
 #define SIZE 1024
-int sliceIter = 0;
+
+struct ProcArray {
+	pid_t* array;
+	int currentSize, maxSize, index;
+} ProcArray; 
+
+struct ProcArray* createProcArray(int maxSize) {
+	struct ProcArray* procArray = (struct ProcArray*)malloc(sizeof(struct ProcArray));
+	procArray->maxSize = maxSize;
+	procArray->currentSize = procArray->index = 0;
+	procArray->array = (pid_t*)malloc(procArray->maxSize * sizeof(pid_t));
+	return procArray;
+}
+
+int arrayIsFull(struct ProcArray* procArray){
+	return (procArray->currentSize == procArray->maxSize);
+}
+
+int arrayIsEmpty(struct ProcArray* procArray){
+	return (procArray->size == 0);
+}
+
+void addToProcArray(struct ProcArray* procArray, pid_t procID){
+	if (arrayIsFull(procArray)){
+		return;
+	} else {
+		// test to ensure PID isn't already in array!
+		for (int i = 0; i < procArray->currentSize; i++){
+			if (procArray->array[i] == procID) {
+				printf("Process ID %d Already In ProcArray, Failed To Add!\n",procID);
+				return;
+			}
+		}
+		procArray->array[procArray->index] = procID;
+		procArray->index = procArray->index + 1;
+		//procArray->index = (procArray->index + 1) % procArray->maxSize;
+		procArray->currentSize = procArray->currentSize + 1;
+		printf("Process %d Added to Process Array\n", procID);
+	}
+}
+//
+void removeFromProcArray(struct ProcArray* procArray, pid_t procID){
+	if (arrayIsEmpty(procArray)){
+		return;
+	} else {
+		for (int i = 0; i < procArray->currentSize; i++) {
+			if (procArray->array[i] == procID) {
+				printf("Process ID %d Found In ProcArray, Removing...\n",procID);
+				for (int j = i; j < procArray->currentSize; j++) {
+					if (j != (procArray->currentSize - 1)) {
+						procArray->array[j] = procArray->array[j+1];
+					} else {
+						procArray->array[j] = -1;
+						// garbage value now at end of array
+					}
+				}
+				break;
+			} else {
+				printf("Process ID %d Not Found In ProcArray, Failed To Remove!\n",procID);
+				return;
+			}
+		}
+		procArray->currentSize = procArray->currentSize - 1;
+		printf("Process %d Removed From Process Array\n", procID);
+	}
+}
+
+// def global process array for future use...
+struct ProcArray procArray;
 
 volatile sig_atomic_t print_flag = false;
 
 void handle_alarm( int sig ) {
     //print_flag = true;
 	//if (signal == SIGALRM) {
-	printf("Alarm triggered for proccess: %d\n",getpid());
-	kill(getpid(), SIGSTOP);
-	sliceIter--;
-	if (sliceIter < 0) {
-		sliceIter = size;
-	}
-	kill(pid_ary[sliceIter], SIGCONT);
-	//pid_t killReturn = kill(pid_ary[sliceIter], SIGCONT);
+	printf("Alarm Triggered, Stopping Proccess: %d\n",procArray[procArray->index]);
+	kill(procArray[procArray->index], SIGSTOP);
+	procArray->index = (procArray->index + 1) % procArray->currentSize;
+	
+	printf("Starting Proccess: %d\n",procArray[procArray->index]);
+	kill(procArray[procArray->index], SIGCONT);
+	
 	// Attempt to continue process aka if (killReturn != 0)
-	/*
+	pid_t killReturn = kill(procArray[procArray->index], SIGCONT);
 	if (killReturn) { 
 		// no proc found
-		signaler(pid_ary,size,SIGALRM);
+		procArray.removeFromProcArray(procArray->index);
+		//signaler(pid_ary,size,SIGALRM);
 	}
-	*/
+	
 	//alarm(1);
 	// potentially set this value to something greater..
 	//}
@@ -182,6 +250,8 @@ int main(int argc, char const *argv[])
 		}
 		if (pid == 0)
 		{
+			procArray.addToProcArray(getpid());
+			printf("%s%d%s\n","Child Proccess: ",getpid()," - Added to Process Array");
 			//printf("%s%d%s\n","Child Proccess: ",pid," - Waiting for SIGUSR1");
 			printf("%s%d%s\n","Child Proccess: ",getpid()," - Waiting for SIGUSR1");
 			int signalInt = sigwait(&sigset,&sig);
@@ -207,6 +277,8 @@ int main(int argc, char const *argv[])
 	 // signaler(pid_array,numLines,SIGSTOP);
 
 	signaler(pid_array,numLines,SIGUSR1);
+
+	signaler(pid_array,numLines,SIGSTOP);
 
 	alarm(1);
 
