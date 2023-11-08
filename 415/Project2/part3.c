@@ -250,7 +250,7 @@ void handle_alarm( int sig ) {
 	if (procIndex < 0) {
 		procIndex = numLines - 1;
 	}
-	
+	printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
 	printf("Continuing Proccess: %d\n",(pid_array[procIndex]));
 	//kill(pid_array[procIndex], SIGCONT);
 	pid_t killReturn = kill(pid_array[procIndex], SIGCONT);
