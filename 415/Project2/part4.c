@@ -7,7 +7,6 @@
 #include <string.h>
 #include <signal.h>
 #include <errno.h>
-#include <time.h>
 #include <sys/wait.h>
 #include "MCP.h"
 
@@ -152,12 +151,6 @@ int main(int argc, char const *argv[])
 
 	// use sigprocmask() to add the signal set in the sigset for blocking
 	sigprocmask(SIG_BLOCK,&sigset,NULL);
-
-	time_t rawtime;
-	struct tm * timeinfo;
-	time( &rawtime );
-	timeinfo = localtime( &rawtime );
-	//printf("%02d:%02d:%02d", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
 	
 	for (int i = 0; i < numLines; i++)
 	{
@@ -172,11 +165,10 @@ int main(int argc, char const *argv[])
 			exit(1);
 		}
 		if (pid == 0)
-		{	printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+		{
 			printf("%s%d%s\n","Child Proccess: ",getpid()," - Waiting for SIGUSR1");
 			int signalInt = sigwait(&sigset,&sig);
 			if (signalInt == 0) {
-				printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
 				printf("%s%d%s\n","Child Proccess: ",getpid()," - Received signal: SIGUSR1 - Calling exec()");
 				if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
 				{
@@ -219,17 +211,11 @@ void signaler(pid_t* pid_array, int size, int signal)
 	pid_t pid;
 	sleep(1);
 
-	time_t rawtime;
-	struct tm * timeinfo;
-	time( &rawtime );
-	timeinfo = localtime( &rawtime );
-	//printf("%02d:%02d:%02d", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-
 	// the following anticipates wanting to send a signal to all processes. 
 	for(int i = 0; i < size; i++)
 	{
 		pid = pid_array[i];
-		printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+		// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
 		printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
 		// send the signal 
 		kill(pid, signal);
@@ -239,11 +225,6 @@ void signaler(pid_t* pid_array, int size, int signal)
 void handle_alarm( int sig ) {
 	//got_interrupt = 1;
     //print_flag = true;
-	time_t rawtime;
-	struct tm * timeinfo;
-	time( &rawtime );
-	timeinfo = localtime( &rawtime );
-	printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
 	printf("Alarm Triggered, Stopping Proccess: %d\n",pid_array[procIndex]);
 	kill(pid_array[procIndex], SIGSTOP);
 	procIndex--;
@@ -258,7 +239,6 @@ void handle_alarm( int sig ) {
 	if (killReturn < 0) { 
 		// no proc found
 		if (errno = ESRCH){
-			printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
 			printf("Failed to continue process, removing from queue...\n");
 			// actually putting at end of queue and adjusting bounds, so as to avoid signalling an incorrect process...
 			int a = pid_array[procIndex];
@@ -269,7 +249,6 @@ void handle_alarm( int sig ) {
 			numLines--;
 			handle_alarm(1);
 		} else {
-			printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
 			printf("Failed to continue process, attempting next...\n");
 			handle_alarm(1);
 		}
