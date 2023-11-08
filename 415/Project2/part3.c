@@ -14,6 +14,7 @@
 #define _GNU_SOURCE
 #define SIZE 1024
 
+/*
 struct ProcArray {
 	pid_t* array;
 	int currentSize, maxSize, index;
@@ -108,18 +109,15 @@ void removeFromProcArray(struct ProcArray* procArray, pid_t procID){
 
 // def global process array for future use...
 struct ProcArray* procArray;
-
+*/
 volatile sig_atomic_t got_interrupt = 0;
 
+/*
 void handle_alarm( int sig ) {
-	//got_interrupt = 1;
-    //print_flag = true;
-	//if (signal == SIGALRM) {
 	printf("Alarm Triggered, Stopping Proccess: %d\n",procArray->array[getIndex(procArray)]);
 	kill(getIndex(procArray), SIGSTOP);
 	procArray->index = (getIndex(procArray) + 1) % getCurrentSize(procArray);
-	//procArray->index = (procArray->index + 1) % procArray->currentSize;
-	
+
 	printf("Starting Proccess: %d\n",procArray->array[getIndex(procArray)]);
 	kill(procArray->array[getIndex(procArray)], SIGCONT);
 	
@@ -128,13 +126,24 @@ void handle_alarm( int sig ) {
 	if (killReturn) { 
 		// no proc found
 		removeFromProcArray(procArray, getIndex(procArray));
-		//procArray->index = (procArray->index + 1) % procArray->currentSize;
-		//signaler(pid_ary,size,SIGALRM);
+	}
+}
+*/
+
+int procIndex = 0;
+
+void handle_alarm( int sig ) {
+	//got_interrupt = 1;
+    //print_flag = true;
+	printf("Alarm Triggered, Stopping Proccess: %d\n",pid_ary[procIndex]);
+	kill(pid_ary[procIndex], SIGSTOP);
+	procIndex++;
+	if (procIndex >= numLines) {
+		procIndex = 0;
 	}
 	
-	//alarm(1);
-	// potentially set this value to something greater..
-	//}
+	printf("Starting Proccess: %d\n",(pid_ary[procIndex]);
+	kill(pid_ary[procIndex], SIGCONT);
 }
 
 int count_token (char* buf, const char* delim)
@@ -211,13 +220,17 @@ int countLines(char *filename)
 
 void signaler(pid_t* pid_ary, int size, int signal);
 
+pid_t *pid_array;
+int numLines;
+
 int main(int argc, char const *argv[])
 {
+	printf("Break One\n");
 	FILE *inFile;
 	char *filenameSrc;
 
 	filenameSrc = strdup(argv[1]);
-	int numLines = countLines(filenameSrc);
+	numLines = countLines(filenameSrc);
 	inFile = fopen(filenameSrc, "r");
 	if (inFile == NULL) {
 		char *errOpenInput = "Error! Failed to open input file.";
@@ -231,10 +244,10 @@ int main(int argc, char const *argv[])
 	size_t size = 1024;
 	char *userInput = malloc (size);
 	ssize_t read;
-	printf("Break One\n");
-	setMaxSize(procArray, numLines);
-	printf("Break Two\n");
-	pid_t *pid_array;
+	
+	//setMaxSize(procArray, numLines);
+	
+	//pid_t *pid_array;
 	pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
 
 	char **comm_array;
@@ -267,7 +280,7 @@ int main(int argc, char const *argv[])
 
 	// use sigprocmask() to add the signal set in the sigset for blocking
 	sigprocmask(SIG_BLOCK,&sigset,NULL);
-
+	printf("Break Two\n");
 	for (int i = 0; i < numLines; i++)
 	{
 		small_token_buffer = str_filler (comm_array[i], " ");
@@ -282,8 +295,8 @@ int main(int argc, char const *argv[])
 		}
 		if (pid == 0)
 		{
-			addToProcArray(procArray,getpid());
-			printf("%s%d%s\n","Child Proccess: ",getpid()," - Added to Process Array");
+			//addToProcArray(procArray,getpid());
+			//printf("%s%d%s\n","Child Proccess: ",getpid()," - Added to Process Array");
 			//printf("%s%d%s\n","Child Proccess: ",pid," - Waiting for SIGUSR1");
 			printf("%s%d%s\n","Child Proccess: ",getpid()," - Waiting for SIGUSR1");
 			int signalInt = sigwait(&sigset,&sig);
