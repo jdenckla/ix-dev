@@ -23,7 +23,7 @@ struct ProcArray* createProcArray(int maxSize) {
 	struct ProcArray* procArray = (struct ProcArray*)malloc(sizeof(struct ProcArray));
 	procArray->maxSize = maxSize;
 	procArray->currentSize = procArray->index = 0;
-	procArray->array = (pid_t*)malloc(procArray->maxSize * sizeof(pid_t));
+	procArray->array = (pid_t*)malloc(maxSize * sizeof(pid_t));
 	return procArray;
 }
 
@@ -72,6 +72,13 @@ int getMaxSize(struct ProcArray* procArray)
 {
     return procArray->array[procArray->maxSize];
 }
+
+void setMaxSize(struct ProcArray* procArray, int max)
+{
+	procArray->maxSize = max;
+	return;
+    //return procArray->array[procArray->maxSize];
+}
 //
 void removeFromProcArray(struct ProcArray* procArray, pid_t procID){
 	if (arrayIsEmpty(procArray)){
@@ -100,7 +107,7 @@ void removeFromProcArray(struct ProcArray* procArray, pid_t procID){
 }
 
 // def global process array for future use...
-struct ProcArray procArray;
+struct ProcArray* procArray;
 
 volatile sig_atomic_t got_interrupt = 0;
 
@@ -108,19 +115,19 @@ void handle_alarm( int sig ) {
 	//got_interrupt = 1;
     //print_flag = true;
 	//if (signal == SIGALRM) {
-	printf("Alarm Triggered, Stopping Proccess: %d\n",procArray.array[getIndex(procArray)]);
+	printf("Alarm Triggered, Stopping Proccess: %d\n",procArray->array[getIndex(procArray)]);
 	kill(getIndex(procArray), SIGSTOP);
-	procArray.index = (getIndex(procArray) + 1) % getCurrentSize(procArray);
+	procArray->index = (getIndex(procArray) + 1) % getCurrentSize(procArray);
 	//procArray->index = (procArray->index + 1) % procArray->currentSize;
 	
-	printf("Starting Proccess: %d\n",procArray.array[getIndex(procArray)]);
-	kill(procArray.array[getIndex(procArray)], SIGCONT);
+	printf("Starting Proccess: %d\n",procArray->array[getIndex(procArray)]);
+	kill(procArray->array[getIndex(procArray)], SIGCONT);
 	
 	// Attempt to continue process aka if (killReturn != 0)
-	pid_t killReturn = kill(procArray.array[getIndex(procArray)], SIGCONT);
+	pid_t killReturn = kill(procArray->array[getIndex(procArray)], SIGCONT);
 	if (killReturn) { 
 		// no proc found
-		procArray.removeFromProcArray(getIndex(procArray));
+		removeFromProcArray(procArray, getIndex(procArray));
 		//procArray->index = (procArray->index + 1) % procArray->currentSize;
 		//signaler(pid_ary,size,SIGALRM);
 	}
@@ -224,7 +231,9 @@ int main(int argc, char const *argv[])
 	size_t size = 1024;
 	char *userInput = malloc (size);
 	ssize_t read;
-
+	printf("Break One\n");
+	setMaxSize(procArray, numLines);
+	printf("Break Two\n");
 	pid_t *pid_array;
 	pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
 
@@ -355,15 +364,15 @@ void signaler(pid_t* pid_ary, int size, int signal)
 		...
 	}
 	*/
-	else {
-		// send to all processes
-		for(int i = 0; i < size; i++)
-		{
-			pid = pid_ary[i];
-			// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
-			printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
-			// send the signal 
-			kill(pid, signal);
-		}
+	//else {
+	// send to all processes
+	for(int i = 0; i < size; i++)
+	{
+		pid = pid_ary[i];
+		// print: Parent process: <pid> - Sending signal: <signal> to child process: <pid>
+		printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
+		// send the signal 
+		kill(pid, signal);
 	}
+	//}
 }
