@@ -5,7 +5,7 @@
  *      Author: gguan, Monil
  *  Modified by John Dencklau, as of Nov 5, 2023
  *
- *	Purpose: The goal of this dynamic helper string struct is to reliably 
+ *	Purpose: The goal of this dynamic helper string is to reliably 
  *			 tokenize strings base on different delimeter. Following this structure
  *           would help to keep the code clean.
  *
@@ -29,7 +29,7 @@ typedef struct
 int count_token (char* buf, const char* delim);
 
 //This functions can tokenize a string to token arrays base on a specified delimeter,
-//it returns a struct variable
+//it returns a variable
 command_line str_filler (char* buf, const char* delim);
 
 
@@ -37,34 +37,34 @@ command_line str_filler (char* buf, const char* delim);
 void free_command_line(command_line* command);
 
 
-typdef struct
+typedef struct
 {
 	pid_t* array;
 	int currentSize, maxSize, index;
 } ProcArray; 
 
-struct ProcArray* createProcArray(int maxSize);
+ProcArray* createProcArray(int maxSize);
 
-void destroyProcArray(struct ProcArray* procArray);
+void destroyProcArray(ProcArray* procArray);
 
-int arrayIsFull(struct ProcArray* procArray);
+int arrayIsFull(ProcArray* procArray);
 
-int arrayIsEmpty(struct ProcArray* procArray);
+int arrayIsEmpty(ProcArray* procArray);
 
-int getIndex(struct ProcArray* procArray);
+int getIndex(ProcArray* procArray);
 
-int getCurrentSize(struct ProcArray* procArray);
+int getCurrentSize(ProcArray* procArray);
 
-int getMaxSize(struct ProcArray* procArray);
+int getMaxSize(ProcArray* procArray);
 
-void setMaxSize(struct ProcArray* procArray, int max);
+void setMaxSize(ProcArray* procArray, int max);
 
-void incrementCurrentSize(struct ProcArray* procArray);
+void incrementCurrentSize(ProcArray* procArray);
 
-void addToProcArray(struct ProcArray* procArray, pid_t procID);
+void addToProcArray(ProcArray* procArray, pid_t procID);
 
-void printProcArray(struct ProcArray* procArray);
+void printProcArray(ProcArray* procArray);
 
-void removeFromProcArray(struct ProcArray* procArray, pid_t procID);
+void removeFromProcArray(ProcArray* procArray, pid_t procID);
 
 #endif /* MCP_H_ */

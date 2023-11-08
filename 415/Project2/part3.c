@@ -6,7 +6,7 @@
 // possibly verify the need for each of the above...
 #include <string.h>
 #include <signal.h>
-//#include <bool.h>
+#include <errno.h>
 #include <sys/wait.h>
 #include "MCP.h"
 
@@ -15,46 +15,42 @@
 #define SIZE 1024
 
 
-//pid_t *pid_array;
-//int numLines;
+pid_t *pid_array;
+int numLines;
+int procIndex = 0;
 
-
-struct ProcArray {
-	pid_t* array;
-	int currentSize, maxSize, index;
-} ProcArray; 
-
-struct ProcArray* createProcArray(int maxSize) {
-	struct ProcArray* procArray = (struct ProcArray*)malloc(sizeof(struct ProcArray));
+/*
+ProcArray* createProcArray(int maxSize) {
+	ProcArray* procArray = (ProcArray*)malloc(sizeof(ProcArray));
 	procArray->maxSize = maxSize;
 	procArray->currentSize = procArray->index = 0;
 	procArray->array = (pid_t*)malloc(maxSize * sizeof(pid_t));
 	return procArray;
 }
 
-void destroyProcArray(struct ProcArray* procArray) {
+void destroyProcArray(ProcArray* procArray) {
 	free(procArray);
 	free(procArray->array);
 	return;
 }
 
-int arrayIsFull(struct ProcArray* procArray){
+int arrayIsFull(ProcArray* procArray){
 	return (procArray->currentSize == procArray->maxSize);
 }
 
-int arrayIsEmpty(struct ProcArray* procArray){
+int arrayIsEmpty(ProcArray* procArray){
 	return (procArray->currentSize == 0);
 }
 
 
-int getIndex(struct ProcArray* procArray)
+int getIndex(ProcArray* procArray)
 {
     if (arrayIsEmpty(procArray))
         return 0;
     return procArray->array[procArray->index];
 }
 
-int getCurrentSize(struct ProcArray* procArray)
+int getCurrentSize(ProcArray* procArray)
 {
     if (arrayIsEmpty(procArray))
         return 0;
@@ -62,38 +58,38 @@ int getCurrentSize(struct ProcArray* procArray)
 	return procArray->currentSize;
 }
 
-int getMaxSize(struct ProcArray* procArray)
+int getMaxSize(ProcArray* procArray)
 {
     return procArray->array[procArray->maxSize];
 }
 
-void setMaxSize(struct ProcArray* procArray, int max)
+void setMaxSize(ProcArray* procArray, int max)
 {
 	procArray->maxSize = max;
 	return;
     //return procArray->array[procArray->maxSize];
 }
 
-void incrementCurrentSize(struct ProcArray* procArray)
+void incrementCurrentSize(ProcArray* procArray)
 {
 	procArray->currentSize = (getCurrentSize(procArray) + 1);
 	return;
     //return procArray->array[procArray->maxSize];
 }
 
-void addToProcArray(struct ProcArray* procArray, pid_t procID){
+void addToProcArray(ProcArray* procArray, pid_t procID){
 	if (arrayIsFull(procArray)){
 		return;
 	} else {
 		// test to ensure PID isn't already in array!
-		/*
+		
 		for (int i = 0; i < procArray->currentSize; i++){
 			if (procArray->array[i] == procID) {
 				printf("Process ID %d Already In ProcArray, Failed To Add!\n",procID);
 				return;
 			}
 		}
-		*/
+		
 		procArray->array[procArray->index] = procID;
 		procArray->index = procArray->index + 1;
 		//procArray->index = (procArray->index + 1) % procArray->maxSize;
@@ -103,7 +99,7 @@ void addToProcArray(struct ProcArray* procArray, pid_t procID){
 }
 
 
-void printProcArray(struct ProcArray* procArray)
+void printProcArray(ProcArray* procArray)
 {
 	printf("Printing Process Array\nCurrent Size: %d\nMax Size: %d\nActive Index: %d\n",procArray->currentSize, procArray->maxSize, procArray->index);
 	if (arrayIsEmpty(procArray)) {
@@ -118,7 +114,7 @@ void printProcArray(struct ProcArray* procArray)
 	}
 }
 //
-void removeFromProcArray(struct ProcArray* procArray, pid_t procID){
+void removeFromProcArray(ProcArray* procArray, pid_t procID){
 	if (arrayIsEmpty(procArray)){
 		return;
 	} else {
@@ -145,44 +141,12 @@ void removeFromProcArray(struct ProcArray* procArray, pid_t procID){
 }
 
 // def global process array for future use...
-struct ProcArray* procArray;
+ProcArray* procArray;
+*/
 
 volatile sig_atomic_t got_interrupt = 0;
 
-
-void handle_alarm( int sig ) {
-	printf("Alarm Triggered, Stopping Proccess: %d\n",procArray->array[getIndex(procArray)]);
-	kill(getIndex(procArray), SIGSTOP);
-	procArray->index = (getIndex(procArray) + 1) % getCurrentSize(procArray);
-
-	printf("Starting Proccess: %d\n",procArray->array[getIndex(procArray)]);
-	kill(procArray->array[getIndex(procArray)], SIGCONT);
-	
-	// Attempt to continue process aka if (killReturn != 0)
-	pid_t killReturn = kill(procArray->array[getIndex(procArray)], SIGCONT);
-	if (killReturn) { 
-		// no proc found
-		removeFromProcArray(procArray, getIndex(procArray));
-	}
-}
-
-/*
-int procIndex = 0;
-
-void handle_alarm( int sig ) {
-	//got_interrupt = 1;
-    //print_flag = true;
-	printf("Alarm Triggered, Stopping Proccess: %d\n",pid_array[procIndex]);
-	kill(pid_array[procIndex], SIGSTOP);
-	procIndex++;
-	if (procIndex >= numLines) {
-		procIndex = 0;
-	}
-	
-	printf("Starting Proccess: %d\n",(pid_array[procIndex]));
-	kill(pid_array[procIndex], SIGCONT);
-}
-*/
+void handle_alarm(int sig);
 
 int count_token (char* buf, const char* delim)
 {
@@ -263,8 +227,8 @@ int main(int argc, char const *argv[])
 	
 	FILE *inFile;
 	char *filenameSrc;
-	pid_t *pid_array;
-	int numLines;
+	//pid_t *pid_array;
+	//int numLines;
 
 	filenameSrc = strdup(argv[1]);
 	numLines = countLines(filenameSrc);
@@ -281,8 +245,9 @@ int main(int argc, char const *argv[])
 	size_t size = 1024;
 	char *userInput = malloc (size);
 	ssize_t read;
+	procIndex = numLines - 1;
 	
-	procArray = createProcArray(numLines);
+	//procArray = createProcArray(numLines);
 	//setMaxSize(procArray, numLines);
 	
 	//pid_t *pid_array;
@@ -333,8 +298,8 @@ int main(int argc, char const *argv[])
 		}
 		if (pid == 0)
 		{
-			printf("%s%d%s\n","Adding Child Proccess: ",getpid()," to Process Array...");
-			addToProcArray(procArray,getpid());
+			//printf("%s%d%s\n","Adding Child Proccess: ",getpid()," to Process Array...");
+			//addToProcArray(procArray,getpid());
 			//printf("%s%d%s\n","Child Proccess: ",pid," - Waiting for SIGUSR1");
 			printf("%s%d%s\n","Child Proccess: ",getpid()," - Waiting for SIGUSR1");
 			int signalInt = sigwait(&sigset,&sig);
@@ -362,9 +327,9 @@ int main(int argc, char const *argv[])
 	signaler(pid_array,numLines,SIGUSR1);
 
 	signaler(pid_array,numLines,SIGSTOP);
-	printf("Break One\n");
-	printProcArray(procArray);
-	printf("Break Two\n");
+	//printf("Break One\n");
+	//printProcArray(procArray);
+	//printf("Break Two\n");
 
 	alarm(1);
 
@@ -389,7 +354,7 @@ int main(int argc, char const *argv[])
 	free (userInput);
 	free(filenameSrc);
 	free(pid_array);
-	destroyProcArray(procArray);
+	//destroyProcArray(procArray);
 	exit(1);
 	return 0;
 }
@@ -401,26 +366,7 @@ void signaler(pid_t* pid_array, int size, int signal)
 	sleep(1);
 
 	// the following anticipates wanting to send a signal to all processes. 
-	
-	/*
-	if (signal == SIGINT) {
-		printf("Interrupt triggered for proccess: %d\n",getpid());
-		//alarm(1);
-		// potentially set unique handler functionality...
-	} else if (signal == SIGUSR1) {
-		printf("SIGUSR1 triggered by proccess: %d, starting queue on %d...\n",getpid(),pid_array[size-1]);
-		kill(pid_array[size-1], SIGUSR1);
-		//alarm(1);
-		// potentially set unique handler functionality...
-	}
-	*/
-	/*
-	if (signal == SIGCONT) {
-		...
-	}
-	*/
-	//else {
-	// send to all processes
+
 	for(int i = 0; i < size; i++)
 	{
 		pid = pid_array[i];
@@ -429,5 +375,56 @@ void signaler(pid_t* pid_array, int size, int signal)
 		// send the signal 
 		kill(pid, signal);
 	}
-	//}
+}
+
+/*
+void handle_alarm( int sig ) {
+	printf("Alarm Triggered, Stopping Proccess: %d\n",procArray->array[getIndex(procArray)]);
+	kill(getIndex(procArray), SIGSTOP);
+	procArray->index = (getIndex(procArray) + 1) % getCurrentSize(procArray);
+
+	printf("Starting Proccess: %d\n",procArray->array[getIndex(procArray)]);
+	kill(procArray->array[getIndex(procArray)], SIGCONT);
+	
+	// Attempt to continue process aka if (killReturn != 0)
+	pid_t killReturn = kill(procArray->array[getIndex(procArray)], SIGCONT);
+	if (killReturn) { 
+		// no proc found
+		removeFromProcArray(procArray, getIndex(procArray));
+	}
+}
+*/
+
+void handle_alarm( int sig ) {
+	//got_interrupt = 1;
+    //print_flag = true;
+	printf("Alarm Triggered, Stopping Proccess: %d\n",pid_array[procIndex]);
+	kill(pid_array[procIndex], SIGSTOP);
+	procIndex--;
+	if (procIndex < 0) {
+		procIndex = numLines - 1;
+	}
+	
+	printf("Continuing Proccess: %d\n",(pid_array[procIndex]));
+	//kill(pid_array[procIndex], SIGCONT);
+	pid_t killReturn = kill(pid_array[procIndex], SIGCONT);
+
+	if (killReturn < 0) { 
+		// no proc found
+		if (errno = ESRCH){
+			printf("Failed to continue process, removing from queue...\n");
+			// actually putting at end of queue and adjusting bounds, so as to avoid signalling an incorrect process...
+			int a = pid_array[procIndex];
+			for (int i = procIndex; i < numLines; i++) {
+				pid_array[i] = pid_array[i+1];
+			}
+			pid_array[numLines] = a;
+			numLines--;
+			handle_alarm(1);
+		} else {
+			printf("Failed to continue process, attempting next...\n");
+			handle_alarm(1);
+		}
+	}
+	alarm(1);
 }
