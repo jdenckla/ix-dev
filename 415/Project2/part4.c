@@ -18,6 +18,7 @@
 pid_t *pid_array;
 int numLines;
 int procIndex = 0;
+const int numProc;
 
 volatile sig_atomic_t got_interrupt = 0;
 
@@ -117,6 +118,7 @@ int main(int argc, char const *argv[])
 	size_t size = 1024;
 	char *userInput = malloc (size);
 	ssize_t read;
+	numProc = numLines;
 	procIndex = numLines - 1;
 	
 	pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
@@ -171,12 +173,12 @@ int main(int argc, char const *argv[])
 			exit(1);
 		}
 		if (pid == 0)
-		{	printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-			printf("%s%d%s\n","Child Proccess: ",getpid()," - Waiting for SIGUSR1");
+		{	//printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+			//printf("%s%d%s\n","Child Proccess: ",getpid()," - Waiting for SIGUSR1");
 			int signalInt = sigwait(&sigset,&sig);
 			if (signalInt == 0) {
-				printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-				printf("%s%d%s\n","Child Proccess: ",getpid()," - Received signal: SIGUSR1 - Calling exec()");
+				//printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+				//printf("%s%d%s\n","Child Proccess: ",getpid()," - Received signal: SIGUSR1 - Calling exec()");
 				if (execvp (small_token_buffer.command_list[0], (small_token_buffer.command_list)) == -1)
 				{
 					//error handling
@@ -186,10 +188,15 @@ int main(int argc, char const *argv[])
 			}
 		}
 	}
+	printProcessTable();
 
 	signaler(pid_array,numLines,SIGUSR1);
 
+	printProcessTable();
+
 	signaler(pid_array,numLines,SIGSTOP);
+
+	printProcessTable();
 
 	alarm(1);
 
@@ -228,8 +235,8 @@ void signaler(pid_t* pid_array, int size, int signal)
 	for(int i = 0; i < size; i++)
 	{
 		pid = pid_array[i];
-		printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-		printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
+		//printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+		//printf("%s%d%s%s%s%d\n","Parent proccess: ",getpid()," - Sending signal: ",strsignal(signal), " - to child process ",pid);
 		// send the signal 
 		kill(pid, signal);
 	}
@@ -242,23 +249,23 @@ void handle_alarm( int sig ) {
 	struct tm * timeinfo;
 	time( &rawtime );
 	timeinfo = localtime( &rawtime );
-	printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-	printf("Alarm Triggered, Stopping Proccess: %d\n",pid_array[procIndex]);
+	//printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+	//printf("Alarm Triggered, Stopping Proccess: %d\n",pid_array[procIndex]);
 	kill(pid_array[procIndex], SIGSTOP);
+	printProcessTable();
 	procIndex--;
 	if (procIndex < 0) {
 		procIndex = numLines - 1;
 	}
-	printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-	printf("Continuing Proccess: %d\n",(pid_array[procIndex]));
+	//printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+	//printf("Continuing Proccess: %d\n",(pid_array[procIndex]));
 	//kill(pid_array[procIndex], SIGCONT);
 	pid_t killReturn = kill(pid_array[procIndex], SIGCONT);
-
 	if (killReturn < 0) { 
 		// no proc found
 		if (errno = ESRCH){
-			printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-			printf("Failed to continue process, removing from queue...\n");
+			//printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+			//printf("Failed to continue process, removing from queue...\n");
 			// actually putting at end of queue and adjusting bounds, so as to avoid signalling an incorrect process...
 			int a = pid_array[procIndex];
 			for (int i = procIndex; i < numLines; i++) {
@@ -268,10 +275,43 @@ void handle_alarm( int sig ) {
 			numLines--;
 			handle_alarm(1);
 		} else {
-			printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-			printf("Failed to continue process, attempting next...\n");
+			//printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+			//printf("Failed to continue process, attempting next...\n");
 			handle_alarm(1);
 		}
 	}
+	printProcessTable();
 	alarm(1);
+}
+
+void printProcessTable(){
+	time_t rawtime;
+	struct tm * timeinfo;
+	time( &rawtime );
+	timeinfo = localtime( &rawtime );
+	//printf("%02d:%02d:%02d | ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+
+	// determine number of parameters prior to setting number of columns
+	// | Time | PID | Status (running, stopped, terminated)? | Mem Used | Parent PID
+	int columns = 5;
+	// number of rows will be set based on number of processes being tracked... since this is adjusted later, we'll want a constant
+	int rows = numProc;
+	// determine format of table, and acknowledge any variable sized fields (like process name / calling function if applicable)
+	printf("| Time | PID | Status | MemUsed | PPID |\n");
+
+	for (int i = 0; j < rows; j++) {
+		// gather data...
+		char * status = "borked";
+		char * mem = "lots";
+		int ppid = 99999;
+		// then print...
+		printf("| %02d:%02d:%02d ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+		printf("| %d ",pid_ary[i]);
+		printf("| %s ",status);
+		printf("| %s ",mem);
+		printf("| %d \n",ppid);
+	}
+	
+
+	return;
 }
