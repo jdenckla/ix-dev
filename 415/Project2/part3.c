@@ -261,10 +261,10 @@ void handle_alarm( int sig ) {
 			printf("Failed to continue process, removing from queue...\n");
 			// actually putting at end of queue and adjusting bounds, so as to avoid signalling an incorrect process...
 			int a = pid_array[procIndex];
-			for (int i = procIndex; i < numLines; i++) {
+			for (int i = procIndex; i < (numLines - 1); i++) {
 				pid_array[i] = pid_array[i+1];
 			}
-			pid_array[numLines] = a;
+			pid_array[numLines - 1] = a;
 			numLines--;
 			handle_alarm(1);
 		} else {

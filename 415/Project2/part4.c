@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <time.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 #include "MCP.h"
 
@@ -18,7 +19,7 @@
 pid_t *pid_array;
 int numLines;
 int procIndex = 0;
-const int numProc;
+int numProc;
 
 volatile sig_atomic_t got_interrupt = 0;
 
@@ -98,6 +99,8 @@ int countLines(char *filename)
 
 void signaler(pid_t* pid_array, int size, int signal);
 
+void printProcessTable();
+
 int main(int argc, char const *argv[])
 {
 	
@@ -105,7 +108,8 @@ int main(int argc, char const *argv[])
 	char *filenameSrc;
 
 	filenameSrc = strdup(argv[1]);
-	numLines = countLines(filenameSrc);
+	numProc = countLines(filenameSrc);
+	numLines = numProc;
 	inFile = fopen(filenameSrc, "r");
 	if (inFile == NULL) {
 		char *errOpenInput = "Error! Failed to open input file.";
@@ -118,7 +122,7 @@ int main(int argc, char const *argv[])
 	size_t size = 1024;
 	char *userInput = malloc (size);
 	ssize_t read;
-	numProc = numLines;
+	//numProc = numLines;
 	procIndex = numLines - 1;
 	
 	pid_array = (pid_t*)malloc(sizeof(pid_t) * numLines);
@@ -268,10 +272,10 @@ void handle_alarm( int sig ) {
 			//printf("Failed to continue process, removing from queue...\n");
 			// actually putting at end of queue and adjusting bounds, so as to avoid signalling an incorrect process...
 			int a = pid_array[procIndex];
-			for (int i = procIndex; i < numLines; i++) {
+			for (int i = procIndex; i < (numLines - 1); i++) {
 				pid_array[i] = pid_array[i+1];
 			}
-			pid_array[numLines] = a;
+			pid_array[numLines - 1] = a;
 			numLines--;
 			handle_alarm(1);
 		} else {
@@ -282,6 +286,34 @@ void handle_alarm( int sig ) {
 	}
 	printProcessTable();
 	alarm(1);
+}
+
+//provided by... (vivekprakash) via online tutorial
+
+int getMemUsageByPID(pid_t pid){
+	int fd, stack, data;
+	char buf[SIZE];
+	char readStat[SIZE];
+	sprintf(readStat, "/proc/%d/status",pid);
+	if ((fd = open(readStat, O_RDONLY)) < 0) {
+		printf("Failed to find process to gauge mem usage, exiting.\n");
+		return 0;
+	} else {
+		read(fd,buf,SIZE-1);
+		buf[SIZE-1] = '\0';
+		close(fd);
+		stack, data = 0;
+		char *vm;
+		vm = strstr(buf,"VmData:");
+		if (vm) {
+			sscanf(vm, "%*s %d", &data);
+		}
+		vm = strstr(buf, "VmStk:");
+		if (vm) {
+			sscanf(vm, "%*s %d", &stack);
+		}
+		return data+stack;
+	}
 }
 
 void printProcessTable(){
@@ -297,21 +329,89 @@ void printProcessTable(){
 	// number of rows will be set based on number of processes being tracked... since this is adjusted later, we'll want a constant
 	int rows = numProc;
 	// determine format of table, and acknowledge any variable sized fields (like process name / calling function if applicable)
-	printf("| Time | PID | Status | MemUsed | PPID |\n");
+	printf("----------------------------------\n");
+	printf("|         Time   %02d:%02d:%02d        |\n", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+	printf("----------------------------------\n");
+	printf("|  PID  | Stat | MemUse |  PPID  |\n");
 
-	for (int i = 0; j < rows; j++) {
+	for (int i = 0; i < rows; i++) {
 		// gather data...
-		char * status = "borked";
-		char * mem = "lots";
-		int ppid = 99999;
-		// then print...
-		printf("| %02d:%02d:%02d ", timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-		printf("| %d ",pid_ary[i]);
-		printf("| %s ",status);
-		printf("| %s ",mem);
-		printf("| %d \n",ppid);
-	}
-	
+		//printf("Break 1\n");
+		int unused1;
+		char unused2[100];
+		char status = 'U';
+		int mem = 0;
+		int ppid = 9999;
+		int pid = pid_array[i];
+		pid_t killReturn = kill(pid, 0);
+		if (killReturn < 0) { 
+			// no proc found
+			if (errno = ESRCH){
+				status = 'U';
+				mem = 0;
+				ppid = 9999;
+			}
+		} else {
+			char filename[100] = "/proc/";
+			char pidStr[SIZE];
+			sprintf(pidStr, "%d", pid);
+			strcat(filename,pidStr);
+			strcat(filename,"/stat");
+			FILE * fp = fopen(filename, "r");
+			fscanf(fp, "%d %s %c %d", &unused1, unused2, &status, &ppid);  
+			fclose(fp);
 
+			// too lazy to make either read method work with the other type of data.. would optimize with more time
+			mem = getMemUsageByPID(pid);
+			
+			//mem = data;
+			
+		}
+		//char * printPID, printMem, printPPID;
+		char printPID[SIZE];
+		char printMem[SIZE];
+		char printPPID[SIZE];
+		//printf("Mem Before: %d",mem);
+		if (pid < 100) {
+			sprintf(printPID, "00%d",pid);
+		} else if (pid < 1000) {
+			sprintf(printPID, "0%d",pid);
+		} else {
+			sprintf(printPID, "%d",pid);
+		}
+		if (mem < 10) {
+			sprintf(printMem, "00000%d",mem);
+		} else if (mem < 100) {
+			sprintf(printMem, "0000%d",mem);
+		} else if (mem < 1000) {
+			sprintf(printMem, "000%d",mem);
+		} else if (mem < 10000) {
+			sprintf(printMem, "00%d",mem);
+		} else if (mem < 100000) {
+			sprintf(printMem, "0%d",mem);
+		} else {
+			sprintf(printMem, "%d",mem);
+		}
+		if (ppid < 10) {
+			sprintf(printPPID, "000%d",ppid);
+		} else if (ppid < 100) {
+			sprintf(printPPID, "00%d",ppid);
+		} else if (ppid < 1000) {
+			sprintf(printPPID, "0%d",ppid);
+		} else {
+			sprintf(printPPID, "%d",ppid);
+		}
+		//printf("PrintMem: %s\n",printMem);
+		//printf("Mem After: %d",mem);
+		// then print...
+		printf("|  %s ",printPID);
+		printf("|  %c   ",status);
+		printf("| %s ",printMem);
+		printf("|  %s  |\n",printPPID);
+	}
+	printf("----------------------------------\n");
+	printf("Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked\n");
+	printf("*Null values '0' or '9999' are placed after a process is no longer active/accessible\n");
+	printf("----------------------------------\n");
 	return;
 }

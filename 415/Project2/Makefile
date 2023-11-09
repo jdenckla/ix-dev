@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -g
 
-all: cpubound iobound part1 part2 part3
+all: cpubound iobound part1 part2 part3 part4
 
 cpubound: cpubound.c
 	$(CC) $(CFLAGS) cpubound.c -o cpubound
