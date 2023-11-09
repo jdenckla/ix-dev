@@ -1,0 +1,77 @@
+==3270== Memcheck, a memory error detector
+==3270== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==3270== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==3270== Command: ./part1 input.txt
+==3270== 
+total 272
+28 part4.o
+12 part4.c
+28 part4
+24 part3.o
+ 8 part3.c
+24 part3
+16 part2.o
+ 8 part2.c
+20 part2
+16 part1.o
+ 4 part1log*.txt
+ 4 part1.c
+20 part1
+ 4 MCP.h
+ 4 Makefile
+ 4 log1.txt
+ 4 iobound.c
+12 iobound
+ 4 input.txt
+ 4 input2.txt
+ 4 cpubound.c
+12 cpubound
+ 4 ..
+ 4 .
+Execution Failed: No such file or directory
+==3273== 
+==3273== HEAP SUMMARY:
+==3273==     in use at exit: 1,417 bytes in 21 blocks
+==3273==   total heap usage: 28 allocs, 7 frees, 10,746 bytes allocated
+==3273== 
+==3273== 84 (64 direct, 20 indirect) bytes in 2 blocks are definitely lost in loss record 8 of 10
+==3273==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3273==    by 0x108C06: str_filler (part1.c:40)
+==3273==    by 0x109044: main (part1.c:126)
+==3273== 
+==3273== LEAK SUMMARY:
+==3273==    definitely lost: 64 bytes in 2 blocks
+==3273==    indirectly lost: 20 bytes in 6 blocks
+==3273==      possibly lost: 0 bytes in 0 blocks
+==3273==    still reachable: 1,333 bytes in 13 blocks
+==3273==         suppressed: 0 bytes in 0 blocks
+==3273== Reachable blocks (those to which a pointer was found) are not shown.
+==3273== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==3273== 
+==3273== For counts of detected and suppressed errors, rerun with: -v
+==3273== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+Process: 3275 - Begining calculation.
+Process: 3275 - Finished.
+Process: 3274 - Begining to write to file.
+Process: 3274 - Finished.
+==3270== 
+==3270== HEAP SUMMARY:
+==3270==     in use at exit: 295 bytes in 16 blocks
+==3270==   total heap usage: 38 allocs, 22 frees, 10,900 bytes allocated
+==3270== 
+==3270== 175 (120 direct, 55 indirect) bytes in 4 blocks are definitely lost in loss record 3 of 3
+==3270==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3270==    by 0x108C06: str_filler (part1.c:40)
+==3270==    by 0x109044: main (part1.c:126)
+==3270== 
+==3270== LEAK SUMMARY:
+==3270==    definitely lost: 120 bytes in 4 blocks
+==3270==    indirectly lost: 55 bytes in 11 blocks
+==3270==      possibly lost: 0 bytes in 0 blocks
+==3270==    still reachable: 120 bytes in 1 blocks
+==3270==         suppressed: 0 bytes in 0 blocks
+==3270== Reachable blocks (those to which a pointer was found) are not shown.
+==3270== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==3270== 
+==3270== For counts of detected and suppressed errors, rerun with: -v
+==3270== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)

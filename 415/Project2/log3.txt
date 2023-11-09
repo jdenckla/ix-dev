@@ -1,0 +1,132 @@
+==3708== Memcheck, a memory error detector
+==3708== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==3708== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==3708== Command: ./part3 input.txt
+==3708== 
+total 276
+28 part4.o
+12 part4.c
+28 part4
+24 part3.o
+ 8 part3.c
+24 part3
+16 part2.o
+ 8 part2.c
+20 part2
+16 part1.o
+ 4 part1.c
+20 part1
+ 4 MCP.h
+ 4 Makefile
+ 4 log3.txt
+ 4 log2.txt
+ 4 log1.txt
+ 4 iobound.c
+12 iobound
+ 4 input.txt
+ 4 input2.txt
+ 4 cpubound.c
+12 cpubound
+ 4 ..
+ 4 .
+Execution Failed: No such file or directory
+22:06:52 | Child Proccess: 3711 - Waiting for SIGUSR1
+22:06:52 | Child Proccess: 3711 - Received signal: SIGUSR1 - Calling exec()
+==3711== 
+==3711== HEAP SUMMARY:
+==3711==     in use at exit: 1,417 bytes in 21 blocks
+==3711==   total heap usage: 38 allocs, 17 frees, 21,436 bytes allocated
+==3711== 
+==3711== 84 (64 direct, 20 indirect) bytes in 2 blocks are definitely lost in loss record 8 of 10
+==3711==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3711==    by 0x109056: str_filler (part3.c:52)
+==3711==    by 0x10956A: main (part3.c:163)
+==3711== 
+==3711== LEAK SUMMARY:
+==3711==    definitely lost: 64 bytes in 2 blocks
+==3711==    indirectly lost: 20 bytes in 6 blocks
+==3711==      possibly lost: 0 bytes in 0 blocks
+==3711==    still reachable: 1,333 bytes in 13 blocks
+==3711==         suppressed: 0 bytes in 0 blocks
+==3711== Reachable blocks (those to which a pointer was found) are not shown.
+==3711== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==3711== 
+==3711== For counts of detected and suppressed errors, rerun with: -v
+==3711== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+Process: 3712 - Begining to write to file.
+Process: 3712 - Finished.
+22:06:53 | Parent proccess: 3708 - Sending signal: User defined signal 1 - to child process 3709
+22:06:53 | Parent proccess: 3708 - Sending signal: User defined signal 1 - to child process 3710
+22:06:53 | Parent proccess: 3708 - Sending signal: User defined signal 1 - to child process 3711
+22:06:53 | Parent proccess: 3708 - Sending signal: User defined signal 1 - to child process 3712
+22:06:53 | Parent proccess: 3708 - Sending signal: User defined signal 1 - to child process 3713
+22:06:54 | Parent proccess: 3708 - Sending signal: Stopped (signal) - to child process 3709
+22:06:54 | Parent proccess: 3708 - Sending signal: Stopped (signal) - to child process 3710
+22:06:54 | Parent proccess: 3708 - Sending signal: Stopped (signal) - to child process 3711
+22:06:54 | Parent proccess: 3708 - Sending signal: Stopped (signal) - to child process 3712
+22:06:54 | Parent proccess: 3708 - Sending signal: Stopped (signal) - to child process 3713
+22:06:55 | Alarm Triggered, Stopping Proccess: 3713
+22:06:55 | Continuing Proccess: 3712
+22:06:57 | Alarm Triggered, Stopping Proccess: 3712
+22:06:57 | Continuing Proccess: 3711
+22:06:57 | Failed to continue process, removing from queue...
+22:06:57 | Alarm Triggered, Stopping Proccess: 3712
+22:06:57 | Continuing Proccess: 3710
+22:06:57 | Failed to continue process, removing from queue...
+22:06:57 | Alarm Triggered, Stopping Proccess: 3712
+22:06:57 | Continuing Proccess: 3709
+22:06:57 | Failed to continue process, removing from queue...
+22:06:57 | Alarm Triggered, Stopping Proccess: 3712
+22:06:57 | Continuing Proccess: 3713
+22:06:58 | Alarm Triggered, Stopping Proccess: 3713
+22:06:58 | Continuing Proccess: 3712
+22:06:59 | Alarm Triggered, Stopping Proccess: 3712
+22:06:59 | Continuing Proccess: 3713
+22:07:00 | Alarm Triggered, Stopping Proccess: 3713
+22:07:00 | Continuing Proccess: 3712
+22:07:01 | Alarm Triggered, Stopping Proccess: 3712
+22:07:01 | Continuing Proccess: 3713
+22:07:03 | Alarm Triggered, Stopping Proccess: 3713
+22:07:03 | Continuing Proccess: 3712
+22:07:04 | Alarm Triggered, Stopping Proccess: 3712
+22:07:04 | Continuing Proccess: 3713
+22:07:05 | Alarm Triggered, Stopping Proccess: 3713
+22:07:05 | Continuing Proccess: 3712
+22:07:06 | Alarm Triggered, Stopping Proccess: 3712
+22:07:06 | Continuing Proccess: 3713
+22:07:07 | Alarm Triggered, Stopping Proccess: 3713
+22:07:07 | Continuing Proccess: 3712
+22:07:08 | Alarm Triggered, Stopping Proccess: 3712
+22:07:08 | Continuing Proccess: 3713
+22:07:09 | Alarm Triggered, Stopping Proccess: 3713
+22:07:09 | Continuing Proccess: 3712
+22:07:10 | Alarm Triggered, Stopping Proccess: 3712
+22:07:10 | Continuing Proccess: 3713
+22:07:11 | Alarm Triggered, Stopping Proccess: 3713
+22:07:11 | Continuing Proccess: 3712
+==3708== 
+==3708== HEAP SUMMARY:
+==3708==     in use at exit: 355 bytes in 19 blocks
+==3708==   total heap usage: 68 allocs, 49 frees, 21,890 bytes allocated
+==3708== 
+==3708== 60 bytes in 3 blocks are definitely lost in loss record 2 of 4
+==3708==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3708==    by 0x4EDB9D9: strdup (strdup.c:42)
+==3708==    by 0x109469: main (part3.c:131)
+==3708== 
+==3708== 175 (120 direct, 55 indirect) bytes in 4 blocks are definitely lost in loss record 4 of 4
+==3708==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3708==    by 0x109056: str_filler (part3.c:52)
+==3708==    by 0x10956A: main (part3.c:163)
+==3708== 
+==3708== LEAK SUMMARY:
+==3708==    definitely lost: 180 bytes in 7 blocks
+==3708==    indirectly lost: 55 bytes in 11 blocks
+==3708==      possibly lost: 0 bytes in 0 blocks
+==3708==    still reachable: 120 bytes in 1 blocks
+==3708==         suppressed: 0 bytes in 0 blocks
+==3708== Reachable blocks (those to which a pointer was found) are not shown.
+==3708== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==3708== 
+==3708== For counts of detected and suppressed errors, rerun with: -v
+==3708== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)

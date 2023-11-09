@@ -1,0 +1,821 @@
+==3800== Memcheck, a memory error detector
+==3800== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==3800== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==3800== Command: ./part4 input.txt
+==3800== 
+total 284
+28 part4.o
+12 part4.c
+28 part4
+24 part3.o
+ 8 part3.c
+24 part3
+16 part2.o
+ 8 part2.c
+20 part2
+16 part1.o
+ 4 part1.c
+20 part1
+ 4 MCP.h
+ 4 Makefile
+ 4 log4.txt
+ 8 log3.txt
+ 4 log2.txt
+ 4 log1.txt
+ 4 iobound.c
+12 iobound
+ 4 input.txt
+ 4 input2.txt
+ 4 cpubound.c
+12 cpubound
+ 4 ..
+ 4 .
+Execution Failed: No such file or directory
+==3803== 
+==3803== HEAP SUMMARY:
+==3803==     in use at exit: 1,417 bytes in 21 blocks
+==3803==   total heap usage: 37 allocs, 16 frees, 17,340 bytes allocated
+==3803== 
+==3803== 84 (64 direct, 20 indirect) bytes in 2 blocks are definitely lost in loss record 8 of 10
+==3803==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3803==    by 0x109216: str_filler (part4.c:54)
+==3803==    by 0x109736: main (part4.c:169)
+==3803== 
+==3803== LEAK SUMMARY:
+==3803==    definitely lost: 64 bytes in 2 blocks
+==3803==    indirectly lost: 20 bytes in 6 blocks
+==3803==      possibly lost: 0 bytes in 0 blocks
+==3803==    still reachable: 1,333 bytes in 13 blocks
+==3803==         suppressed: 0 bytes in 0 blocks
+==3803== Reachable blocks (those to which a pointer was found) are not shown.
+==3803== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==3803== 
+==3803== For counts of detected and suppressed errors, rerun with: -v
+==3803== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C3971C: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109C78: getMemUsageByPID (part4.c:307)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109878: main (part4.c:203)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C39721: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109C78: getMemUsageByPID (part4.c:307)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109878: main (part4.c:203)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C3971C: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109CC1: getMemUsageByPID (part4.c:311)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109878: main (part4.c:203)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C39721: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109CC1: getMemUsageByPID (part4.c:311)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109878: main (part4.c:203)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x10A008: printProcessTable (part4.c:382)
+==3800==    by 0x109878: main (part4.c:203)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4E9A8AA: vfprintf (vfprintf.c:1642)
+==3800==    by 0x4EBF680: vsprintf (iovsprintf.c:42)
+==3800==    by 0x4EA3053: sprintf (sprintf.c:32)
+==3800==    by 0x10A02A: printProcessTable (part4.c:383)
+==3800==    by 0x109878: main (part4.c:203)
+==3800== 
+==3800== Use of uninitialised value of size 8
+==3800==    at 0x4E9683B: _itoa_word (_itoa.c:179)
+==3800==    by 0x4E99EDD: vfprintf (vfprintf.c:1642)
+==3800==    by 0x4EBF680: vsprintf (iovsprintf.c:42)
+==3800==    by 0x4EA3053: sprintf (sprintf.c:32)
+==3800==    by 0x10A02A: printProcessTable (part4.c:383)
+==3800==    by 0x109878: main (part4.c:203)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4E96845: _itoa_word (_itoa.c:179)
+==3800==    by 0x4E99EDD: vfprintf (vfprintf.c:1642)
+==3800==    by 0x4EBF680: vsprintf (iovsprintf.c:42)
+==3800==    by 0x4EA3053: sprintf (sprintf.c:32)
+==3800==    by 0x10A02A: printProcessTable (part4.c:383)
+==3800==    by 0x109878: main (part4.c:203)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4E99FE4: vfprintf (vfprintf.c:1642)
+==3800==    by 0x4EBF680: vsprintf (iovsprintf.c:42)
+==3800==    by 0x4EA3053: sprintf (sprintf.c:32)
+==3800==    by 0x10A02A: printProcessTable (part4.c:383)
+==3800==    by 0x109878: main (part4.c:203)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4E9AB1C: vfprintf (vfprintf.c:1642)
+==3800==    by 0x4EBF680: vsprintf (iovsprintf.c:42)
+==3800==    by 0x4EA3053: sprintf (sprintf.c:32)
+==3800==    by 0x10A02A: printProcessTable (part4.c:383)
+==3800==    by 0x109878: main (part4.c:203)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C3971C: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109C78: getMemUsageByPID (part4.c:307)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109A77: handle_alarm (part4.c:259)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F22334: waitpid (waitpid.c:30)
+==3800==    by 0x1098B8: main (part4.c:211)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C39721: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109C78: getMemUsageByPID (part4.c:307)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109A77: handle_alarm (part4.c:259)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F22334: waitpid (waitpid.c:30)
+==3800==    by 0x1098B8: main (part4.c:211)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C3971C: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109CC1: getMemUsageByPID (part4.c:311)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109A77: handle_alarm (part4.c:259)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F22334: waitpid (waitpid.c:30)
+==3800==    by 0x1098B8: main (part4.c:211)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C39721: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109CC1: getMemUsageByPID (part4.c:311)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109A77: handle_alarm (part4.c:259)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F22334: waitpid (waitpid.c:30)
+==3800==    by 0x1098B8: main (part4.c:211)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x10A008: printProcessTable (part4.c:382)
+==3800==    by 0x109A77: handle_alarm (part4.c:259)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F22334: waitpid (waitpid.c:30)
+==3800==    by 0x1098B8: main (part4.c:211)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C3971C: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109C78: getMemUsageByPID (part4.c:307)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109B88: handle_alarm (part4.c:287)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F22334: waitpid (waitpid.c:30)
+==3800==    by 0x1098B8: main (part4.c:211)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C39721: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109C78: getMemUsageByPID (part4.c:307)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109B88: handle_alarm (part4.c:287)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F22334: waitpid (waitpid.c:30)
+==3800==    by 0x1098B8: main (part4.c:211)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C3971C: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109CC1: getMemUsageByPID (part4.c:311)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109B88: handle_alarm (part4.c:287)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F22334: waitpid (waitpid.c:30)
+==3800==    by 0x1098B8: main (part4.c:211)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x4C39721: strstr (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109CC1: getMemUsageByPID (part4.c:311)
+==3800==    by 0x109F7E: printProcessTable (part4.c:365)
+==3800==    by 0x109B88: handle_alarm (part4.c:287)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F22334: waitpid (waitpid.c:30)
+==3800==    by 0x1098B8: main (part4.c:211)
+==3800== 
+==3800== Conditional jump or move depends on uninitialised value(s)
+==3800==    at 0x10A008: printProcessTable (part4.c:382)
+==3800==    by 0x109B88: handle_alarm (part4.c:287)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F22334: waitpid (waitpid.c:30)
+==3800==    by 0x1098B8: main (part4.c:211)
+==3800== 
+----------------------------------
+|         Time   22:07:21        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3801 |  S   | 083624 |  3800  |
+|  3802 |  S   | 083624 |  3800  |
+|  3803 |  S   | 083624 |  3800  |
+|  3804 |  S   | 083624 |  3800  |
+|  3805 |  S   | 083624 |  3800  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:22        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3801 |  R   | 083624 |  3800  |
+|  3802 |  R   | 083624 |  3800  |
+|  3803 |  R   | 083624 |  3800  |
+|  3804 |  R   | 083624 |  3800  |
+|  3805 |  R   | 083624 |  3800  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:23        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3801 |  Z   | 000000 |  3800  |
+|  3802 |  T   | 000308 |  3800  |
+|  3803 |  Z   | 000000 |  3800  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:24        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3801 |  U   | 000000 |  9999  |
+|  3802 |  T   | 000308 |  3800  |
+|  3803 |  Z   | 000000 |  3800  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:24        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3801 |  U   | 000000 |  9999  |
+|  3802 |  T   | 000308 |  3800  |
+|  3803 |  Z   | 000000 |  3800  |
+|  3804 |  R   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:25        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3801 |  U   | 000000 |  9999  |
+|  3802 |  T   | 000308 |  3800  |
+|  3803 |  Z   | 000000 |  3800  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:25        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3801 |  U   | 000000 |  9999  |
+|  3802 |  T   | 000308 |  3800  |
+|  3803 |  Z   | 000000 |  3800  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:26        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3801 |  U   | 000000 |  9999  |
+|  3802 |  T   | 000308 |  3800  |
+|  3803 |  Z   | 000000 |  3800  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:26        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3801 |  U   | 000000 |  9999  |
+|  3802 |  R   | 000000 |  3800  |
+|  3803 |  Z   | 000000 |  3800  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:27        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3801 |  U   | 000000 |  9999  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:27        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:27        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  R   | 000308 |  3800  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:27        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  R   | 000308 |  3800  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:28        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:28        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3804 |  R   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:29        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:29        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3802 |  U   | 000000 |  9999  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:29        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:29        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  R   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:29        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  R   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:29        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  R   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:30        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:30        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  R   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:31        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:31        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  R   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:32        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:32        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  R   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:33        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:33        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  R   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:34        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:34        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  R   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:35        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:35        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  R   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:36        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:36        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  R   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:38        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  R   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:38        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  R   | 000308 |  3800  |
+|  3805 |  R   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+-----Process: 3804 - Begining to write to file.
+Process: 3804 - Finished.
+==3800== Invalid read of size 4
+==3800==    at 0x109A60: handle_alarm (part4.c:258)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F4E101: write (write.c:27)
+==3800==    by 0x4EC915C: _IO_file_write@@GLIBC_2.2.5 (fileops.c:1203)
+==3800==    by 0x4ECAF00: new_do_write (fileops.c:457)
+==3800==    by 0x4ECAF00: _IO_do_write@@GLIBC_2.2.5 (fileops.c:433)
+==3800==    by 0x4ECD1B1: _IO_flush_all_lockp (genops.c:769)
+==3800==    by 0x4ECD3B4: _IO_cleanup (genops.c:929)
+==3800==    by 0x4E810F1: __run_exit_handlers (exit.c:130)
+==3800==    by 0x4E81129: exit (exit.c:139)
+==3800==    by 0x109968: main (part4.c:222)
+==3800==  Address 0x52309f0 is 0 bytes inside a block of size 20 free'd
+==3800==    at 0x4C32D3B: free (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x10995E: main (part4.c:221)
+==3800==  Block was alloc'd at
+==3800==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x1095C6: main (part4.c:128)
+==3800== 
+==3800== Invalid read of size 4
+==3800==    at 0x109E03: printProcessTable (part4.c:345)
+==3800==    by 0x109A77: handle_alarm (part4.c:259)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F4E101: write (write.c:27)
+==3800==    by 0x4EC915C: _IO_file_write@@GLIBC_2.2.5 (fileops.c:1203)
+==3800==    by 0x4ECAF00: new_do_write (fileops.c:457)
+==3800==    by 0x4ECAF00: _IO_do_write@@GLIBC_2.2.5 (fileops.c:433)
+==3800==    by 0x4ECD1B1: _IO_flush_all_lockp (genops.c:769)
+==3800==    by 0x4ECD3B4: _IO_cleanup (genops.c:929)
+==3800==    by 0x4E810F1: __run_exit_handlers (exit.c:130)
+==3800==    by 0x4E81129: exit (exit.c:139)
+==3800==    by 0x109968: main (part4.c:222)
+==3800==  Address 0x52309f0 is 0 bytes inside a block of size 20 free'd
+==3800==    at 0x4C32D3B: free (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x10995E: main (part4.c:221)
+==3800==  Block was alloc'd at
+==3800==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x1095C6: main (part4.c:128)
+==3800== 
+==3800== Invalid read of size 4
+==3800==    at 0x109AB7: handle_alarm (part4.c:267)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F4E101: write (write.c:27)
+==3800==    by 0x4EC915C: _IO_file_write@@GLIBC_2.2.5 (fileops.c:1203)
+==3800==    by 0x4ECAF00: new_do_write (fileops.c:457)
+==3800==    by 0x4ECAF00: _IO_do_write@@GLIBC_2.2.5 (fileops.c:433)
+==3800==    by 0x4ECD1B1: _IO_flush_all_lockp (genops.c:769)
+==3800==    by 0x4ECD3B4: _IO_cleanup (genops.c:929)
+==3800==    by 0x4E810F1: __run_exit_handlers (exit.c:130)
+==3800==    by 0x4E81129: exit (exit.c:139)
+==3800==    by 0x109968: main (part4.c:222)
+==3800==  Address 0x52309f4 is 4 bytes inside a block of size 20 free'd
+==3800==    at 0x4C32D3B: free (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x10995E: main (part4.c:221)
+==3800==  Block was alloc'd at
+==3800==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x1095C6: main (part4.c:128)
+==3800== 
+==3800== Invalid read of size 4
+==3800==    at 0x109E03: printProcessTable (part4.c:345)
+==3800==    by 0x109B88: handle_alarm (part4.c:287)
+==3800==    by 0x4E7CF0F: ??? (in /lib/x86_64-linux-gnu/libc-2.27.so)
+==3800==    by 0x4F4E101: write (write.c:27)
+==3800==    by 0x4EC915C: _IO_file_write@@GLIBC_2.2.5 (fileops.c:1203)
+==3800==    by 0x4ECAF00: new_do_write (fileops.c:457)
+==3800==    by 0x4ECAF00: _IO_do_write@@GLIBC_2.2.5 (fileops.c:433)
+==3800==    by 0x4ECD1B1: _IO_flush_all_lockp (genops.c:769)
+==3800==    by 0x4ECD3B4: _IO_cleanup (genops.c:929)
+==3800==    by 0x4E810F1: __run_exit_handlers (exit.c:130)
+==3800==    by 0x4E81129: exit (exit.c:139)
+==3800==    by 0x109968: main (part4.c:222)
+==3800==  Address 0x52309f0 is 0 bytes inside a block of size 20 free'd
+==3800==    at 0x4C32D3B: free (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x10995E: main (part4.c:221)
+==3800==  Block was alloc'd at
+==3800==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x1095C6: main (part4.c:128)
+==3800== 
+-----------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:39        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  T   | 000308 |  3800  |
+|  3805 |  R   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+----------------------------------
+|         Time   22:07:39        |
+----------------------------------
+|  PID  | Stat | MemUse |  PPID  |
+|  3804 |  R   | 000308 |  3800  |
+|  3805 |  T   | 000308 |  3800  |
+|  3802 |  U   | 000000 |  9999  |
+|  3803 |  U   | 000000 |  9999  |
+|  3801 |  U   | 000000 |  9999  |
+----------------------------------
+Status Key: D/S = Sleep, R = Running, T/t = Stopped, Z = Zombie, U = Terminated/Untracked
+*Null values '0' or '9999' are placed after a process is no longer active/accessible
+----------------------------------
+==3800== 
+==3800== HEAP SUMMARY:
+==3800==     in use at exit: 355 bytes in 19 blocks
+==3800==   total heap usage: 312 allocs, 293 frees, 181,696 bytes allocated
+==3800== 
+==3800== 60 bytes in 3 blocks are definitely lost in loss record 2 of 4
+==3800==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x4EDB9D9: strdup (strdup.c:42)
+==3800==    by 0x109635: main (part4.c:137)
+==3800== 
+==3800== 175 (120 direct, 55 indirect) bytes in 4 blocks are definitely lost in loss record 4 of 4
+==3800==    at 0x4C31B0F: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3800==    by 0x109216: str_filler (part4.c:54)
+==3800==    by 0x109736: main (part4.c:169)
+==3800== 
+==3800== LEAK SUMMARY:
+==3800==    definitely lost: 180 bytes in 7 blocks
+==3800==    indirectly lost: 55 bytes in 11 blocks
+==3800==      possibly lost: 0 bytes in 0 blocks
+==3800==    still reachable: 120 bytes in 1 blocks
+==3800==         suppressed: 0 bytes in 0 blocks
+==3800== Reachable blocks (those to which a pointer was found) are not shown.
+==3800== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==3800== 
+==3800== For counts of detected and suppressed errors, rerun with: -v
+==3800== Use --track-origins=yes to see where uninitialised values come from
+==3800== ERROR SUMMARY: 1100 errors from 26 contexts (suppressed: 0 from 0)
+Process: 3805 - Begining calculation.
+Process: 3805 - Finished.
