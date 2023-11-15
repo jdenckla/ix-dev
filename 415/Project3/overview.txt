@@ -1,0 +1,44 @@
+Lab 8 discussion on functions
+
+pthread_create 
+
+-> threads share heap memory, though pointers between them would be difficult to share.. 
+
+four parameters for the above
+
+pid_t was the process array, so we can use tid_t array for threads
+
+third argument is a fuction pointer 
+-> when I start this thread, go execute this function 
+(like a print function, for example)
+
+fourth argument is the arguments for the function above
+
+pthread_exit 
+-> we can't use exit() because it would shut down the process 
+-> we want this one thread to exit, not the process
+
+pthread_join
+-> exactly like waitpid(), but now we want a coordinator thread to wait on its children
+-> coordinator exits last, waittid()
+
+mutexLock 
+(an atomic instruction to achieve mutual exclusion)
+(fights race conditions)
+-> to work on a bank account, apply lock, do your account operations, then release lock
+
+pthread_conwait?
+(make a conditional object)
+-> two arguments, a condition (new object) and a mutex lock 
+-> how to achieve no deadlocks...
+-> use barrier wait here.. 
+
+If a thread hits pthread_conwait, it releases the lock and waits on a conditional
+-> now we can use broadcast to release all threads waiting on conditional
+-> signal would release one thread 
+
+barrier_init / barrier 
+-> you have a barrier object
+(wait for x threads (ex 10)), pause all threads until we break a certain threshold (x, 10)
+
+
