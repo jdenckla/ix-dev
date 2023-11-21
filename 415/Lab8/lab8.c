@@ -25,6 +25,7 @@ void * Print_thread(void* i)
     // TODO: Release the mutex lock
     pthread_mutex_unlock(&mutex1);
     // TODO: You may also comment out the lock and unlock and see how the output changes
+	pthread_exit(NULL);
 
 }
 
