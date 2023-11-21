@@ -17,11 +17,11 @@ void * Print_thread(void* i)
     // TODO: Allocate the mutex lock
     pthread_mutex_lock(&mutex1);
     // TODO: print "First Print: " and the int i
-    printf("First Print: %d\n",i);
+    printf("First Print: %ld\n",i);
     // TODO: sleep for one second
     sleep(1);
     // TODO: print "Second Print:" and the int i
-    printf("Second Print: %d\n",i);
+    printf("Second Print: %ld\n",i);
     // TODO: Release the mutex lock
     pthread_mutex_unlock(&mutex1);
     // TODO: You may also comment out the lock and unlock and see how the output changes
@@ -51,6 +51,7 @@ int main(int argc, char * argv[])
             printf("Error - failed to create pthread: %d\n",rc);
             exit(-1);
         }
+		printf("Thread '%ld' created\n",thread_id[i]);
     }
 	for (i = 0; i < n; i++){
 		pthread_join(thread_id[i], NULL);
