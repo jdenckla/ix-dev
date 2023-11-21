@@ -1,122 +1,97 @@
-// For drafting/planning
-
-// Instructions: 
 /*
+Library
+○ <pthread.h>
 
-Part 1: Lab 1
+● Functions you need
+○ pthread_create()
+○ pthread_exit()
+○ pthread_join()
+○ pthread_mutex_lock()
+○ pthread_mutex_unlock()
+○ pthread_cond_wait()
+○ pthread_cond_broadcast() or pthread_cond_signal()
+○ pthread_barrier_wait()
+○ pthread_barrier_init()
+○ sched_yield() (optional but strongly recommended)
+○ mmap()
+○ munmap()
+○ memcpy()
 
-Read from a file, each line is a command and its args
+● Functions you have to write
+○ void* process_transaction (void* arg)
+    ■ This function will be run by a worker thread to handle the transaction
+    requests assigned to them.
+    ■ This function will return nothing (optional)
+    ■ This function will take in one argument, the argument has to be one of the
+    following types, char**, command_line*, struct (customized).
+○ void* update_balance (void* arg)
+    ■ This function will be run by a dedicated bank thread to update each
+    account’s balance base on their reward rate and transaction tracker.
+    ■ This function will return the number of times it had to update each account
+    ■ This function does not take any argument
 
-Take an input file, get number of lines. Does the token function give us this?
+//////////////////
 
-For each line in the array, fork()
+Input file structure:
+● First line
+Line 1: n total # of accounts
 
-Attempt to exec this line. 
+● Account block
+Line n: index # indicating the start of account information
+Line n + 1: #........# account number (char*)
+Line n + 2: ****** password (char*)
+Line n + 3: ###### initial balance (double)
+Line n + 4: #.## reward rate (double)
 
--> pull from prev proj
+● Transaction lines (separated by space)
+Transfer funds:  “T src_account password dest_account transfer_amount”
+Check balance:   “C account_num password”
+Deposit:         “D account_num password amount”
+Withdraw:        “W account_num password amount”
 
-For each command, MCP must launch a separate process to run the command:
-fork() the proc
-an exec() variant to run it
+● Additional information
+In these requests, there are some invalid requests (wrong password). Getting to know the total
+number of each type of request and invalid requests will help you debug down the road.
+*/
 
--> pull from lab 1
+// See Project Description For Expected Output and Additional Info
 
-Once all proc's are running, MCP should wait for each to terminate
-using a wait() variant
+/* Part One - Single Threads Solution
 
--> pull from lab 1
+Create array of account structs. 
+Parse number of accounts (given in first line) * number of fields per account (5). 
+This many lines, (plus initial line), lets us store all accounts (initial setup), then we can begin transactions
+(ex '10' accts, 5 fields (constant) = 5 * 10 + 1 lines parsed prior to transactions - txn's begin at line 52)
+Input fills: index of array, account_number, password, balance (starting), reward_rate
+Solvable - transaction_tracter, out_file
 
-After all proc's termainate, MCP must use exit()
+transaction_tracter (likely) keeps track of the number of transactions an account has made.
+This number will effect the reward rate and final amount. 
+Alternatively, this could be a method of calculating a pre-total prior to interacting with balance...
 
--> pos lab 2
 
 */
 
-///////////////////////////////////////////////////////
-
-/*
-
-Part 2: Lab 2
-
-Between fork() and exec(), tell each process to stop and wait for SIGUSR1
--> implement sigwait() as with lab5, which occurs immediately after fork()
-->> SIGUSR1 is the first signal to wait for
-
-Once each process is created, (and therefore waiting), send each child SIGUSR1 simultaneously
--> This will allow each to reach exec() call, see lab5...
-
-Once each process begins executing, (after exec()), send each process SIGSTOP
--> should be similar to the above...
-
-After all processes ahve been touched by SIGSTOP, send each SIGCONT
--> ||
-
-After SIGCONT, wait for each process to finish, (same as part 1), then free associated memory
+/* Part Two - Multi-thread w/ Critical Section
 
 */
 
-/*
+/* Part Three - Coordinating the Threads (to work together)
 
-Part 3: No more labs to carry us..
-
-Use alarm(), (which delivers the SIGALARM signal), to effectively time each process
--> Each process will only be given a time slice to execute in
-
-In using this alarm(), we will do the following:
--> suspend current workload process using SIGSTOP
-->> Determine next workload process and send it SIGCONT
-->>> Reset the alarm and continue whatever else...
-
-Ensure that the above transitions output some kind of debug.
-
-Notes:
-
-Each workload process is a child of the MCP (aka part3). How do we know each has terminated?
--> possibly modify the value inside of pid_array?
--X Cannot use the return value of waitpid.
-
-Ensure output shows the steps above, (the start/stop, the alarm, possibly a process ending)
-
-// pos look into 'quantum = getenv()' ?
-
-Potentially consider using a global array (or two) to store process information, to include whether each process is running. 
-Fields to include: PID, IsRunning (bool), Parent -> or just wait til Part 4
-
-Potentially make a FIFO queue, (with push/pop), to rotate between active processes
--> how to determine whether a process is active
-->> how to pop when a process finishes
-
-! Look at arrival time of each thread
-
-Pos use sched_yield after alarm? Don't know that we want to touch the kernel though
-
-One (unlikely) solution:
--> Create a linked list, (building struct into code and main). This would be global, shared across processes. 
-!Either! Append the queue (at tail end) when the process is forked, OR append the queue when the process awaits execution
-
-->> Starting at the head, pop the process off the queue, exec for alloted time***, 
-then IF process has not finished, (see above), push back to the tail of the queue
-
-->>> Processes can be started/stopped with STOP/CONT signals. Timer can be ALARM. INT can interrupt the current process and move to next? Pos just have it pause until next press.
-SIGUSR1 may be for the queueing function, (ie fork all before processing any)
-
-?> Should we look at arrival time when building the queue? If we had a tree we wouldn't want parents running before children.
--> perhaps arrival time can help sort the queue initially? (ie later arrival, put at front of list to ensure hierarchy rather than FIFO)
-
-??> Do we concern ourselves with the initial parent process? (In this case, part3)
 */
 
-/*
+/* Part Four - Transferring to Another Bank (savings acct)
 
-Part 4:
+*/
 
-"Simple" test/debug output. Decide what to lookup, analyze, and present.
+/* Additional Remarks:
 
-Each process exists in the /proc directory, (numbered). Each has:
--> /proc/<PID>/cmdline ~ gives cmd line arguement(s) used to start the process
--> /proc/<PID>/status ~ including mem usage and proc statistics, see 'Name' and 'State'
--> /proc/<PID>/fd ~ shows links to files opened by process
+Race conditions are going to play a huge role while implementing part3. An important
+question you should ask yourself is how do you make sure one thread will reach a certain part of
+the code before another?
 
-We'll want similar functionality to 'top' where we print information into a table and update it at every cycle.
+Deadlocks could make your program stuck, and it is extremely difficult to figure out
+exactly what happened, and how to resolve it. Think about what variables you could keep track
+of to signal a deadlock.
 
 */
