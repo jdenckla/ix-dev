@@ -44,7 +44,7 @@ int main(int argc, char * argv[])
     for (i = 0; i < n; i++) {
         tidPtr = (int *)malloc(sizeof(int));
         *tidPtr = i;
-        printf("Creating thread: %d\n",i);
+        printf("Creating thread: %d\n",i + 1);
         //rc = pthread_create(&thread_id[i], NULL, Print_thread, );
         rc = pthread_create(&thread_id[i], NULL, Print_thread, (void *)tidPtr);
         if (rc) {
@@ -52,6 +52,9 @@ int main(int argc, char * argv[])
             exit(-1);
         }
     }
+	for (i = 0; i < n; i++){
+		pthread_join(thread_id[i], NULL);
+	}
     // You may add print statements here as well if you want
     return 0;
 
