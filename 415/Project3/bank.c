@@ -217,7 +217,7 @@ void process_transaction(command_line token_buffer){
                     printf("Current Balance: %f",acct_ary[i].balance);
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     double amount = atof(token_buffer.command_list[3]);
-                    printf("Deposit: %f\n",amount);
+                    //printf("Deposit: %f\n",amount);
                     acct_ary[i].transaction_tracter += amount;
                     ctr++;
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) {
