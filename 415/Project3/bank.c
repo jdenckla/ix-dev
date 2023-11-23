@@ -193,13 +193,13 @@ void printAccounts(account *acct_ary)
 void process_transaction(char** commandArg){
     command_line token_buffer;
     token_buffer = str_filler(*commandArg, " ");
-    double actNum = atof(token_buffer.command_list[1]);
-    double actPass = atof(token_buffer.command_list[2]);
+    //double actNum = atof(token_buffer.command_list[1]);
+    //double actPass = atof(token_buffer.command_list[2]);
     for (int i = 0; i < numAcct; i++) {
-        if (acct_ary[i].account_number == actNum){
-            if (acct_ary[i].password == actPass){
+        if (acct_ary[i].account_number == token_buffer.command_list[1]){
+            if (acct_ary[i].password == token_buffer.command_list[2]){
                 if (strcmp("C",token_buffer.command_list[0]) == 0) {
-                    printf("Current Balance: %d",acct_ary[i].balance);
+                    printf("Current Balance: %f",acct_ary[i].balance);
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].transaction_tracter += amount;
@@ -207,10 +207,10 @@ void process_transaction(char** commandArg){
                     double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].transaction_tracter -= amount;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) {
-                    double dest = atof(token_buffer.command_list[3]);
+                    //double dest = atof(token_buffer.command_list[3]);
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < numAcct; j++) {
-                        if (acct_ary[j].account_number == dest){
+                        if (acct_ary[j].account_number == token_buffer.command_list[3]){
                             acct_ary[i].transaction_tracter -= amount;
                             acct_ary[j].transaction_tracter += amount;
                             break;
@@ -241,7 +241,7 @@ void update_balance(){
     // or should this reward rate instead be applied to every deposit / incoming transfer?
     for (int i = 0; i < numAcct; i++) {
         //acct_array[i].transaction_tracter += acct_ary[i].balance;
-        acct_array[i].balance += (acct_array[i].transaction_tracter * acct_array[i].reward_rate);
+        acct_ary[i].balance += (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
     }
     return;
 }
