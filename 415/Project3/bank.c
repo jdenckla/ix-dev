@@ -115,18 +115,11 @@ int main(int argc, char * argv[])
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
-    char *firstLine = NULL;
 
     account *acct_ary;
 
     int ctr = 0;
-    char *garbage = NULL;
-    char *acctNum = NULL;
-    char *pass = NULL;
-    char *bal = NULL;
-    char *tract = NULL;
     
-
 	filenameSrc = strdup(argv[1]);
     numProc = countLines(filenameSrc);
     fp = fopen(filenameSrc, "r");
@@ -137,20 +130,22 @@ int main(int argc, char * argv[])
 		free(filenameSrc);
 		return 1;
     } else {
-        firstLine = getline(&line, &len, fp);
-        numAcct = atoi(firstLine);
+        getline(&line, &len, fp);
+        numAcct = atoi(line);
         acct_ary = (account*)malloc(sizeof(account) * numAcct);
         for (int i = 0; i < numAcct; i++) {
             // using number of fields
             getline(&line, &len, fp);
             // discard index line
             getline(&line, &len, fp);
-            acct_ary[i].account_number = line;
+            //acct_ary[i].account_number = line;
+            strncpy(acct_ary[i].account_number, line, 17);
             getline(&line, &len, fp);
-            acct_ary[i].password = line;
+            //acct_ary[i].password = line;
+            strncpy(acct_ary[i].account_number, line, 9);
             getline(&line, &len, fp);
             acct_ary[i].balance = atof(line);
-            tract = getline(&line, &len, fp);
+            getline(&line, &len, fp);
             acct_ary[i].transaction_tracter = atof(line);
             // possibly sscanf(bal, "%lf", &acct_ary[i]->balance)
         }
