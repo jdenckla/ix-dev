@@ -164,6 +164,20 @@ int main(int argc, char * argv[])
         if (line)
             free(line);
     }
+    printAccounts(acct_ary);
     return 0;
 
+}
+
+void printAccounts(account *acct_ary)
+{
+    for (int i = 0; i < numAcct; i++) {
+        // using number of fields
+        printf("Account Number: %s\n",acct_ary[i].account_number);
+        printf("Password: %s\n",acct_ary[i].password);
+        printf("Balance: %f\n",acct_ary[i].balance);
+        printf("Reward Rate: %f\n",acct_ary[i].reward_rate);
+        printf("Tracker: %f\n",acct_ary[i].transaction_tracter);
+    }
+    return;
 }
