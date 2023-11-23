@@ -221,11 +221,13 @@ void process_transaction(command_line token_buffer){
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     double amount = atof(token_buffer.command_list[3]);
                     //printf("Deposit: %f\n",amount);
+                    acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
                     ctr++;
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) {
                     double amount = atof(token_buffer.command_list[3]);
-                    acct_ary[i].transaction_tracter -= amount;
+                    acct_ary[i].balance -= amount;
+                    //acct_ary[i].transaction_tracter -= amount;
                     ctr++;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) {
                     ctr++;
@@ -233,7 +235,9 @@ void process_transaction(command_line token_buffer){
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < numAcct; j++) {
                         if (acct_ary[j].account_number == token_buffer.command_list[3]){
-                            acct_ary[i].transaction_tracter -= amount;
+                            acct_ary[i].balance -= amount;
+                            acct_ary[j].balance += amount;
+                            //acct_ary[i].transaction_tracter -= amount;
                             acct_ary[j].transaction_tracter += amount;
                             break;
                         }
@@ -266,7 +270,8 @@ void update_balance(){
         //acct_ary[i].balance += acct_ary[i].transaction_tracter;
         //printf("%d tracker at update: %f\n",i,acct_ary[i].transaction_tracter);
 
-        acct_ary[i].balance += acct_ary[i].transaction_tracter + (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
+        //acct_ary[i].balance += acct_ary[i].transaction_tracter + (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
+        acct_ary[i].balance += (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
         
         //acct_ary[i].balance += (acct_ary[i].balance * acct_ary[i].reward_rate);
         //acct_ary[i].balance += acct_ary[i].transaction_tracter;
