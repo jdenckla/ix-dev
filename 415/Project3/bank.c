@@ -122,7 +122,7 @@ int main(int argc, char * argv[])
     }
 
     struct stat st = {0};
-
+    printf("attempt mkdir output\n");
     if (stat("/output", &st) == -1) {
         mkdir("/output", 0700);
     }
@@ -188,6 +188,7 @@ int main(int argc, char * argv[])
 	memset (&token_buffer, 0, 0);
     //for debugging
     for (int a; a < numAcct; a++){
+        printf("attempt final output\n");
         char filename[100] = "output";
         strcat(filename,acct_ary[a].account_number);
         FILE * afp = fopen(filename, "w");
@@ -233,6 +234,7 @@ void process_transaction(command_line token_buffer){
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0){
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
                 if (strcmp("C",token_buffer.command_list[0]) == 0) {
+                    printf("attempt check balance\n");
                     char filename[100] = "/output/";
                     strcat(filename,acct_ary[i].account_number);
                     FILE * afp = fopen(filename, "w");
