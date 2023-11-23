@@ -121,11 +121,6 @@ int main(int argc, char * argv[])
         exit(1); 
     }
 
-    struct stat st = {0};
-    //printf("attempt mkdir output\n");
-    if (stat("/output", &st) == -1) {
-        mkdir("/output", 0700);
-    }
     FILE *fp;
 	char *filenameSrc;
 
@@ -234,10 +229,15 @@ void process_transaction(command_line token_buffer){
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0){
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
                 if (strcmp("C",token_buffer.command_list[0]) == 0) {
-                    printf("attempt check balance\n");
+                    //printf("attempt check balance\n");
+                    struct stat st = {0};
+                    //printf("attempt mkdir output\n");
+                    if (stat("/output", &st) == -1) {
+                        mkdir("/output", 0700);
+                    }
                     char filename[100] = "/output/";
                     strcat(filename,acct_ary[i].account_number);
-                    printf("%s\n",filename);
+                    //printf("%s\n",filename);
                     FILE * afp = fopen(filename, "w");
                     fprintf(afp,"Balance: %.2f\n",acct_ary[i].balance);
                     //char *balance;
