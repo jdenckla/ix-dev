@@ -213,11 +213,11 @@ void process_transaction(command_line token_buffer){
     //double actNum = atof(token_buffer.command_list[1]);
     //double actPass = atof(token_buffer.command_list[2]);
     for (int i = 0; i < numAcct; i++) {
-        printf("%s\n",token_buffer.command_list[0]);
-        if (acct_ary[i].account_number == token_buffer.command_list[1]){
-            if (acct_ary[i].password == token_buffer.command_list[2]){
+        if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0){
+            if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
                 if (strcmp("C",token_buffer.command_list[0]) == 0) {
-                    printf("Current Balance: %f",acct_ary[i].balance);
+                    //printf("Current Balance: %f\n",acct_ary[i].balance);
+                    //printf("Entered balance\n");
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     double amount = atof(token_buffer.command_list[3]);
                     //printf("Deposit: %f\n",amount);
@@ -264,12 +264,14 @@ void update_balance(){
         //acct_array[i].transaction_tracter += acct_ary[i].balance;
         //acct_ary[i].balance += (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
         //acct_ary[i].balance += acct_ary[i].transaction_tracter;
-        printf("%d tracker at update: %f\n",i,acct_ary[i].transaction_tracter);
-        double inter = acct_ary[i].transaction_tracter * acct_ary[i].reward_rate;
-        acct_ary[i].balance += acct_ary[i].transaction_tracter;
-        acct_ary[i].balance += inter;
+        //printf("%d tracker at update: %f\n",i,acct_ary[i].transaction_tracter);
+
+        acct_ary[i].balance += acct_ary[i].transaction_tracter + (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
+        
+        //acct_ary[i].balance += (acct_ary[i].balance * acct_ary[i].reward_rate);
+        //acct_ary[i].balance += acct_ary[i].transaction_tracter;
+        
         acct_ary[i].transaction_tracter = 0;
-        //acct_ary[i].balance = acct_ary[i].balance + inter;
     }
     return;
 }
