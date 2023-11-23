@@ -190,7 +190,7 @@ void printAccounts(account *acct_ary)
 
 void process_transaction(char** commandArg){
     command_line token_buffer;
-    token_buffer = str_filler(&commandArg, " ");
+    token_buffer = str_filler(commandArg, " ");
     double actNum = atof(token_buffer[1]);
     double actPass = atof(token_buffer[2]);
     for (int i = 0; i < numAcct; i++) {
@@ -215,7 +215,7 @@ void process_transaction(char** commandArg){
                         }
                     }
                 } else {
-                    printf("Error - Command Unrecognized, Failed to Process: %s\n",&commandArg);
+                    printf("Error - Command Unrecognized, Failed to Process: %s\n",commandArg);
                 }
             }
             break;
