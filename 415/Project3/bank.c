@@ -191,22 +191,22 @@ void printAccounts(account *acct_ary)
 void process_transaction(char** commandArg){
     command_line token_buffer;
     token_buffer = str_filler(*commandArg, " ");
-    double actNum = atof(token_buffer[1]);
-    double actPass = atof(token_buffer[2]);
+    double actNum = atof(token_buffer.command_list[1]);
+    double actPass = atof(token_buffer.command_list[2]);
     for (int i = 0; i < numAcct; i++) {
         if (acct_ary[i].account_number == actNum){
             if (acct_ary[i].password == actPass){
-                if (strcmp("C",token_buffer[0]) != NULL) {
+                if (strcmp("C",token_buffer.command_list[0]) != NULL) {
                     printf("Current Balance: %d",acct_ary[i].balance);
-                } else if (strcmp("D",token_buffer[0]) != NULL) {
-                    double amount = atof(token_buffer[3]);
+                } else if (strcmp("D",token_buffer.command_list[0]) != NULL) {
+                    double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].transaction_tracter += amount;
-                } else if (strcmp("W",token_buffer[0]) != NULL) {
-                    double amount = atof(token_buffer[3]);
+                } else if (strcmp("W",token_buffer.command_list[0]) != NULL) {
+                    double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].transaction_tracter -= amount;
-                } else if (strcmp("T",token_buffer[0]) != NULL) {
-                    double dest = atof(token_buffer[3]);
-                    double amount = atof(token_buffer[4]);
+                } else if (strcmp("T",token_buffer.command_list[0]) != NULL) {
+                    double dest = atof(token_buffer.command_list[3]);
+                    double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < numAcct; j++) {
                         if (acct_ary[j].account_number == dest){
                             acct_ary[i].transaction_tracter -= amount;
