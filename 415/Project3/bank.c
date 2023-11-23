@@ -4,48 +4,167 @@
 #include <unistd.h>
 #include "account.h"
 
+#include <string.h>
+#include <signal.h>
+#include <errno.h>
+#include <time.h>
+#include <fcntl.h>
+#include <sys/wait.h>
+
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
-#define MAX_THREADS 50
+#define MAX_THREADS 10
 
-pthread_t thread_id[MAX_THREADS];    
+pthread_t thread_id[MAX_THREADS];
 
-//personal additional, see ref: https://courses.engr.illinois.edu/cs241/fa2010/ppt/10-pthread-examples.pdf
+pid_t *pid_array;
+int numLines;
+int procIndex = 0;
+int numProc;
+int numAcct;
 
-void * Print_thread(void* i)
+volatile sig_atomic_t got_interrupt = 0;
+
+void handle_alarm(int sig);
+
+// OG 50, alt max thread is 5000 and when we reach this threshold we pause
+
+int count_token (char* buf, const char* delim)
 {
-    pthread_mutex_lock(&mutex1);
-    printf("First Print: %d\n",i);
-    sleep(1);
-    printf("Second Print: %d\n",i);
-    pthread_mutex_unlock(&mutex1);
-	pthread_exit(NULL);
+	char* save;
+	strtok_r(buf,"\n",&save);
+	char* string = strdup(buf);
+	int count = 0;
+	char* pointer;
+	char* token;
 
+	pointer = NULL;
+	token = strtok_r(string, delim, &pointer);
+	while (token != NULL) {
+		token = strtok_r(NULL, delim, &pointer);
+		count++;
+	}
+	free(string);
+	return count;
+}
+
+command_line str_filler (char* buf, const char* delim)
+{
+	command_line var;
+	var.num_token = count_token(buf, delim);
+	char* token;
+	char* string = buf;
+	var.command_list = (char **)malloc((var.num_token + 1) * (sizeof(char*)));
+	token = strtok_r(string, delim, &string);
+	for (int j = 0; j < var.num_token; j++) {
+		var.command_list[j] = strdup(token);
+		token = strtok_r(NULL, delim, &string);
+	}
+	var.command_list[var.num_token] = NULL;
+	return var;
+}
+
+
+void free_command_line(command_line* command)
+{	
+	for (int i = 0; (i < command->num_token + 1); i++) {
+		free(command->command_list[i]);
+	}
+	free(command->command_list);
+}
+
+int countLines(char *filename)
+{
+// line counter sourced from: https://codereview.stackexchange.com/questions/156477/c-program-to-count-number-of-lines-in-a-file
+	int counter = 0;
+	FILE *fp;
+	fp = fopen(filename,"r");
+	char buffer[SIZE + 1], lastchar = '\n';
+	size_t bytes;
+	if (fp == NULL) {
+		perror("Error opening file");
+		return -1;
+	} else {
+		while ((bytes = fread(buffer, 1, sizeof(buffer) - 1, fp))) {
+			lastchar = buffer[bytes - 1];
+			for (char *c = buffer; (c = memchr(c, '\n', bytes - (c - buffer))); c++) {
+				counter++;
+			}
+		}
+		if (lastchar != '\n') {
+			counter++; 
+		}
+	}
+	fclose(fp);
+	return counter;
 }
 
 int main(int argc, char * argv[])
 {
-    int rc, i, n;
-
     if(argc < 2) 
     {
-        printf("Please add the number of threads to the command line\n");
+        printf("Error - Usage: ./bank inputfile.txt\n");
         exit(1); 
     }
-    n = atoi(argv[1]);
-    if(n > MAX_THREADS) n = MAX_THREADS;
+    FILE *fp;
+	char *filenameSrc;
 
-    for (i = 0; i < n; i++) {
-        printf("Creating thread: %d\n",i);
-        rc = pthread_create(&thread_id[i], NULL, Print_thread, (void *)i);
-        if (rc) {
-            printf("Error - failed to create pthread: %d\n",rc);
-            exit(-1);
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    char *firstLine = NULL;
+
+    account *acct_ary;
+
+    int ctr = 0;
+    char *garbage = NULL;
+    char *acctNum = NULL;
+    char *pass = NULL;
+    char *bal = NULL;
+    char *tract = NULL;
+    
+
+	filenameSrc = strdup(argv[1]);
+    numProc = countLines(filenameSrc);
+    fp = fopen(filenameSrc, "r");
+    if (fp == NULL) {
+		char *errOpenInput = "Error! Failed to open input file.";
+		write(1,errOpenInput,strlen(errOpenInput));
+		write(1,"\n",1);
+		free(filenameSrc);
+		return 1;
+    } else {
+        firstLine = getline(&line, &len, fp);
+        numAcct = atoi(firstLine);
+        acct_ary = (account*)malloc(sizeof(account) * numAcct);
+        for (int i = 0; i < numAcct; i++) {
+            // using number of fields
+            garbage = getline(&line, &len, fp);
+            acctNum = getline(&line, &len, fp);
+            pass = getline(&line, &len, fp);
+            bal = getline(&line, &len, fp);
+            tract = getline(&line, &len, fp);
+            acct_ary[i]->account_number = acctNum;
+            acct_ary[i]->password = pass;
+            // possibly sscanf(bal, "%lf", &acct_ary[i]->balance)
+            acct_ary[i]->balance = atof(bal);
+            acct_ary[i]->transaction_tracter = atof(tract);
         }
+        // accounts filled, begin processes...
+        /*
+        while ((read = getline(&line, &len, fp)) != -1) {
+            //printf("Retrieved line of length %zu:\n", read);
+            printf("%s", line);
+            ctr++;
+            if (ctr == numAcct){
+                break;
+            }
+        }
+        */
+        fclose(fp);
+        if (line)
+            free(line);
     }
-	for (i = 0; i < n; i++){
-		pthread_join(thread_id[i], NULL);
-	}
     return 0;
 
 }
