@@ -154,24 +154,27 @@ int main(int argc, char * argv[])
             getline(&line, &len, fp);
             acct_ary[i].reward_rate = atof(line);
         }
+        //printAccounts(acct_ary);
         // accounts filled, begin processes...
-        /*
+        
         while ((read = getline(&line, &len, fp)) != -1) {
             //printf("Retrieved line of length %zu:\n", read);
-            printf("%s", line);
+            //printf("%s", line);
+            process_transaction(&line);
             ctr++;
-            if (ctr == numAcct){
-                break;
-            }
+            //if (ctr == numAcct){
+            //    break;
+            //}
         }
-        */
+        update_balance();
+        
         fclose(fp);
         if (line)
             free(line);
     }
     free(filenameSrc);
     //for debugging
-    //printAccounts(acct_ary);
+    printAccounts(acct_ary);
     return 0;
 
 }
