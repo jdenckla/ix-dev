@@ -256,10 +256,10 @@ void update_balance(){
     // or should this reward rate instead be applied to every deposit / incoming transfer?
     for (int i = 0; i < numAcct; i++) {
         //acct_array[i].transaction_tracter += acct_ary[i].balance;
-        acct_ary[i].balance += (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
+        //acct_ary[i].balance += (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
+        double inter = acct_ary[i].balance * acct_ary[i].reward_rate;
+        acct_ary[i].balance = acct_ary[i].balance + acct_ary[i].transaction_tracter + inter;
         acct_ary[i].transaction_tracter = 0;
-        //double inter = acct_ary[i].balance * acct_ary[i].reward_rate;
-        //acct_ary[i].balance = 
     }
     return;
 }
