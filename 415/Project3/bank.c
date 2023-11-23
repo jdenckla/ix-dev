@@ -236,7 +236,8 @@ void process_transaction(command_line token_buffer){
                         }
                     }
                 } else {
-                    printf("Error - Command Unrecognized, Failed to Process: %s\n",*commandArg);
+                    //printf("Error - Command Unrecognized, Failed to Process: %s\n",*commandArg);
+                    break;
                 }
             }
             break;
