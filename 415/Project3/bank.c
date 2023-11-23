@@ -257,10 +257,12 @@ void update_balance(){
     for (int i = 0; i < numAcct; i++) {
         //acct_array[i].transaction_tracter += acct_ary[i].balance;
         //acct_ary[i].balance += (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
-        acct_ary[i].balance += acct_ary[i].transaction_tracter;
-        double inter = acct_ary[i].balance * acct_ary[i].reward_rate;
+        //acct_ary[i].balance += acct_ary[i].transaction_tracter;
+        double inter = acct_ary[i].transaction_tracter * acct_ary[i].reward_rate;
+        acct_ary[i].balance += transaction_tracter;
+        acct_ary[i].balance += inter;
         acct_ary[i].transaction_tracter = 0;
-        acct_ary[i].balance = acct_ary[i].balance + inter;
+        //acct_ary[i].balance = acct_ary[i].balance + inter;
     }
     return;
 }
