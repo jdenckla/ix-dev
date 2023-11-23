@@ -11,6 +11,9 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 #define _GNU_SOURCE
 #define SIZE 1024
 
@@ -117,6 +120,12 @@ int main(int argc, char * argv[])
         printf("Error - Usage: ./bank inputfile.txt\n");
         exit(1); 
     }
+
+    struct stat st = {0};
+
+    if (stat("/output", &st) == -1) {
+        mkdir("/output", 0700);
+    }
     FILE *fp;
 	char *filenameSrc;
 
@@ -178,7 +187,14 @@ int main(int argc, char * argv[])
     free_command_line (&token_buffer);
 	memset (&token_buffer, 0, 0);
     //for debugging
-    printBalance(acct_ary);
+    char filename[100] = "output";
+    strcat(filename,acct_ary[i].account_number);
+    FILE * afp = fopen(filename, "w");
+    for (int a; a < numAcct; a++){
+        fprintf("%d balance:\t%.2f\n\n",i,acct_ary[i].balance);
+    }
+    fclose(afp);
+    //printBalance(acct_ary);
     //printAccounts(acct_ary);
     return 0;
 
@@ -210,8 +226,13 @@ void process_transaction(command_line token_buffer){
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0){
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
                 if (strcmp("C",token_buffer.command_list[0]) == 0) {
+                    char filename[100] = "/output/";
+                    strcat(filename,acct_ary[i].account_number);
+                    FILE * afp = fopen(filename, "w");
+                    fprintf(afp,"Balance: ");
+                    fprintf(afp, acct_ary[i].balance);
+                    fclose(afp);
                     //output to file
-                    ;
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].balance += amount;
