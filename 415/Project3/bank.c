@@ -148,7 +148,7 @@ int main(int argc, char * argv[])
             getline(&line, &len, fp);
             acct_ary[i].balance = atof(line);
             getline(&line, &len, fp);
-            acct_ary[i].transaction_tracter = atof(line);
+            acct_ary[i].reward_rate = atof(line);
         }
         // accounts filled, begin processes...
         /*
