@@ -139,15 +139,24 @@ int main(int argc, char * argv[])
             // using number of fields
             getline(&line, &len, fp);
             // discard index line
+            printf("Passing garbo: %s",line);
+
             getline(&line, &len, fp);
             //acct_ary[i].account_number = line;
+            printf("Passing acct: %s",line);
             strcpy(acct_ary[i].account_number, line);
+
             getline(&line, &len, fp);
             //acct_ary[i].password = line;
+            printf("Passing pass: %s",line);
             strcpy(acct_ary[i].password, line);
+
             getline(&line, &len, fp);
+            printf("Passing bal: %s",line);
             acct_ary[i].balance = atof(line);
+
             getline(&line, &len, fp);
+            printf("Passing trac: %s",line);
             acct_ary[i].transaction_tracter = atof(line);
             // possibly sscanf(bal, "%lf", &acct_ary[i]->balance)
         }
@@ -166,16 +175,17 @@ int main(int argc, char * argv[])
         if (line)
             free(line);
     }
-    printAccounts(acct_ary);
+    //printAccounts(acct_ary);
     return 0;
 
 }
 
 void printAccounts(account *acct_ary)
 {
+    printf("\nNumber of Accounts: %d\n",numAcct);
     for (int i = 0; i < numAcct; i++) {
         // using number of fields
-        printf("\nAccount Number: %s\n",acct_ary[i].account_number);
+        printf("Account Number: %s\n",acct_ary[i].account_number);
         printf("Password: %s\n",acct_ary[i].password);
         printf("Balance: %f\n",acct_ary[i].balance);
         printf("Reward Rate: %f\n",acct_ary[i].reward_rate);
