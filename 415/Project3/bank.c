@@ -125,6 +125,9 @@ int main(int argc, char * argv[])
     ssize_t read;
     ctr = 0;
 
+    command_line token_buffer;
+    
+
     //account *acct_ary;
     
 	filenameSrc = strdup(argv[1]);
@@ -159,9 +162,9 @@ int main(int argc, char * argv[])
         // accounts filled, begin processes...
         
         while ((read = getline(&line, &len, fp)) != -1) {
-            //printf("Retrieved line of length %zu:\n", read);
-            //printf("%s", line);
-            process_transaction(&line);
+            //process_transaction(&line);
+            token_buffer = str_filler(line, " ");
+            process_transaction(token_buffer);
             //ctr++;
             if (ctr % 5000){
                 update_balance();
@@ -202,9 +205,9 @@ void printBalance(account *acct_ary)
     return;
 }
 
-void process_transaction(char** commandArg){
-    command_line token_buffer;
-    token_buffer = str_filler(*commandArg, " ");
+//void process_transaction(char** commandArg){
+void process_transaction(command_line token_buffer){
+    //token_buffer = str_filler(*commandArg, " ");
     //double actNum = atof(token_buffer.command_list[1]);
     //double actPass = atof(token_buffer.command_list[2]);
     for (int i = 0; i < numAcct; i++) {
