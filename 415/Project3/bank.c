@@ -103,6 +103,7 @@ int countLines(char *filename)
 }
 
 void printAccounts(account *acct_ary);
+void printBalance(account *acct_ary);
 void process_transaction(char** commandArg);
 void update_balance();
 
