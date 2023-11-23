@@ -162,9 +162,9 @@ int main(int argc, char * argv[])
             //printf("%s", line);
             process_transaction(&line);
             ctr++;
-            //if (ctr == numAcct){
-            //    break;
-            //}
+            if (ctr % 5000){
+                update_balance();
+            }
         }
         update_balance();
         
@@ -174,7 +174,8 @@ int main(int argc, char * argv[])
     }
     free(filenameSrc);
     //for debugging
-    printAccounts(acct_ary);
+    printBalance(acct_ary);
+    //printAccounts(acct_ary);
     return 0;
 
 }
@@ -183,12 +184,19 @@ void printAccounts(account *acct_ary)
 {
     printf("\nNumber of Accounts: %d\n",numAcct);
     for (int i = 0; i < numAcct; i++) {
-        // using number of fields
         printf("\nAccount Number: %s\n",acct_ary[i].account_number);
         printf("Password: %s\n",acct_ary[i].password);
         printf("Balance: %f\n",acct_ary[i].balance);
         printf("Reward Rate: %f\n",acct_ary[i].reward_rate);
         printf("Tracker: %f\n",acct_ary[i].transaction_tracter);
+    }
+    return;
+}
+
+void printBalance(account *acct_ary)
+{
+    for (int i = 0; i < numAcct; i++) {
+        printf("%d balance:\t%f\n\n",acct_ary[i].balance);
     }
     return;
 }
