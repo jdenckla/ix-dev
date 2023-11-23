@@ -69,6 +69,16 @@ transaction_tracter (likely) keeps track of the number of transactions an accoun
 This number will effect the reward rate and final amount. 
 Alternatively, this could be a method of calculating a pre-total prior to interacting with balance...
 
+Balance should only update after reward rate and tracter calcuations - the update is called deliberately at threshold or end of file. 
+Balance update adds the current balance to tracter * reward rate
+
+Whenever a deposit, withdrawal, or transfer is made, the amount is added to the tracker (tracter). 
+We must keep a counter of transactions (EXCLUDING Check Balance) across all threads.
+
+Deposit - add to accounts tracker
+Withdrawal - subtract
+Transfer - subtract from source tracker, add to dest tracker
+Check - simply print unupdated balance. 
 
 */
 

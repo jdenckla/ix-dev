@@ -103,6 +103,8 @@ int countLines(char *filename)
 }
 
 void printAccounts(account *acct_ary);
+void process_transaction(char** commandArg);
+void update_balance();
 
 int main(int argc, char * argv[])
 {
@@ -165,6 +167,7 @@ int main(int argc, char * argv[])
         if (line)
             free(line);
     }
+    free(filenameSrc);
     //for debugging
     //printAccounts(acct_ary);
     return 0;
@@ -181,6 +184,62 @@ void printAccounts(account *acct_ary)
         printf("Balance: %f\n",acct_ary[i].balance);
         printf("Reward Rate: %f\n",acct_ary[i].reward_rate);
         printf("Tracker: %f\n",acct_ary[i].transaction_tracter);
+    }
+    return;
+}
+
+void process_transaction(char** commandArg){
+    command_line token_buffer;
+    token_buffer = str_filler(&commandArg, " ");
+    double actNum = atof(token_buffer[1]);
+    double actPass = atof(token_buffer[2]);
+    for (int i = 0; i < numAcct; i++) {
+        if (acct_ary[i].account_number == actNum){
+            if (acct_ary[i].password == actPass){
+                if (strcmp("C",token_buffer[0]) != NULL) {
+                    printf("Current Balance: %d",acct_ary[i].balance);
+                } else if (strcmp("D",token_buffer[0]) != NULL) {
+                    double amount = atof(token_buffer[3]);
+                    acct_ary[i].transaction_tracter += amount;
+                } else if (strcmp("W",token_buffer[0]) != NULL) {
+                    double amount = atof(token_buffer[3]);
+                    acct_ary[i].transaction_tracter -= amount;
+                } else if (strcmp("T",token_buffer[0]) != NULL) {
+                    double dest = atof(token_buffer[3]);
+                    double amount = atof(token_buffer[4]);
+                    for (int j = 0; j < numAcct; j++) {
+                        if (acct_ary[j].account_number == dest){
+                            acct_ary[i].transaction_tracter -= amount;
+                            acct_ary[j].transaction_tracter += amount;
+                            break;
+                        }
+                    }
+                } else {
+                    printf("Error - Command Unrecognized, Failed to Process: %s\n",&commandArg);
+                }
+            }
+            break;
+        }
+    }
+    free_command_line (&token_buffer);
+	memset (&token_buffer, 0, 0);
+    return;
+    
+    // parse argument as a command, tokenizing it. Might do this as the argument instead
+    // make a switch, or something similar to previous project, where we check the type and take appropriate action
+    // D = Deposit, [Code] [AcctNum] [Pass] [Credit], Add Credit to Acct's Tracker (acct_ary[x].account_number == AcctNum)
+    // W = Withdrawal, same codes, Subtract ||
+    // T = Transfer [Code] [SourceAcct] [Pass] [DestAcct] [Credit], Remove from Source Tracker, Add to Dest
+    // C = Check Balance, [Code] [SourceAcct] [Pass], print current balance prior to initiating update
+}
+
+void update_balance(){
+    // this should apply to every account
+    // "add the account balance to the transaction_tracter * reward_rate"
+    // or should this reward rate instead be applied to every deposit / incoming transfer?
+    for (int i = 0; i < numAcct; i++) {
+        //acct_array[i].transaction_tracter += acct_ary[i].balance;
+        acct_array[i].balance += (acct_array[i].transaction_tracter * acct_array[i].reward_rate);
     }
     return;
 }
