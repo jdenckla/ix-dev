@@ -271,12 +271,13 @@ void update_balance(){
         //printf("%d tracker at update: %f\n",i,acct_ary[i].transaction_tracter);
 
         //acct_ary[i].balance += acct_ary[i].transaction_tracter + (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
-        acct_ary[i].balance += (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
+        double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate)
+        acct_ary[i].balance += temp;
         
         //acct_ary[i].balance += (acct_ary[i].balance * acct_ary[i].reward_rate);
         //acct_ary[i].balance += acct_ary[i].transaction_tracter;
         
-        //acct_ary[i].transaction_tracter = 0;
+        acct_ary[i].transaction_tracter = 0;
     }
     return;
 }
