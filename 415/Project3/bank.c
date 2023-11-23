@@ -191,7 +191,14 @@ int main(int argc, char * argv[])
     strcat(filename,acct_ary[i].account_number);
     FILE * afp = fopen(filename, "w");
     for (int a; a < numAcct; a++){
-        fprintf("%d balance:\t%.2f\n\n",i,acct_ary[i].balance);
+        char *iterator;
+        sprintf(iterator,"%d",a);
+        char *balance;
+        sprintf(balance,"%.2f",acct_ary[a].balance);
+        fprintf(afp, iterator);
+        fprintf(afp, " balance:\t");
+        fprintf(afp, balance);
+        fprintf(afp, "\n\n");
     }
     fclose(afp);
     //printBalance(acct_ary);
@@ -230,7 +237,9 @@ void process_transaction(command_line token_buffer){
                     strcat(filename,acct_ary[i].account_number);
                     FILE * afp = fopen(filename, "w");
                     fprintf(afp,"Balance: ");
-                    fprintf(afp, acct_ary[i].balance);
+                    char *balance;
+                    //sprintf(balance,"%.2f",acct_ary[a].balance);
+                    fprintf(afp, balance);
                     fclose(afp);
                     //output to file
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
