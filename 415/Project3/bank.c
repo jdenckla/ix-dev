@@ -191,7 +191,7 @@ void printAccounts(account *acct_ary)
     printf("\nNumber of Accounts: %d\n",numAcct);
     for (int i = 0; i < numAcct; i++) {
         // using number of fields
-        printf("Account Number: %s\n",acct_ary[i].account_number);
+        printf("\nAccount Number: %s\n",acct_ary[i].account_number);
         printf("Password: %s\n",acct_ary[i].password);
         printf("Balance: %f\n",acct_ary[i].balance);
         printf("Reward Rate: %f\n",acct_ary[i].reward_rate);
