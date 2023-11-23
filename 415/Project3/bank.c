@@ -139,21 +139,19 @@ int main(int argc, char * argv[])
             // using number of fields
             getline(&line, &len, fp);
             // discard index line
-            printf("Passing garbo: %s\n",line);
+            //printf("Passing garbo: %s\n",line);
 
             getline(&line, &len, fp);
             //acct_ary[i].account_number = line;
             printf("Passing acct: %s",line);
             strcpy(acct_ary[i].account_number, line);
-            int len = strlen(acct_ary[i].account_number);
-            if (acct_ary[i].account_number > 0 && acct_ary[i].account_number[len-1] == '\n') acct_ary[i].account_number[len-1] = '\0';
+            acct_ary[i].account_number[strlen(acct_ary[i].account_number)-1] = '\0';
             printf("Now: %s\n",acct_ary[i].account_number);
             getline(&line, &len, fp);
             //acct_ary[i].password = line;
             printf("Passing pass: %s",line);
             strcpy(acct_ary[i].password, line);
-            int leng = strlen(acct_ary[i].password);
-            if (acct_ary[i].password > 0 && acct_ary[i].password[leng-1] == '\n') acct_ary[i].password[leng-1] = '\0';
+            acct_ary[i].password[strlen(acct_ary[i].password)-1] = '\0';
             printf("Now: %s\n",acct_ary[i].password);
 
             getline(&line, &len, fp);
