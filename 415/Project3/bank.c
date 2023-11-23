@@ -187,20 +187,20 @@ int main(int argc, char * argv[])
     free_command_line (&token_buffer);
 	memset (&token_buffer, 0, 0);
     //for debugging
-    char filename[100] = "output";
-    strcat(filename,acct_ary[i].account_number);
-    FILE * afp = fopen(filename, "w");
     for (int a; a < numAcct; a++){
-        char *iterator;
-        sprintf(iterator,"%d",a);
-        char *balance;
-        sprintf(balance,"%.2f",acct_ary[a].balance);
-        fprintf(afp, iterator);
-        fprintf(afp, " balance:\t");
-        fprintf(afp, balance);
-        fprintf(afp, "\n\n");
+        char filename[100] = "output";
+        strcat(filename,acct_ary[a].account_number);
+        FILE * afp = fopen(filename, "w");
+        //char *iterator;
+        //sprintf(iterator,"%d",a);
+        //char *balance;
+        //sprintf(balance,"%.2f",acct_ary[a].balance);
+        fprintf(afp, "%d balance:\t%.2f\n\n", a, acct_ary[a].balance);
+        //fprintf(afp, " balance:\t");
+        //fprintf(afp, balance);
+        //fprintf(afp, "\n\n");
+        fclose(afp);
     }
-    fclose(afp);
     //printBalance(acct_ary);
     //printAccounts(acct_ary);
     return 0;
@@ -236,10 +236,10 @@ void process_transaction(command_line token_buffer){
                     char filename[100] = "/output/";
                     strcat(filename,acct_ary[i].account_number);
                     FILE * afp = fopen(filename, "w");
-                    fprintf(afp,"Balance: ");
-                    char *balance;
-                    //sprintf(balance,"%.2f",acct_ary[a].balance);
-                    fprintf(afp, balance);
+                    fprintf(afp,"Balance: %.2f\n",acct_ary[i].balance);
+                    //char *balance;
+                    //sprintf(balance,"%.2f",acct_ary[i].balance);
+                    //fprintf(afp, balance);
                     fclose(afp);
                     //output to file
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
