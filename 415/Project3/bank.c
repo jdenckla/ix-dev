@@ -214,6 +214,7 @@ void process_transaction(char** commandArg){
                     printf("Current Balance: %f",acct_ary[i].balance);
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     double amount = atof(token_buffer.command_list[3]);
+                    printf("Deposit: %f\n",amount);
                     acct_ary[i].transaction_tracter += amount;
                     ctr++;
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) {
@@ -258,7 +259,7 @@ void update_balance(){
         //acct_array[i].transaction_tracter += acct_ary[i].balance;
         //acct_ary[i].balance += (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
         //acct_ary[i].balance += acct_ary[i].transaction_tracter;
-        printf("%d tracker at update: %f",i,acct_ary[i].transaction_tracter);
+        printf("%d tracker at update: %f\n",i,acct_ary[i].transaction_tracter);
         double inter = acct_ary[i].transaction_tracter * acct_ary[i].reward_rate;
         acct_ary[i].balance += acct_ary[i].transaction_tracter;
         acct_ary[i].balance += inter;
