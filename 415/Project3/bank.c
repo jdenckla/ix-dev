@@ -102,6 +102,8 @@ int countLines(char *filename)
 	return counter;
 }
 
+void printAccounts(account *acct_ary);
+
 int main(int argc, char * argv[])
 {
     if(argc < 2) 
