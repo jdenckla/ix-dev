@@ -279,33 +279,6 @@ void process_transaction(command_line token_buffer){
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
                 if (strcmp("C",token_buffer.command_list[0]) == 0) {
                     checkBalance(i);
-                    //printf("attempt check balance\n");
-                    /* 
-                    char *filename = token_buffer.command_list[1];
-                    char *balText;
-                    balText = "Current Balance:\t";
-                    //printf("attempt dup\n");
-                    char *fileHead;
-                    struct stat st = {0};
-                    //printf("attempt mkdir output\n");
-                    if (stat(filename, &st) == -1) {
-                        printf("attempt create header\n");
-                        FILE * afp = fopen(filename, "w");
-                        fileHead = "account ";
-                        fprintf(afp,"%s",fileHead);
-                        fprintf(afp,"%d",i);
-                        fprintf(afp,"%s",":\n");
-                        fclose(afp);
-                    }
-                    //printf("attempt after header\n");
-                    FILE * afp = fopen(filename, "w");
-                    //printf("attempting to open: %s\n",filename);
-                    fprintf(afp,"%s",balText);
-                    fprintf(afp,"%.2f\n",acct_ary[i].balance);
-                    fclose(afp);
-                    free(filename);
-                    */
-                    //return;
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     //printf("attempt deposit\n");
                     double amount = atof(token_buffer.command_list[3]);
