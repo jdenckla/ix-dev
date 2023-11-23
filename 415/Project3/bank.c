@@ -177,6 +177,8 @@ int main(int argc, char * argv[])
             free(line);
     }
     free(filenameSrc);
+    free_command_line (&token_buffer);
+	memset (&token_buffer, 0, 0);
     //for debugging
     printBalance(acct_ary);
     //printAccounts(acct_ary);
@@ -211,6 +213,7 @@ void process_transaction(command_line token_buffer){
     //double actNum = atof(token_buffer.command_list[1]);
     //double actPass = atof(token_buffer.command_list[2]);
     for (int i = 0; i < numAcct; i++) {
+        printf("%s\n",token_buffer.command_list[0]);
         if (acct_ary[i].account_number == token_buffer.command_list[1]){
             if (acct_ary[i].password == token_buffer.command_list[2]){
                 if (strcmp("C",token_buffer.command_list[0]) == 0) {
@@ -243,8 +246,6 @@ void process_transaction(command_line token_buffer){
             break;
         }
     }
-    free_command_line (&token_buffer);
-	memset (&token_buffer, 0, 0);
     return;
     
     // parse argument as a command, tokenizing it. Might do this as the argument instead
