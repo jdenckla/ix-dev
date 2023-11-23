@@ -141,10 +141,10 @@ int main(int argc, char * argv[])
             // discard index line
             getline(&line, &len, fp);
             strcpy(acct_ary[i].account_number, line);
-            //acct_ary[i].account_number[strlen(acct_ary[i].account_number)-1] = '\0';
+            acct_ary[i].account_number[strcspn(acct_ary[i].account_number,"\n")] = '\0';
             getline(&line, &len, fp);
             strcpy(acct_ary[i].password, line);
-            //acct_ary[i].password[strcspn(acct_ary[i].password,"\n")] = '\0';
+            acct_ary[i].password[strcspn(acct_ary[i].password,"\n")] = '\0';
             getline(&line, &len, fp);
             acct_ary[i].balance = atof(line);
             getline(&line, &len, fp);
