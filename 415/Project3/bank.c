@@ -139,25 +139,28 @@ int main(int argc, char * argv[])
             // using number of fields
             getline(&line, &len, fp);
             // discard index line
-            printf("Passing garbo: %s",line);
+            printf("Passing garbo: %s\n",line);
 
             getline(&line, &len, fp);
             //acct_ary[i].account_number = line;
             printf("Passing acct: %s",line);
             strcpy(acct_ary[i].account_number, line);
-
+            printf("Now: %s\n",acct_ary[i].account_number);
             getline(&line, &len, fp);
             //acct_ary[i].password = line;
             printf("Passing pass: %s",line);
             strcpy(acct_ary[i].password, line);
+            printf("Now: %s\n",acct_ary[i].password);
 
             getline(&line, &len, fp);
             printf("Passing bal: %s",line);
             acct_ary[i].balance = atof(line);
+            printf("Now: %s\n",acct_ary[i].balance);
 
             getline(&line, &len, fp);
             printf("Passing trac: %s",line);
             acct_ary[i].transaction_tracter = atof(line);
+            printf("Now: %s\n",acct_ary[i].transaction_tracter);
             // possibly sscanf(bal, "%lf", &acct_ary[i]->balance)
         }
         // accounts filled, begin processes...
