@@ -143,27 +143,27 @@ int main(int argc, char * argv[])
 
             getline(&line, &len, fp);
             //acct_ary[i].account_number = line;
-            printf("Passing acct: %s",line);
+            //printf("Passing acct: %s",line);
             strcpy(acct_ary[i].account_number, line);
             acct_ary[i].account_number[strlen(acct_ary[i].account_number)-1] = '\0';
             //acct_ary[i].account_number[strcspn(acct_ary[i].account_number,"\n")] = '\0';
-            printf("Now: %s",acct_ary[i].account_number);
+            //printf("Now: %s",acct_ary[i].account_number);
             getline(&line, &len, fp);
             //acct_ary[i].password = line;
-            printf("Passing pass: %s",line);
+            //printf("Passing pass: %s",line);
             strcpy(acct_ary[i].password, line);
             acct_ary[i].password[strcspn(acct_ary[i].password,"\n")] = '\0';
-            printf("Now: %s",acct_ary[i].password);
+            //printf("Now: %s",acct_ary[i].password);
 
             getline(&line, &len, fp);
-            printf("Passing bal: %s",line);
+            //printf("Passing bal: %s",line);
             acct_ary[i].balance = atof(line);
-            printf("Now: %f",acct_ary[i].balance);
+            //printf("Now: %f",acct_ary[i].balance);
 
             getline(&line, &len, fp);
-            printf("Passing trac: %s",line);
+            //printf("Passing trac: %s",line);
             acct_ary[i].transaction_tracter = atof(line);
-            printf("Now: %f",acct_ary[i].transaction_tracter);
+            //printf("Now: %f",acct_ary[i].transaction_tracter);
             // possibly sscanf(bal, "%lf", &acct_ary[i]->balance)
         }
         // accounts filled, begin processes...
@@ -181,7 +181,7 @@ int main(int argc, char * argv[])
         if (line)
             free(line);
     }
-    //printAccounts(acct_ary);
+    printAccounts(acct_ary);
     return 0;
 
 }
