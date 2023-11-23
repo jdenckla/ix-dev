@@ -197,7 +197,7 @@ void printAccounts(account *acct_ary)
 void printBalance(account *acct_ary)
 {
     for (int i = 0; i < numAcct; i++) {
-        printf("%d balance:\t%f\n\n",i,acct_ary[i].balance);
+        printf("%d balance:\t%.2f\n\n",i,acct_ary[i].balance);
     }
     return;
 }
