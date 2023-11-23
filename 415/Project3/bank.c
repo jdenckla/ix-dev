@@ -158,12 +158,12 @@ int main(int argc, char * argv[])
             getline(&line, &len, fp);
             printf("Passing bal: %s",line);
             acct_ary[i].balance = atof(line);
-            printf("Now: %s",acct_ary[i].balance);
+            printf("Now: %f",acct_ary[i].balance);
 
             getline(&line, &len, fp);
             printf("Passing trac: %s",line);
             acct_ary[i].transaction_tracter = atof(line);
-            printf("Now: %s",acct_ary[i].transaction_tracter);
+            printf("Now: %f",acct_ary[i].transaction_tracter);
             // possibly sscanf(bal, "%lf", &acct_ary[i]->balance)
         }
         // accounts filled, begin processes...
