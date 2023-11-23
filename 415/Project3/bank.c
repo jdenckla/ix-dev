@@ -11,6 +11,9 @@
 #include <fcntl.h>
 #include <sys/wait.h>
 
+#define _GNU_SOURCE
+#define SIZE 1024
+
 pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 #define MAX_THREADS 10
@@ -139,16 +142,17 @@ int main(int argc, char * argv[])
         acct_ary = (account*)malloc(sizeof(account) * numAcct);
         for (int i = 0; i < numAcct; i++) {
             // using number of fields
-            garbage = getline(&line, &len, fp);
-            acctNum = getline(&line, &len, fp);
-            pass = getline(&line, &len, fp);
-            bal = getline(&line, &len, fp);
+            getline(&line, &len, fp);
+            // discard index line
+            getline(&line, &len, fp);
+            acct_ary[i].account_number = line;
+            getline(&line, &len, fp);
+            acct_ary[i].password = line;
+            getline(&line, &len, fp);
+            acct_ary[i].balance = atof(line);
             tract = getline(&line, &len, fp);
-            acct_ary[i]->account_number = acctNum;
-            acct_ary[i]->password = pass;
+            acct_ary[i].transaction_tracter = atof(line);
             // possibly sscanf(bal, "%lf", &acct_ary[i]->balance)
-            acct_ary[i]->balance = atof(bal);
-            acct_ary[i]->transaction_tracter = atof(tract);
         }
         // accounts filled, begin processes...
         /*
