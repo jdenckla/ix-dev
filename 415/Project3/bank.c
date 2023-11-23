@@ -106,6 +106,8 @@ void printAccounts(account *acct_ary);
 void process_transaction(char** commandArg);
 void update_balance();
 
+account *acct_ary;
+
 int main(int argc, char * argv[])
 {
     if(argc < 2) 
@@ -120,7 +122,7 @@ int main(int argc, char * argv[])
     size_t len = 0;
     ssize_t read;
 
-    account *acct_ary;
+    //account *acct_ary;
 
     int ctr = 0;
     
@@ -196,15 +198,15 @@ void process_transaction(char** commandArg){
     for (int i = 0; i < numAcct; i++) {
         if (acct_ary[i].account_number == actNum){
             if (acct_ary[i].password == actPass){
-                if (strcmp("C",token_buffer.command_list[0]) != NULL) {
+                if (strcmp("C",token_buffer.command_list[0]) == 0) {
                     printf("Current Balance: %d",acct_ary[i].balance);
-                } else if (strcmp("D",token_buffer.command_list[0]) != NULL) {
+                } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].transaction_tracter += amount;
-                } else if (strcmp("W",token_buffer.command_list[0]) != NULL) {
+                } else if (strcmp("W",token_buffer.command_list[0]) == 0) {
                     double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].transaction_tracter -= amount;
-                } else if (strcmp("T",token_buffer.command_list[0]) != NULL) {
+                } else if (strcmp("T",token_buffer.command_list[0]) == 0) {
                     double dest = atof(token_buffer.command_list[3]);
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < numAcct; j++) {
