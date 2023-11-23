@@ -108,6 +108,7 @@ void process_transaction(char** commandArg);
 void update_balance();
 
 account *acct_ary;
+int ctr;
 
 int main(int argc, char * argv[])
 {
@@ -122,10 +123,9 @@ int main(int argc, char * argv[])
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
+    ctr = 0;
 
     //account *acct_ary;
-
-    int ctr = 0;
     
 	filenameSrc = strdup(argv[1]);
     numProc = countLines(filenameSrc);
@@ -162,7 +162,7 @@ int main(int argc, char * argv[])
             //printf("Retrieved line of length %zu:\n", read);
             //printf("%s", line);
             process_transaction(&line);
-            ctr++;
+            //ctr++;
             if (ctr % 5000){
                 update_balance();
             }
@@ -215,10 +215,13 @@ void process_transaction(char** commandArg){
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].transaction_tracter += amount;
+                    ctr++;
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) {
                     double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].transaction_tracter -= amount;
+                    ctr++;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) {
+                    ctr++;
                     //double dest = atof(token_buffer.command_list[3]);
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < numAcct; j++) {
