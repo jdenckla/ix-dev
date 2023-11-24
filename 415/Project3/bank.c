@@ -288,7 +288,8 @@ void createAccount(int iter)
 }
 
 void *process_transaction(void *token_buf){
-    command_line *token_buffer = (command_line *)token_buf;
+    command_line *token_buffr = (command_line *)token_buf;
+    command_line token_buffer = *token_buffr;
     for (int i = 0; i < numAcct; i++) {
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0){
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
@@ -328,7 +329,7 @@ void *process_transaction(void *token_buf){
             break;
         }
     }
-    return;
+    //return;
     
     // parse argument as a command, tokenizing it. Might do this as the argument instead
     // make a switch, or something similar to previous project, where we check the type and take appropriate action
