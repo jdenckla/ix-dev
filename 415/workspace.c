@@ -84,13 +84,54 @@ Check - simply print unupdated balance.
 
 /* Part Two - Multi-thread w/ Critical Section
 
+Idenfity critical sections - believe to be any that modify the account class (aka process transactions)
+// plus the setup, but this should be handled prior to threads
+
+Do any other sections modify globals?
+
+Use pthread_mutex_t (w/in account) to lock sections
+
+"Evenly slice the number of transactions for each of the of the worker threads to handle based on number of workers"
+Having number of lines in the file, subtract lines required for account creation.
+
+Dividing this result by number of threads gives each threads starting location for processing. ? will effect intermediate results, as its non sequential
+Attempt to spawn ten consecutive threads? Must null check!
+
+Use pthread_create to start all worker threads, (sliced above)
+
+Use pthread create to start the "bank thread". This only updtaes when all workers complete. 
+
 */
 
 /* Part Three - Coordinating the Threads (to work together)
 
+Update reward regularly (every 5000 transactions, not including check balance)
+
+use pthread_barrier_wait & pthread_cond_wait to facilitate communication between worker and bank threads
+
+Have all threads wait for signal after creation. 
+
+When legal/legit (non check balance) requests reaches 5000, all threads must pause and notify bank to wake up
+
+When updating balances, each account will have individual output files written to. 
+
+When writing completes, the bank thread will tell each worker to continue, placing itself back in a ready state.
+
 */
 
 /* Part Four - Transferring to Another Bank (savings acct)
+
+A second process, similar to the first (overarching program aka main), will populate the same account data. 
+Initial balance will equal 20% of the original initial (ie 1 duck checking = 0.2 puddles savings)
+
+Everyone has a flat reward rate of 2%
+
+We want duck bank processes to write to shared memory using mmap()
+
+Every time banker thread from part 3 applies interest, (update_balance),
+puddles should apply the .02 rate to the savings balance as well
+
+Savings accounts should go to a savings directory (instead of output) but otherwise be the same format
 
 */
 
@@ -103,5 +144,11 @@ the code before another?
 Deadlocks could make your program stuck, and it is extremely difficult to figure out
 exactly what happened, and how to resolve it. Think about what variables you could keep track
 of to signal a deadlock.
+
+Output should include any useful information about the state of the program. 
+Last line should read 'total updates: x'
+
+Output should include thread ID's, detailing when they start, pause to signal bank, 
+when bank receives signal, when bank is waiting, and when threads complete. See example. 
 
 */
