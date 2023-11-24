@@ -198,7 +198,7 @@ int main(int argc, char * argv[])
             for (int b = 0; b < MAX_THREADS; b++) {
                 if ((read = getline(&line, &len, fp)) != -1) {
                     *token_buffer = str_filler(line, " ");
-                    printf("Creating thread: %d\n",b);
+                    //printf("Creating thread: %d\n",b);
                     // token_buffer very likely needs to be a pointer. Test this!
                     tid = pthread_create(&thread_id[b], NULL, process_transaction, token_buffer);
                     if (tid) {
