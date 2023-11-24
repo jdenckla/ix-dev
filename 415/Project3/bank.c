@@ -141,8 +141,14 @@ int main(int argc, char * argv[])
     updateCount = 0;
     int endOfFile = 0;
     int tid;
-
-    command_line* token_buffer;
+    /*
+    command_line** token_buffer;
+    token_buffer = (command_line**)malloc(sizeof(command_line*)*MAX_THREADS);
+    for (int z = 0; z < MAX_THREADS; z++){
+        token_buffer[z] = (command_line*)malloc(sizeof(command_line));
+    }
+    */
+    command_line token_buffer[MAX_THREADS];
 
     //account *acct_ary;
     
@@ -197,8 +203,9 @@ int main(int argc, char * argv[])
         while (endOfFile == 0) {
             for (int b = 0; b < MAX_THREADS; b++) {
                 if ((read = getline(&line, &len, fp)) != -1) {
-                    command_line token_buff = *token_buffer;
-                    token_buff= str_filler(line, " ");
+                    //command_line* token_buff = token_buffer[b];
+                    //*token_buffer[b]= str_filler(line, " ");
+                    token_buffer[b] = str_filler(line, " ");
                     
                     //printf("Creating thread: %d\n",b);
                     // token_buffer very likely needs to be a pointer. Test this!
