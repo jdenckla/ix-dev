@@ -110,7 +110,7 @@ void printBalance(account *acct_ary);
 void process_transaction(command_line token_buffer);
 void update_balance();
 void outputBalance(account *acct_ary);
-void checkBalance(int iter);
+void createAccount(int iter);
 
 account *acct_ary;
 int ctr;
@@ -178,6 +178,7 @@ int main(int argc, char * argv[])
             acct_ary[i].balance = atof(line);
             getline(&line, &len, fp);
             acct_ary[i].reward_rate = atof(line);
+            createAccount(i);
         }
         //printf("exit account fill\n");
         // accounts filled, begin processes...
@@ -186,8 +187,9 @@ int main(int argc, char * argv[])
             token_buffer = str_filler(line, " ");
             //printf("start process\n");
             process_transaction(token_buffer);
-            ctr++;
-            if (ctr % 5000){
+            //ctr++;
+            if ((ctr % 5000) == 0){
+                //ctr = 0;
                 //printf("iter update\n");
                 update_balance();
             }
@@ -247,7 +249,7 @@ void outputBalance(account *acct_ary)
     return;
 }
 
-void checkBalance(int iter)
+void createAccount(int iter)
 {
     //printf("/////// Output Balance ///////\n");
     char *filename;
@@ -264,8 +266,9 @@ void checkBalance(int iter)
         return;
     } else {
         //fprintf(afp,"%d - ",iter);
-        fprintf(afp,"Current Balance:\t");
-        fprintf(afp,"%.2f\n",acct_ary[iter].balance);
+        fprintf(afp,"account ");
+        fprintf(afp,"%d",iter);
+        fprintf(afp,":\n");
         //fprintf(afp,"%d balance:\t%.2f\n\n",a,acct_ary[a].balance);
     }
     fclose(afp);
@@ -278,7 +281,9 @@ void process_transaction(command_line token_buffer){
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0){
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
                 if (strcmp("C",token_buffer.command_list[0]) == 0) {
-                    checkBalance(i);
+                    //checkBalance(i);
+                    //ctr--;
+                    ;
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     //printf("attempt deposit\n");
                     double amount = atof(token_buffer.command_list[3]);
@@ -322,8 +327,26 @@ void process_transaction(command_line token_buffer){
 
 void update_balance(){
     for (int i = 0; i < numAcct; i++) {
-        acct_ary[i].balance += (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
-        acct_ary[i].transaction_tracter = 0;
+        double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
+        if (temp != 0){
+            acct_ary[i].balance += temp;
+            acct_ary[i].transaction_tracter = 0;
+            //update file
+            char *filename;
+            filename = strdup(acct_ary[i].account_number);
+            FILE * afp = fopen(filename, "a");
+            if (afp == NULL) {
+                char *errOpenInput = "Error! Failed to open acct file.";
+                write(1,errOpenInput,strlen(errOpenInput));
+                write(1,"\n",1);
+                return;
+            } else {
+                fprintf(afp,"Current Balance:\t");
+                fprintf(afp,"%.2f\n",acct_ary[i].balance);
+            }
+            fclose(afp);
+            free(filename);
+        }
     }
     return;
 }
