@@ -200,7 +200,7 @@ int main(int argc, char * argv[])
                     *token_buffer = str_filler(line, " ");
                     //printf("Creating thread: %d\n",b);
                     // token_buffer very likely needs to be a pointer. Test this!
-                    tid = pthread_create(&thread_id[b], NULL, process_transaction, token_buffer);
+                    tid = pthread_create(&thread_id[b], NULL, process_transaction(token_buffer), NULL);
                     if (tid) {
                         printf("Error - failed to create pthread: %d\n",tid);
                         exit(-1);
@@ -226,10 +226,10 @@ int main(int argc, char * argv[])
 		        pthread_join(thread_id[c], NULL);
 	        }
         }
-        for (int c = 0; c < MAX_THREADS; c++){
+        for (int d = 0; c < MAX_THREADS; ++d){
             //should probably be current thread count, need to check thread_id array
             printf("Wrapping Up Final Threads...\n");
-            pthread_join(thread_id[c], NULL);
+            pthread_join(thread_id[d], NULL);
 	    }
         printf("Done. Cleaning up.\n");
         //update_balance();
@@ -329,35 +329,37 @@ void *process_transaction(void *token_buf){
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     //printf("attempt deposit\n");
                     //pthread_mutex_lock(&mutex1)
-                    pthread_mutex_lock(&acct_ary[i].ac_lock);
                     double amount = atof(token_buffer.command_list[3]);
+                    pthread_mutex_lock(&acct_ary[i].ac_lock);
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
-                    ctr++;
                     pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                    ctr++;
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) {
                     //printf("attempt withdrawal\n");
-                    pthread_mutex_lock(&acct_ary[i].ac_lock);
+                    
                     double amount = atof(token_buffer.command_list[3]);
+                    pthread_mutex_lock(&acct_ary[i].ac_lock);
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
-                    ctr++;
                     pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                    ctr++;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) {
-                    pthread_mutex_lock(&acct_ary[i].ac_lock);
+                    
                     //printf("attempt transfer\n");
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < numAcct; j++) {
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0){
-                            pthread_mutex_lock(&acct_ary[j].ac_lock);
+                            pthread_mutex_lock(&acct_ary[i].ac_lock);
                             acct_ary[i].balance -= amount;
-                            acct_ary[j].balance += amount;
                             acct_ary[i].transaction_tracter += amount;
+                            pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                            pthread_mutex_lock(&acct_ary[j].ac_lock);
+                            acct_ary[j].balance += amount;
                             pthread_mutex_unlock(&acct_ary[j].ac_lock);
                         }
                     }
                     ctr++;
-                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
                 } else {
                     //printf("Error - Command Unrecognized, Failed to Process: %s\n",*commandArg);
                     break;
