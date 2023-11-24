@@ -197,8 +197,8 @@ int main(int argc, char * argv[])
         while (endOfFile == 0) {
             for (int b = 0; b < MAX_THREADS; b++) {
                 if ((read = getline(&line, &len, fp)) != -1) {
-                    command_line token_buffer = *token_buffer;
-                    token_buffer= str_filler(line, " ");
+                    command_line token_buff = *token_buffer;
+                    token_buff= str_filler(line, " ");
                     
                     //printf("Creating thread: %d\n",b);
                     // token_buffer very likely needs to be a pointer. Test this!
