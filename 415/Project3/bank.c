@@ -139,6 +139,7 @@ int main(int argc, char * argv[])
     ssize_t read;
     ctr = 0;
     updateCount = 0;
+    int endOfFile = 0;
 
     command_line token_buffer;
 
@@ -183,17 +184,24 @@ int main(int argc, char * argv[])
         //printf("exit account fill\n");
         // accounts filled, begin processes...
         
-        while ((read = getline(&line, &len, fp)) != -1) {
-            token_buffer = str_filler(line, " ");
-            //printf("start process\n");
-            process_transaction(token_buffer);
-            //ctr++;
-            //if ((ctr %% 5000) == 0){
-            if (ctr == 5000){
-                ctr = 0;
-                //printf("iter update\n");
-                update_balance();
+        while (endOfFile == 0) {
+            if ((read = getline(&line, &len, fp)) != -1) {
+                token_buffer = str_filler(line, " ");
+                //printf("start process\n");
+                process_transaction(token_buffer);
+                //ctr++;
+                //if ((ctr %% 5000) == 0){
+                if (ctr == 5000){
+                    ctr = 0;
+                    //printf("iter update\n");
+                    update_balance();
+                }
+            } else {
+                endOfFile = 1;
+                // signal?
+                break;
             }
+            
         }
         //update_balance();
         
@@ -299,7 +307,6 @@ void process_transaction(command_line token_buffer){
                     ctr++;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) {
                     //printf("attempt transfer\n");
-                    ctr++;
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < numAcct; j++) {
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0){
@@ -308,6 +315,7 @@ void process_transaction(command_line token_buffer){
                             acct_ary[i].transaction_tracter += amount;
                         }
                     }
+                    ctr++;
                 } else {
                     //printf("Error - Command Unrecognized, Failed to Process: %s\n",*commandArg);
                     break;

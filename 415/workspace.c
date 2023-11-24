@@ -151,4 +151,6 @@ Last line should read 'total updates: x'
 Output should include thread ID's, detailing when they start, pause to signal bank, 
 when bank receives signal, when bank is waiting, and when threads complete. See example. 
 
+We will also want to know when a thread stops do to a lock... Does it know how to resume when an unlock occurs?
+
 */
