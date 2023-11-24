@@ -217,15 +217,18 @@ int main(int argc, char * argv[])
                     break;
                 }
             }
-            if (endOfFile = 1){
-                break;
-            }
             for (int c = 0; c < MAX_THREADS; c++){
                 //should probably be current thread count, need to check thread_id array
                 printf("Joining Threads...\n");
 		        pthread_join(thread_id[c], NULL);
 	        }
         }
+        for (int c = 0; c < MAX_THREADS; c++){
+            //should probably be current thread count, need to check thread_id array
+            printf("Wrapping Up Final Threads...\n");
+            pthread_join(thread_id[c], NULL);
+	    }
+        printf("Done. Cleaning up.\n");
         //update_balance();
         
         fclose(fp);
@@ -238,6 +241,7 @@ int main(int argc, char * argv[])
     //for debugging
     //printBalance(acct_ary);
     //printAccounts(acct_ary);
+    printf("Attempting Output\n");
     outputBalance(acct_ary);
     printf("Update Count: %d\n", updateCount);
     return 0;
