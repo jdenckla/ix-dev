@@ -109,7 +109,7 @@ int countLines(char *filename)
 
 void printAccounts(account *acct_ary);
 void printBalance(account *acct_ary);
-void * process_transaction(command_line* token_buffer);
+void * process_transaction(void* token_buffer);
 void update_balance();
 void outputBalance(account *acct_ary);
 void createAccount(int iter);
@@ -287,7 +287,8 @@ void createAccount(int iter)
     return;
 }
 
-void *process_transaction(command_line *token_buffer){
+void *process_transaction(void *token_buf){
+    command_line *token_buffer = (command_line *)token_buf;
     for (int i = 0; i < numAcct; i++) {
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0){
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
