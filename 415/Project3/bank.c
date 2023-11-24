@@ -195,7 +195,7 @@ int main(int argc, char * argv[])
                     token_buffer = str_filler(line, " ");
                     printf("Creating thread: %d\n",b);
                     // token_buffer very likely needs to be a pointer. Test this!
-                    tid = pthread_create(&thread_id[b], NULL, process_transaction, (command_line*)token_buffer);
+                    tid = pthread_create(&thread_id[b], NULL, process_transaction, token_buffer);
                     if (tid) {
                         printf("Error - failed to create pthread: %d\n",tid);
                         exit(-1);
