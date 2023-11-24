@@ -396,22 +396,13 @@ void update_balance(){
     updateCount++;
     printf("update %d\n",updateCount);
     for (int i = 0; i < numAcct; i++) {
+        pthread_mutex_lock(&acct_ary[i].ac_lock);
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
-        //if (temp != 0){
         acct_ary[i].balance += temp;
         acct_ary[i].transaction_tracter = 0;
         //update file
-        
         char *filename;
-        //char *prefix;
-        //filename = "/output/";
-        //filename = (char *)malloc(sizeof(char) * (strlen(acct_ary[i].account_number) + strlen(prefix)));
-        //filename = prefix;
-        //char *copy;
-        //copy = strdup(acct_ary[i].account_number);
-        //printf("cat two attempt\n");
         filename = strdup(acct_ary[i].out_file);
-        //filename = strdup(acct_ary[i].account_number);
         FILE * afp = fopen(filename, "a");
         if (afp == NULL) {
             printf("Failed to open file to update!\n");
@@ -420,6 +411,7 @@ void update_balance(){
             fprintf(afp,"Current Balance:\t");
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
+        pthread_mutex_unlock(&acct_ary[j].ac_lock);
         fclose(afp);
         free(filename);
         
