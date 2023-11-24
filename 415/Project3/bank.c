@@ -218,7 +218,7 @@ int main(int argc, char * argv[])
             }
             for (int c = 0; c < MAX_THREADS; c++){
                 //should probably be current thread count, need to check thread_id array
-		        pthread_join(thread_id[i], NULL);
+		        pthread_join(thread_id[c], NULL);
 	        }
         }
         //update_balance();
