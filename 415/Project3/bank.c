@@ -300,8 +300,13 @@ void createAccount(int iter)
 void *process_transaction(void *token_buf){
     command_line *token_buffr = (command_line *)token_buf;
     command_line token_buffer = *token_buffr;
-    pthread_id_np_t tid;
-    tid = pthread_getthreadid_np();
+    #ifdef SYS_gettid
+    pid_t tid = syscall(SYS_gettid);
+    #else
+    #error "SYS_gettid unavailable on this system"
+    #endif
+    //pthread_id_np_t tid;
+    //tid = pthread_getthreadid_np();
     //pid_t tid = gettid();
     printf("Processing tid: %ld\n",tid);
     for (int i = 0; i < numAcct; i++) {
