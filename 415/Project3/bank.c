@@ -160,9 +160,11 @@ int main(int argc, char * argv[])
         numAcct = atoi(line);
         acct_ary = (account*)malloc(sizeof(account) * numAcct);
         // aka max threads...
+        /*
         for (int a = 0; a < 10; a++){
-            &acct_ary[a].ac_lock = PTHREAD_MUTEX_INITIALIZER;
+            acct_ary[a].ac_lock = PTHREAD_MUTEX_INITIALIZER;
         }
+        */
         for (int i = 0; i < numAcct; i++) {
             // using number of fields
             getline(&line, &len, fp);
@@ -184,6 +186,7 @@ int main(int argc, char * argv[])
             acct_ary[i].balance = atof(line);
             getline(&line, &len, fp);
             acct_ary[i].reward_rate = atof(line);
+            acct_ary[i].ac_lock = PTHREAD_MUTEX_INITIALIZER;
             createAccount(i);
         }
         //printf("exit account fill\n");
