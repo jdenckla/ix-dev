@@ -308,7 +308,7 @@ void *process_transaction(void *token_buf){
     //pthread_id_np_t tid;
     //tid = pthread_getthreadid_np();
     //pid_t tid = gettid();
-    printf("Processing tid: %ld\n",tid);
+    printf("Processing tid: %d\n",tid);
     for (int i = 0; i < numAcct; i++) {
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0){
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
