@@ -216,7 +216,9 @@ int main(int argc, char * argv[])
                     break;
                 }
             }
-            
+            for (int c = 0; c < n; c++){
+		        pthread_join(thread_id[i], NULL);
+	        }
         }
         //update_balance();
         
@@ -305,27 +307,35 @@ void *process_transaction(void *token_buf){
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     //printf("attempt deposit\n");
                     //pthread_mutex_lock(&mutex1)
+                    pthread_mutex_lock(&acct_ary[i].ac_lock);
                     double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
                     ctr++;
+                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) {
                     //printf("attempt withdrawal\n");
+                    pthread_mutex_lock(&acct_ary[i].ac_lock);
                     double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
                     ctr++;
+                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) {
+                    pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("attempt transfer\n");
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < numAcct; j++) {
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0){
+                            pthread_mutex_lock(&acct_ary[j].ac_lock);
                             acct_ary[i].balance -= amount;
                             acct_ary[j].balance += amount;
                             acct_ary[i].transaction_tracter += amount;
+                            pthread_mutex_unlock(&acct_ary[j].ac_lock);
                         }
                     }
                     ctr++;
+                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
                 } else {
                     //printf("Error - Command Unrecognized, Failed to Process: %s\n",*commandArg);
                     break;
