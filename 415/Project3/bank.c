@@ -161,7 +161,7 @@ int main(int argc, char * argv[])
         acct_ary = (account*)malloc(sizeof(account) * numAcct);
         // aka max threads...
         for (int a = 0; a < 10; a++){
-            acct_ary[a].ac_lock = PTHREAD_MUTEX_INITIALIZER;
+            &acct_ary[a].ac_lock = PTHREAD_MUTEX_INITIALIZER;
         }
         for (int i = 0; i < numAcct; i++) {
             // using number of fields
