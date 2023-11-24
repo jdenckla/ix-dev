@@ -186,7 +186,7 @@ int main(int argc, char * argv[])
             acct_ary[i].balance = atof(line);
             getline(&line, &len, fp);
             acct_ary[i].reward_rate = atof(line);
-            inc c;
+            int c;
             c = pthread_mutex_init(&acct_ary[i].ac_lock, NULL);
             //acct_ary[i].ac_lock = PTHREAD_MUTEX_INITIALIZER;
             createAccount(i);
