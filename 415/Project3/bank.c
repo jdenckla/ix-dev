@@ -118,6 +118,10 @@ account *acct_ary;
 int ctr;
 int updateCount;
 
+for (int a = 0; a < MAX_THREADS; a++){
+    acct_ary[a].ac_lock = PTHREAD_MUTEX_INITIALIZER;
+}
+
 int main(int argc, char * argv[])
 {
     if(argc < 2) 
@@ -188,13 +192,16 @@ int main(int argc, char * argv[])
             for (int b = 0; b < MAX_THREADS; b++) {
                 if ((read = getline(&line, &len, fp)) != -1) {
                     token_buffer = str_filler(line, " ");
-                    //printf("start process\n");
-                    process_transaction(token_buffer);
-                    //ctr++;
-                    //if ((ctr %% 5000) == 0){
+                    printf("Creating thread: %d\n",i);
+                    // token_buffer very likely needs to be a pointer. Test this!
+                    rc = pthread_create(&thread_id[b], NULL, process_transaction, token_buffer);
+                    if (rc) {
+                        printf("Error - failed to create pthread: %d\n",rc);
+                        exit(-1);
+                    }
+                    //process_transaction(token_buffer);
                     if (ctr == 5000){
                         ctr = 0;
-                        //printf("iter update\n");
                         update_balance();
                     }
                 } else {
@@ -254,7 +261,6 @@ void outputBalance(account *acct_ary)
             fprintf(afp,"%d",a);
             fprintf(afp," balance:\t");
             fprintf(afp,"%.2f\n\n",acct_ary[a].balance);
-            //fprintf(afp,"%d balance:\t%.2f\n\n",a,acct_ary[a].balance);
         }
     }
     fclose(afp);
@@ -263,24 +269,17 @@ void outputBalance(account *acct_ary)
 
 void createAccount(int iter)
 {
-    //printf("/////// Output Balance ///////\n");
     char *filename;
-    //printf("precat attempt\n");
-    //printf("%s\n",acct_ary[iter].out_file);
     filename = strdup(acct_ary[iter].out_file);
-    //strcpy(filename,acct_ary[iter].out_file);
-    //printf("cat one attempt\n");
     FILE * afp = fopen(filename, "w+");
     if (afp == NULL) {
         printf("Failed to open file to create!\n");
-        //free(filename);
+        free(filename);
         return;
     } else {
-        //fprintf(afp,"%d - ",iter);
         fprintf(afp,"account ");
         fprintf(afp,"%d",iter);
         fprintf(afp,":\n");
-        //fprintf(afp,"%d balance:\t%.2f\n\n",a,acct_ary[a].balance);
     }
     fclose(afp);
     free(filename);
@@ -297,6 +296,7 @@ void process_transaction(command_line token_buffer){
                     ;
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
                     //printf("attempt deposit\n");
+                    //pthread_mutex_lock(&mutex1)
                     double amount = atof(token_buffer.command_list[3]);
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
