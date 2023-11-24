@@ -411,7 +411,7 @@ void update_balance(){
             fprintf(afp,"Current Balance:\t");
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
-        pthread_mutex_unlock(&acct_ary[j].ac_lock);
+        pthread_mutex_unlock(&acct_ary[i].ac_lock);
         fclose(afp);
         free(filename);
         
