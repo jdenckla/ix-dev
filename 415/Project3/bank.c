@@ -219,6 +219,9 @@ int main(int argc, char * argv[])
             }
             for (int c = 0; c < MAX_THREADS; c++){
                 //should probably be current thread count, need to check thread_id array
+                if (endOfFile == 1){
+                    break;
+                }
                 printf("Joining Threads...\n");
 		        pthread_join(thread_id[c], NULL);
 	        }
