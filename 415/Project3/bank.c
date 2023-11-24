@@ -213,11 +213,13 @@ int main(int argc, char * argv[])
                 } else {
                     endOfFile = 1;
                     // signal?
+                    printf("End of File\n");
                     break;
                 }
             }
             for (int c = 0; c < MAX_THREADS; c++){
                 //should probably be current thread count, need to check thread_id array
+                printf("Joining Threads...\n");
 		        pthread_join(thread_id[c], NULL);
 	        }
         }
@@ -298,6 +300,8 @@ void createAccount(int iter)
 void *process_transaction(void *token_buf){
     command_line *token_buffr = (command_line *)token_buf;
     command_line token_buffer = *token_buffr;
+    pid_t tid = gettid();
+    printf("Processing tid: %ld\n",tid);
     for (int i = 0; i < numAcct; i++) {
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0){
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
@@ -357,7 +361,7 @@ void *process_transaction(void *token_buf){
 
 void update_balance(){
     updateCount++;
-    //printf("up %d\n",updateCount);
+    printf("update %d\n",updateCount);
     for (int i = 0; i < numAcct; i++) {
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
         //if (temp != 0){
