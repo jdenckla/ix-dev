@@ -185,21 +185,23 @@ int main(int argc, char * argv[])
         // accounts filled, begin processes...
         
         while (endOfFile == 0) {
-            if ((read = getline(&line, &len, fp)) != -1) {
-                token_buffer = str_filler(line, " ");
-                //printf("start process\n");
-                process_transaction(token_buffer);
-                //ctr++;
-                //if ((ctr %% 5000) == 0){
-                if (ctr == 5000){
-                    ctr = 0;
-                    //printf("iter update\n");
-                    update_balance();
+            for (int b = 0; b < MAX_THREADS; b++) {
+                if ((read = getline(&line, &len, fp)) != -1) {
+                    token_buffer = str_filler(line, " ");
+                    //printf("start process\n");
+                    process_transaction(token_buffer);
+                    //ctr++;
+                    //if ((ctr %% 5000) == 0){
+                    if (ctr == 5000){
+                        ctr = 0;
+                        //printf("iter update\n");
+                        update_balance();
+                    }
+                } else {
+                    endOfFile = 1;
+                    // signal?
+                    break;
                 }
-            } else {
-                endOfFile = 1;
-                // signal?
-                break;
             }
             
         }
