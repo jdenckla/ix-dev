@@ -226,7 +226,7 @@ int main(int argc, char * argv[])
 		        pthread_join(thread_id[c], NULL);
 	        }
         }
-        for (int d = 0; c < MAX_THREADS; ++d){
+        for (int d = 0; d < MAX_THREADS; ++d){
             //should probably be current thread count, need to check thread_id array
             printf("Wrapping Up Final Threads...\n");
             pthread_join(thread_id[d], NULL);
