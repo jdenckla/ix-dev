@@ -109,7 +109,7 @@ int countLines(char *filename)
 
 void printAccounts(account *acct_ary);
 void printBalance(account *acct_ary);
-void process_transaction(command_line token_buffer);
+void *process_transaction(command_line token_buffer);
 void update_balance();
 void outputBalance(account *acct_ary);
 void createAccount(int iter);
@@ -117,10 +117,6 @@ void createAccount(int iter);
 account *acct_ary;
 int ctr;
 int updateCount;
-
-for (int a = 0; a < MAX_THREADS; a++){
-    acct_ary[a].ac_lock = PTHREAD_MUTEX_INITIALIZER;
-}
 
 int main(int argc, char * argv[])
 {
@@ -144,6 +140,7 @@ int main(int argc, char * argv[])
     ctr = 0;
     updateCount = 0;
     int endOfFile = 0;
+    int tid;
 
     command_line token_buffer;
 
@@ -162,6 +159,9 @@ int main(int argc, char * argv[])
         getline(&line, &len, fp);
         numAcct = atoi(line);
         acct_ary = (account*)malloc(sizeof(account) * numAcct);
+        for (int a = 0; a < MAX_THREADS; a++){
+            acct_ary[a].ac_lock = PTHREAD_MUTEX_INITIALIZER;
+        }
         for (int i = 0; i < numAcct; i++) {
             // using number of fields
             getline(&line, &len, fp);
@@ -194,9 +194,9 @@ int main(int argc, char * argv[])
                     token_buffer = str_filler(line, " ");
                     printf("Creating thread: %d\n",i);
                     // token_buffer very likely needs to be a pointer. Test this!
-                    rc = pthread_create(&thread_id[b], NULL, process_transaction, token_buffer);
-                    if (rc) {
-                        printf("Error - failed to create pthread: %d\n",rc);
+                    tid = pthread_create(&thread_id[b], NULL, process_transaction, token_buffer);
+                    if (tid) {
+                        printf("Error - failed to create pthread: %d\n",tid);
                         exit(-1);
                     }
                     //process_transaction(token_buffer);
@@ -286,7 +286,7 @@ void createAccount(int iter)
     return;
 }
 
-void process_transaction(command_line token_buffer){
+void *process_transaction(command_line token_buffer){
     for (int i = 0; i < numAcct; i++) {
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0){
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
