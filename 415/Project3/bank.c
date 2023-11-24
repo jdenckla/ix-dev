@@ -1,3 +1,4 @@
+#include <sys/syscall.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +14,7 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 
 #define _GNU_SOURCE
 #define SIZE 1024
@@ -114,6 +116,7 @@ void createAccount(int iter);
 
 account *acct_ary;
 int ctr;
+int updateCount;
 
 int main(int argc, char * argv[])
 {
@@ -123,12 +126,10 @@ int main(int argc, char * argv[])
         exit(1); 
     }
     struct stat st = {0};
+    
     //printf("attempt mkdir output\n");
-    if (stat("/output", &st) == -1) {
-        mkdir("/output", 0700);
-        //printf("attempted mkdir\n");
-    }
-
+    const char *name = "output";
+    mkdir(name,S_IRWXU);
 
     FILE *fp;
 	char *filenameSrc;
@@ -137,6 +138,7 @@ int main(int argc, char * argv[])
     size_t len = 0;
     ssize_t read;
     ctr = 0;
+    updateCount = 0;
 
     command_line token_buffer;
 
@@ -158,19 +160,17 @@ int main(int argc, char * argv[])
         for (int i = 0; i < numAcct; i++) {
             // using number of fields
             getline(&line, &len, fp);
-            //printf("attempt touch out\n");
-            strcpy(acct_ary[i].out_file,"account ");
-            //acct_ary[i].out_file += "account ";
-            //printf("attempt touch 1\n");
-            char iter[3];
-            sprintf(iter,"%d\n",i);
-            //printf("attempt touch 2\n");
-            strcat(acct_ary[i].out_file,iter);
-            //acct_ary[i].out_file += iter;
             // discard index line
             getline(&line, &len, fp);
             strcpy(acct_ary[i].account_number, line);
             acct_ary[i].account_number[strcspn(acct_ary[i].account_number,"\n")] = '\0';
+            char iter[64];
+            strcpy(iter,"output/");
+            strcat(iter,acct_ary[i].account_number);
+            strcat(iter,".txt");
+            strcpy(acct_ary[i].out_file,iter);
+            //acct_ary[i].out_file = iter;
+            //printf("attempt touch 2\n");
             getline(&line, &len, fp);
             strcpy(acct_ary[i].password, line);
             acct_ary[i].password[strcspn(acct_ary[i].password,"\n")] = '\0';
@@ -188,13 +188,14 @@ int main(int argc, char * argv[])
             //printf("start process\n");
             process_transaction(token_buffer);
             //ctr++;
-            if ((ctr % 5000) == 0){
-                //ctr = 0;
+            //if ((ctr %% 5000) == 0){
+            if (ctr == 5000){
+                ctr = 0;
                 //printf("iter update\n");
                 update_balance();
             }
         }
-        update_balance();
+        //update_balance();
         
         fclose(fp);
         if (line)
@@ -207,6 +208,7 @@ int main(int argc, char * argv[])
     //printBalance(acct_ary);
     //printAccounts(acct_ary);
     outputBalance(acct_ary);
+    printf("Update Count: %d\n", updateCount);
     return 0;
 
 }
@@ -253,15 +255,14 @@ void createAccount(int iter)
 {
     //printf("/////// Output Balance ///////\n");
     char *filename;
-    //strcpy(filename,acct_ary[iter].account_number);
-    filename = strdup(acct_ary[iter].account_number);
-    //filename = strcpy(acct_ary[iter].account_number);
-    //filename = "output.txt";
-    FILE * afp = fopen(filename, "w");
+    //printf("precat attempt\n");
+    //printf("%s\n",acct_ary[iter].out_file);
+    filename = strdup(acct_ary[iter].out_file);
+    //strcpy(filename,acct_ary[iter].out_file);
+    //printf("cat one attempt\n");
+    FILE * afp = fopen(filename, "w+");
     if (afp == NULL) {
-        char *errOpenInput = "Error! Failed to open input file.";
-        write(1,errOpenInput,strlen(errOpenInput));
-        write(1,"\n",1);
+        printf("Failed to open file to create!\n");
         //free(filename);
         return;
     } else {
@@ -326,27 +327,37 @@ void process_transaction(command_line token_buffer){
 }
 
 void update_balance(){
+    updateCount++;
+    //printf("up %d\n",updateCount);
     for (int i = 0; i < numAcct; i++) {
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
-        if (temp != 0){
-            acct_ary[i].balance += temp;
-            acct_ary[i].transaction_tracter = 0;
-            //update file
-            char *filename;
-            filename = strdup(acct_ary[i].account_number);
-            FILE * afp = fopen(filename, "a");
-            if (afp == NULL) {
-                char *errOpenInput = "Error! Failed to open acct file.";
-                write(1,errOpenInput,strlen(errOpenInput));
-                write(1,"\n",1);
-                return;
-            } else {
-                fprintf(afp,"Current Balance:\t");
-                fprintf(afp,"%.2f\n",acct_ary[i].balance);
-            }
-            fclose(afp);
-            free(filename);
+        //if (temp != 0){
+        acct_ary[i].balance += temp;
+        acct_ary[i].transaction_tracter = 0;
+        //update file
+        
+        char *filename;
+        //char *prefix;
+        //filename = "/output/";
+        //filename = (char *)malloc(sizeof(char) * (strlen(acct_ary[i].account_number) + strlen(prefix)));
+        //filename = prefix;
+        //char *copy;
+        //copy = strdup(acct_ary[i].account_number);
+        //printf("cat two attempt\n");
+        filename = strdup(acct_ary[i].out_file);
+        //filename = strdup(acct_ary[i].account_number);
+        FILE * afp = fopen(filename, "a");
+        if (afp == NULL) {
+            printf("Failed to open file to update!\n");
+            return;
+        } else {
+            fprintf(afp,"Current Balance:\t");
+            fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
+        fclose(afp);
+        free(filename);
+        
+        //}
     }
     return;
 }
