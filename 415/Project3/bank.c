@@ -173,6 +173,7 @@ int main(int argc, char * argv[])
         */
         for (int i = 0; i < numAcct; i++) {
             // using number of fields
+            acct_ary[i].transaction_tracter = 0;
             getline(&line, &len, fp);
             // discard index line
             getline(&line, &len, fp);
@@ -342,8 +343,8 @@ void *process_transaction(void *token_buf){
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
-                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
                     ctr++;
+                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) {
                     //printf("attempt withdrawal\n");
                     
@@ -351,8 +352,8 @@ void *process_transaction(void *token_buf){
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
-                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
                     ctr++;
+                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) {
                     
                     //printf("attempt transfer\n");
@@ -365,10 +366,10 @@ void *process_transaction(void *token_buf){
                             pthread_mutex_unlock(&acct_ary[i].ac_lock);
                             pthread_mutex_lock(&acct_ary[j].ac_lock);
                             acct_ary[j].balance += amount;
+                            ctr++;
                             pthread_mutex_unlock(&acct_ary[j].ac_lock);
                         }
                     }
-                    ctr++;
                 } else {
                     //printf("Error - Command Unrecognized, Failed to Process: %s\n",*commandArg);
                     break;
