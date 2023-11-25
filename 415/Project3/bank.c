@@ -31,10 +31,8 @@ int procIndex = 0;
 int numProc;
 int numAcct;
 
-int locks;
-int multithread;
-locks = 0;
-multithread = 0;
+int locks = 0;
+int multithread = 0;
 
 volatile sig_atomic_t got_interrupt = 0;
 
@@ -287,6 +285,7 @@ int main(int argc, char * argv[])
             printf("Wrapping Up Final Threads...\n");
             pthread_join(thread_id[d], NULL);
 	    }
+        update_balance();
         printf("Done. Cleaning up.\n");
         //update_balance();
         
