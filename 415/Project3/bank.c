@@ -272,25 +272,32 @@ int main(int argc, char * argv[])
                         break;
                     }
                 }
+                printf("Joining Threads...\n");
                 for (int c = 0; c < 1; c++){
                     //should probably be current thread count, need to check thread_id array
+                    /*
                     if (endOfFile == 1){
                         break;
                     }
-                    printf("Joining Threads...\n");
+                    */
+                     #ifdef SYS_gettid
+                    pid_t tid = syscall(SYS_gettid);
+                    #else
+                    #error "SYS_gettid unavailable on this system"
+                    #endif
+                    printf("closing %d from %d",thread_id[c],tid);
                     pthread_join(thread_id[c], NULL);
                 }
             }
         }
         
-        
+        printf("Wrapping Up Final Threads...\n");
         for (int d = 0; d < MAX_THREADS; ++d){
             //should probably be current thread count, need to check thread_id array
             if (!thread_id[d]){
                 printf("Bad pointer...\n");
             } else {
                 pthread_join(thread_id[d], NULL);
-                printf("Wrapping Up Final Threads...\n");
             }  
 	    }
         update_balance();
