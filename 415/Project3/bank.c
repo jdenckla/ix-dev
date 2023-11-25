@@ -19,7 +19,7 @@
 #define _GNU_SOURCE
 #define SIZE 1024
 
-pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+//pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
 
 #define MAX_THREADS 10
 
@@ -30,6 +30,11 @@ int numLines;
 int procIndex = 0;
 int numProc;
 int numAcct;
+
+int locks;
+int multithread;
+locks = 0;
+multithread = 0;
 
 volatile sig_atomic_t got_interrupt = 0;
 
@@ -194,48 +199,89 @@ int main(int argc, char * argv[])
             getline(&line, &len, fp);
             acct_ary[i].reward_rate = atof(line);
             int c;
-            c = pthread_mutex_init(&acct_ary[i].ac_lock, NULL);
+            if (locks == 1) {
+                c = pthread_mutex_init(&acct_ary[i].ac_lock, NULL);
+            }
             //acct_ary[i].ac_lock = PTHREAD_MUTEX_INITIALIZER;
             createAccount(i);
         }
         //printf("exit account fill\n");
         // accounts filled, begin processes...
-        
-        while (endOfFile == 0) {
-            for (int b = 0; b < MAX_THREADS; b++) {
-                if ((read = getline(&line, &len, fp)) != -1) {
-                    //command_line* token_buff = token_buffer[b];
-                    //*token_buffer[b]= str_filler(line, " ");
-                    token_buffer[b] = str_filler(line, " ");
-                    
-                    //printf("Creating thread: %d\n",b);
-                    // token_buffer very likely needs to be a pointer. Test this!
-                    tid = pthread_create(&thread_id[b], NULL, process_transaction, token_buffer);
-                    if (tid) {
-                        printf("Error - failed to create pthread: %d\n",tid);
-                        exit(-1);
+        if (multithread == 1) {
+            while (endOfFile == 0) {
+                for (int b = 0; b < MAX_THREADS; b++) {
+                    if ((read = getline(&line, &len, fp)) != -1) {
+                        //command_line* token_buff = token_buffer[b];
+                        //*token_buffer[b]= str_filler(line, " ");
+                        token_buffer[b] = str_filler(line, " ");
+                        
+                        //printf("Creating thread: %d\n",b);
+                        // token_buffer very likely needs to be a pointer. Test this!
+                        tid = pthread_create(&thread_id[b], NULL, process_transaction, token_buffer);
+                        if (tid) {
+                            printf("Error - failed to create pthread: %d\n",tid);
+                            exit(-1);
+                        }
+                        //process_transaction(token_buffer);
+                        if (ctr == 5000){
+                            ctr = 0;
+                            update_balance();
+                        }
+                    } else {
+                        endOfFile = 1;
+                        // signal?
+                        printf("End of File\n");
+                        break;
                     }
-                    //process_transaction(token_buffer);
-                    if (ctr == 5000){
-                        ctr = 0;
-                        update_balance();
+                }
+                for (int c = 0; c < MAX_THREADS; c++){
+                    //should probably be current thread count, need to check thread_id array
+                    if (endOfFile == 1){
+                        break;
                     }
-                } else {
-                    endOfFile = 1;
-                    // signal?
-                    printf("End of File\n");
-                    break;
+                    printf("Joining Threads...\n");
+                    pthread_join(thread_id[c], NULL);
                 }
             }
-            for (int c = 0; c < MAX_THREADS; c++){
-                //should probably be current thread count, need to check thread_id array
-                if (endOfFile == 1){
-                    break;
+        } else {
+            while (endOfFile == 0) {
+                for (int b = 0; b < 1; b++) {
+                    if ((read = getline(&line, &len, fp)) != -1) {
+                        //command_line* token_buff = token_buffer[b];
+                        //*token_buffer[b]= str_filler(line, " ");
+                        token_buffer[b] = str_filler(line, " ");
+                        
+                        //printf("Creating thread: %d\n",b);
+                        // token_buffer very likely needs to be a pointer. Test this!
+                        tid = pthread_create(&thread_id[b], NULL, process_transaction, token_buffer);
+                        if (tid) {
+                            printf("Error - failed to create pthread: %d\n",tid);
+                            exit(-1);
+                        }
+                        //process_transaction(token_buffer);
+                        if (ctr == 5000){
+                            ctr = 0;
+                            update_balance();
+                        }
+                    } else {
+                        endOfFile = 1;
+                        // signal?
+                        printf("End of File\n");
+                        break;
+                    }
                 }
-                printf("Joining Threads...\n");
-		        pthread_join(thread_id[c], NULL);
-	        }
+                for (int c = 0; c < 1; c++){
+                    //should probably be current thread count, need to check thread_id array
+                    if (endOfFile == 1){
+                        break;
+                    }
+                    printf("Joining Threads...\n");
+                    pthread_join(thread_id[c], NULL);
+                }
+            }
         }
+        
+        
         for (int d = 0; d < MAX_THREADS; ++d){
             //should probably be current thread count, need to check thread_id array
             printf("Wrapping Up Final Threads...\n");
@@ -341,37 +387,53 @@ void *process_transaction(void *token_buf){
                     //printf("attempt deposit\n");
                     //pthread_mutex_lock(&mutex1)
                     double amount = atof(token_buffer.command_list[3]);
-                    pthread_mutex_lock(&acct_ary[i].ac_lock);
+                    if (locks == 1) {
+                        pthread_mutex_lock(&acct_ary[i].ac_lock);
+                    }
                     printf("Deposit: %s\n",token_buffer.command_list[1]);
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
                     ctr++;
-                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                    if (locks == 1) {
+                        pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                    }
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) {
                     //printf("attempt withdrawal\n");
                     double amount = atof(token_buffer.command_list[3]);
-                    pthread_mutex_lock(&acct_ary[i].ac_lock);
+                    if (locks == 1) {
+                        pthread_mutex_lock(&acct_ary[i].ac_lock);
+                    }
                     printf("Withdraw: %s\n",token_buffer.command_list[1]);
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
                     ctr++;
-                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                    if (locks == 1) {
+                        pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                    }
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) {
                     
                     //printf("attempt transfer\n");
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < numAcct; j++) {
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0){
-                            pthread_mutex_lock(&acct_ary[i].ac_lock);
+                            if (locks == 1) {
+                                pthread_mutex_lock(&acct_ary[i].ac_lock);
+                            }
                             printf("Transfer From: %s\n",token_buffer.command_list[1]);
                             acct_ary[i].balance -= amount;
                             acct_ary[i].transaction_tracter += amount;
-                            pthread_mutex_unlock(&acct_ary[i].ac_lock);
-                            pthread_mutex_lock(&acct_ary[j].ac_lock);
+                            if (locks == 1) {
+                                pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                            }
+                            if (locks == 1) {
+                                pthread_mutex_lock(&acct_ary[j].ac_lock);
+                            }
                             printf("Transfer To: %s\n",token_buffer.command_list[3]);
                             acct_ary[j].balance += amount;
                             ctr++;
-                            pthread_mutex_unlock(&acct_ary[j].ac_lock);
+                            if (locks == 1) {
+                                pthread_mutex_unlock(&acct_ary[j].ac_lock);
+                            }
                         }
                     }
                 } else {
@@ -396,7 +458,9 @@ void update_balance(){
     updateCount++;
     printf("update %d\n",updateCount);
     for (int i = 0; i < numAcct; i++) {
-        pthread_mutex_lock(&acct_ary[i].ac_lock);
+        if (locks == 1) {
+            pthread_mutex_lock(&acct_ary[i].ac_lock);
+        }
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
         acct_ary[i].balance += temp;
         acct_ary[i].transaction_tracter = 0;
@@ -411,7 +475,9 @@ void update_balance(){
             fprintf(afp,"Current Balance:\t");
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
-        pthread_mutex_unlock(&acct_ary[i].ac_lock);
+        if (locks == 1) {
+            pthread_mutex_unlock(&acct_ary[i].ac_lock);
+        }
         fclose(afp);
         free(filename);
         
