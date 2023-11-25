@@ -24,7 +24,7 @@
 #define MAX_THREADS 10
 
 //pthread_t thread_id[MAX_THREADS];
-ptrhead_t (*thread_id)[MAX_THREADS];
+pthread_t (*thread_id)[MAX_THREADS];
 
 //pid_t *pid_array;
 int numLines;
