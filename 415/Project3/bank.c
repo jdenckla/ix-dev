@@ -286,8 +286,12 @@ int main(int argc, char * argv[])
         
         for (int d = 0; d < MAX_THREADS; ++d){
             //should probably be current thread count, need to check thread_id array
-            printf("Wrapping Up Final Threads...\n");
-            pthread_join(thread_id[d], NULL);
+            if (!thread_id[d]){
+                printf("Bad pointer...\n");
+            } else {
+                pthread_join(thread_id[d], NULL);
+                printf("Wrapping Up Final Threads...\n");
+            }  
 	    }
         update_balance();
         printf("Done. Cleaning up.\n");
@@ -305,7 +309,7 @@ int main(int argc, char * argv[])
     //printAccounts(acct_ary);
     printf("Attempting Output\n");
     outputBalance(acct_ary);
-    free(thread_id);
+    //free(thread_id);
     printf("Update Count: %d\n", updateCount);
     return 0;
 
