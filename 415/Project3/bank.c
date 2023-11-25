@@ -24,7 +24,8 @@
 #define MAX_THREADS 10
 
 //pthread_t thread_id[MAX_THREADS];
-pthread_t (*thread_id)[MAX_THREADS];
+//pthread_t (*thread_id)[MAX_THREADS];
+pthread_t *thread_id;
 
 //pid_t *pid_array;
 int numLines;
@@ -135,7 +136,7 @@ int main(int argc, char * argv[])
     const char *name = "output";
     mkdir(name,S_IRWXU);
 
-    thread_id = malloc(sizeof(pid_t) * MAX_THREADS);
+    thread_id = (pthread_t*)malloc(sizeof(pthread_t) * MAX_THREADS);
 
     FILE *fp;
 	char *filenameSrc;
