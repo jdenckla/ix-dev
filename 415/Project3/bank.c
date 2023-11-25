@@ -236,12 +236,30 @@ int main(int argc, char * argv[])
                         break;
                     }
                 }
+                /*
                 for (int c = 0; c < MAX_THREADS; c++){
                     //should probably be current thread count, need to check thread_id array
                     if (endOfFile == 1){
                         break;
                     }
                     printf("Joining Threads...\n");
+                    pthread_join(thread_id[c], NULL);
+                }
+                */
+                printf("Joining Threads...\n");
+                for (int c = 0; c < MAX_THREADS; c++){
+                    //should probably be current thread count, need to check thread_id array
+                    /*
+                    if (endOfFile == 1){
+                        break;
+                    }
+                    */
+                     #ifdef SYS_gettid
+                    pid_t tid = syscall(SYS_gettid);
+                    #else
+                    #error "SYS_gettid unavailable on this system"
+                    #endif
+                    printf("closing %ld from %d",thread_id[c],tid);
                     pthread_join(thread_id[c], NULL);
                 }
             }
@@ -272,20 +290,12 @@ int main(int argc, char * argv[])
                         break;
                     }
                 }
-                printf("Joining Threads...\n");
                 for (int c = 0; c < 1; c++){
                     //should probably be current thread count, need to check thread_id array
-                    /*
                     if (endOfFile == 1){
                         break;
                     }
-                    */
-                     #ifdef SYS_gettid
-                    pid_t tid = syscall(SYS_gettid);
-                    #else
-                    #error "SYS_gettid unavailable on this system"
-                    #endif
-                    printf("closing %ld from %d",thread_id[c],tid);
+                    printf("Joining Threads...\n");
                     pthread_join(thread_id[c], NULL);
                 }
             }
