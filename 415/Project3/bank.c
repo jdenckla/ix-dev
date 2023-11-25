@@ -31,8 +31,8 @@ int procIndex = 0;
 int numProc;
 int numAcct;
 
-int locks = 0;
-int multithread = 0;
+int locks = 1;
+int multithread = 1;
 
 volatile sig_atomic_t got_interrupt = 0;
 
@@ -133,6 +133,8 @@ int main(int argc, char * argv[])
     //printf("attempt mkdir output\n");
     const char *name = "output";
     mkdir(name,S_IRWXU);
+
+    thread_id = malloc(sizeof(pid_t) * MAX_THREADS);
 
     FILE *fp;
 	char *filenameSrc;
@@ -301,6 +303,7 @@ int main(int argc, char * argv[])
     //printAccounts(acct_ary);
     printf("Attempting Output\n");
     outputBalance(acct_ary);
+    free(thread_id);
     printf("Update Count: %d\n", updateCount);
     return 0;
 
