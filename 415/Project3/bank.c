@@ -285,7 +285,7 @@ int main(int argc, char * argv[])
                     #else
                     #error "SYS_gettid unavailable on this system"
                     #endif
-                    printf("closing %d from %d",thread_id[c],tid);
+                    printf("closing %ld from %d",thread_id[c],tid);
                     pthread_join(thread_id[c], NULL);
                 }
             }
