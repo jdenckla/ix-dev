@@ -431,8 +431,14 @@ void *process_worker_queue(void *i)
     if (debugText == 1)
     {
         printf("Worker %d Created, Signalling Barrier\n",id);
+        sleep(1);
     }
     pthread_barrier_wait(&barrier);
+    if (debugText == 1)
+    {
+        printf("Signal Received, Beginning Process\n");
+        sleep(1);
+    }
     command_line token_buffer;
     int processing = 1;
     while (processing == 1)
