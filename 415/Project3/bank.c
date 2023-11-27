@@ -9,7 +9,7 @@
 #include "account.h"
 
 //#include <fcntl.h>
-//#include <sys/wait.h>
+#include <sys/wait.h>
 //#include <sys/types.h>
 //#include <dirent.h>
 
