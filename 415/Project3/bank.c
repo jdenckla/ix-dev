@@ -356,36 +356,26 @@ void parse_file(char *file)
 					//printf("%s added to queue\n",process_queue[a][q]);
 					
                 } else {
+                    int b = MAX_THREADS - a;
                     endOfFile = 1;
+                    for (b; b >= 0; b--)
+                    {
+                        strcpy(process_queue[b][q],"\0");
+                    }
+                    for (a; a < MAX_THREADS; a++)
+                    {
+                        strcpy(process_queue[a][q],"\0");
+                    }
                     break;
                 }
             }
+            q++;
             if (endOfFile == 1)
             {
                 break;
             }
-            q++;
-        }
-        // place null character so we can denote end of queue
-        for (int b = 0; b < MAX_THREADS; b++) 
-        {
-            if (process_queue[b][q-1] == NULL)
-            {
-                process_queue[b][q-1] = "\0";
-            } else if (process_queue[b][q] == NULL)
-            {
-                process_queue[b][q] = "\0";
-				q--;
-            } else
-            {
-                process_queue[b][q+1] = "\0";
-				q++;
-            }
         }
     }
-	//printf("Debug - Q1L1: %s\n",process_queue[0][0]);
-	//printf("Debug - Q%dL%d: %s\n",MAX_THREADS-1,q,process_queue[MAX_THREADS-1][q-1]);
-	//sleep(5);
     //printf("Q terminates at %d\n",q);
     //sleep(1);
     fclose(fp);
