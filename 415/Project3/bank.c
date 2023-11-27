@@ -357,7 +357,7 @@ void parse_file(char *file)
 					
                 } else {
                     int b = MAX_THREADS - a;
-                    print("Max: %d | a: %d | b: %d\n",MAX_THREADS,a,b);
+                    printf("Max: %d | a: %d | b: %d\n",MAX_THREADS,a,b);
                     endOfFile = 1;
                     for (b; b >= 0; b--)
                     {
