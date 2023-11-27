@@ -454,12 +454,14 @@ void *process_worker_queue(void *i)
             process_transaction(token_buffer);
             job++;
 			//printf("Process Counter: %d\n",*processCounter);
+            /*
             if (*processCounter >= 5000)
             {
 				//printf("//////// Update Triggered by Process Count /////////\n");
                 *processCounter = 0;
                 update_balance();
             }
+            */
         } 
     }
     if (debugText == 1)
