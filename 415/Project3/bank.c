@@ -86,7 +86,7 @@ int main(int argc, char * argv[])
 
     int endOfFile = 0;
     int q = 0;
-    numLines = countLines(filename);
+    numLines = count_lines(filename);
     
     fp = fopen(filename, "r");
     getline(&line, &len, fp);
