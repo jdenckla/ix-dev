@@ -406,7 +406,7 @@ void *process_worker_queue(void *i)
     //command_line token_buffer[100];
     while (process_queue[id][job] != "\0")
     {
-        token_buffer[id] = str_filler(process_queue[id][job], " ");
+        token_buffer = str_filler(process_queue[id][job], " ");
         process_transaction(token_buffer);
         job++;
         if (job > *numLines)
