@@ -441,6 +441,8 @@ void process_transaction(command_line token_buffer)
     printf("Against %d Accounts",*numAcct);
     for (int i = 0; i < *numAcct; i++) 
     {
+        printf("Compare acct: %s\n",acct_ary[i].account_number);
+        printf("Against buf.cmd: %s\n",token_buffer.command_list[1]);
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0)
         {
             printf("Accout Found\n");
