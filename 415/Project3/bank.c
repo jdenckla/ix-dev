@@ -355,7 +355,8 @@ void parse_file(char *file)
                     //potentially cleanup newline and null characters...
 					//printf("%s added to queue\n",process_queue[a][q]);
 					
-                } else {
+                } else if (a > 0)
+                {
                     int b = MAX_THREADS - a;
                     printf("Max: %d | a: %d | b: %d\n",MAX_THREADS,a,b);
                     endOfFile = 1;
@@ -367,7 +368,7 @@ void parse_file(char *file)
                     for (a; a < MAX_THREADS; a++)
                     {
                         //strcpy(process_queue[a][q],"\0");
-                        process_queue[b][q] = '\0';
+                        process_queue[a][q] = '\0';
                     }
                     break;
                 }
