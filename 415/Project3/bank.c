@@ -24,6 +24,7 @@
 
 pthread_t thread_id[MAX_THREADS];
 pthread_barrier_t barrier;
+pthread_cond_t condition;
 
 account *acct_ary;
 char ***process_queue;
@@ -526,6 +527,8 @@ void process_transaction(command_line token_buffer)
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Deposit: %s\n",token_buffer.command_list[1]);
+                    while (!condition)
+                        pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
                     pthread_mutex_unlock(&acct_ary[i].ac_lock);
@@ -539,7 +542,8 @@ void process_transaction(command_line token_buffer)
 					}
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
-                    //printf("Withdraw: %s\n",token_buffer.command_list[1]);
+                    while (!condition)
+                        pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
                     pthread_mutex_unlock(&acct_ary[i].ac_lock);
@@ -557,16 +561,18 @@ void process_transaction(command_line token_buffer)
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0)
                         {
                             pthread_mutex_lock(&acct_ary[i].ac_lock);
-                            //printf("Transfer From: %s\n",token_buffer.command_list[1]);
+                            while (!condition)
+                                pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
                             acct_ary[i].balance -= amount;
                             acct_ary[i].transaction_tracter += amount;
                             pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                            
                             pthread_mutex_lock(&acct_ary[j].ac_lock);
-                            //printf("Transfer To: %s\n",token_buffer.command_list[3]);
+                            while (!condition)
+                                pthread_cond_wait(&condition, &acct_ary[j].ac_lock);
                             acct_ary[j].balance += amount;
                             pthread_mutex_unlock(&acct_ary[j].ac_lock);
 							*processCounter = *processCounter + 1;
-                            //*processCounter++;
 							if (debugText == 1)
 							{
 								printf(" Complete!\n");
@@ -624,6 +630,7 @@ void update_balance()
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
         pthread_mutex_unlock(&acct_ary[i].ac_lock);
+        pthread_cond_broadcast(&condition);
         fclose(afp);
         free(filename);
     }
