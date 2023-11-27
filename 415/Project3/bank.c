@@ -158,7 +158,7 @@ int main(int argc, char * argv[])
     command_line token_buffer[MAX_THREADS];
 
     //account *acct_ary;
-    
+    //int balanceUpdated = 0;
 	filenameSrc = strdup(argv[1]);
     numProc = countLines(filenameSrc);
     fp = fopen(filenameSrc, "r");
@@ -213,6 +213,7 @@ int main(int argc, char * argv[])
             while (endOfFile == 0) {
                 for (int b = 0; b < MAX_THREADS; b++) {
                     if ((read = getline(&line, &len, fp)) != -1) {
+                        //balanceUpdated = 0;
                         //command_line* token_buff = token_buffer[b];
                         //*token_buffer[b]= str_filler(line, " ");
                         token_buffer[b] = str_filler(line, " ");
@@ -227,7 +228,24 @@ int main(int argc, char * argv[])
                         //process_transaction(token_buffer);
                         if (ctr == 5000){
                             ctr = 0;
+                            printf("Joining Threads Prior to Update...\n");
+                            for (int c = 0; c < MAX_THREADS; c++){
+                                //should probably be current thread count, need to check thread_id array
+                                /*
+                                if (endOfFile == 1){
+                                    break;
+                                }
+                                */
+                                #ifdef SYS_gettid
+                                pid_t tid = syscall(SYS_gettid);
+                                #else
+                                #error "SYS_gettid unavailable on this system"
+                                #endif
+                                //printf("closing %ld from %d\n",thread_id[c],tid);
+                                pthread_join(thread_id[c], NULL);
+                            }
                             update_balance();
+                            //balanceUpdated = 1;
                         }
                     } else {
                         endOfFile = 1;
@@ -469,6 +487,7 @@ void *process_transaction(void *token_buf){
             break;
         }
     }
+    pthread_exit();
     //return;
     
     // parse argument as a command, tokenizing it. Might do this as the argument instead
