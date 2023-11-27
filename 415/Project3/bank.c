@@ -50,7 +50,7 @@ int count_lines(char *filename);
 void create_acct_outfiles(int i);
 void parse_file(char *filename);
 void outputBalance(account *acct_ary);
-void * process_worker_queue(void* i);
+void *process_worker_queue(void *i);
 void process_transaction(command_line *token_buffer);
 void update_balance();
 
@@ -137,7 +137,7 @@ int main(int argc, char * argv[])
             return -1;
         }
         *worker = a;
-        tid = pthread_create(&thread_id[a], NULL, process_worker_queue, (void *)a);
+        tid = pthread_create(&thread_id[a], NULL, process_worker_queue, worker);
         // anticipate each pausing from inside worker_queue
     }
     // generate another thread for updating accounts? aka bank/manager thread
@@ -360,7 +360,7 @@ void outputBalance(account *acct_ary)
 }
 
 // notice free of pointer here, may be useful elsewhere
-void * process_worker_queue(void *i)
+void *process_worker_queue(void *i)
 {
     int id = *((int *)i);
     printf("Process Started For Worker: %d\n",id);
