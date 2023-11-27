@@ -24,7 +24,7 @@
 // use shared memory for the following instead
 
 pthread_t thread_id[MAX_THREADS];
-pthread_barrier_t barrier;
+//pthread_barrier_t barrier;
 
 account *acct_ary;
 char ***process_queue;
@@ -75,7 +75,7 @@ int main(int argc, char * argv[])
     size_t len = 0;
     ssize_t read;
 
-    pthread_barrier_init(&barrier, NULL, MAX_THREADS);
+    //pthread_barrier_init(&barrier, NULL, MAX_THREADS);
 	
     processCounter = malloc(sizeof(int) * 10000);
     numLines = malloc(sizeof(int) * 10000);
@@ -154,7 +154,7 @@ int main(int argc, char * argv[])
         sleep(1);
     }
 
-    pthread_barrier_wait(&barrier);
+    //pthread_barrier_wait(&barrier);
 
     if (debugText == 1)
     {
@@ -162,7 +162,7 @@ int main(int argc, char * argv[])
         sleep(1);
     }
 
-    pthread_barrier_destroy(&barrier);
+    //pthread_barrier_destroy(&barrier);
     if (debugText == 1)
     {
         printf("Barrier Destroyed\n");
@@ -438,7 +438,7 @@ void *process_worker_queue(void *i)
         printf("Worker %d Created, Signalling Barrier\n",id);
         sleep(1);
     }
-    pthread_barrier_wait(&barrier);
+    //pthread_barrier_wait(&barrier);
     if (debugText == 1)
     {
         printf("Signal Received, Beginning Process\n");
