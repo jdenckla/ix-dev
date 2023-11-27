@@ -527,7 +527,7 @@ void process_transaction(command_line token_buffer)
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Deposit: %s\n",token_buffer.command_list[1]);
-                    while (!condition)
+                    while (condition)
                         pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
@@ -542,7 +542,7 @@ void process_transaction(command_line token_buffer)
 					}
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
-                    while (!condition)
+                    while (condition)
                         pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
@@ -561,14 +561,14 @@ void process_transaction(command_line token_buffer)
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0)
                         {
                             pthread_mutex_lock(&acct_ary[i].ac_lock);
-                            while (!condition)
+                            while (condition)
                                 pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
                             acct_ary[i].balance -= amount;
                             acct_ary[i].transaction_tracter += amount;
                             pthread_mutex_unlock(&acct_ary[i].ac_lock);
                             
                             pthread_mutex_lock(&acct_ary[j].ac_lock);
-                            while (!condition)
+                            while (condition)
                                 pthread_cond_wait(&condition, &acct_ary[j].ac_lock);
                             acct_ary[j].balance += amount;
                             pthread_mutex_unlock(&acct_ary[j].ac_lock);
