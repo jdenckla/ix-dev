@@ -576,10 +576,9 @@ void process_transaction(command_line token_buffer)
                             pthread_mutex_unlock(&acct_ary[i].ac_lock);
                             
                             pthread_mutex_lock(&acct_ary[j].ac_lock);
-                            pthread_mutex_lock(&acct_ary[i].ac_lock);
                             if (*processCounter >= 5000)
                             {
-                                pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
+                                pthread_cond_wait(&condition, &acct_ary[j].ac_lock);
                             }
                             acct_ary[j].balance += amount;
                             pthread_mutex_unlock(&acct_ary[j].ac_lock);
