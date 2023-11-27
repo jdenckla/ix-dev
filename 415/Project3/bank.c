@@ -168,8 +168,7 @@ int main(int argc, char * argv[])
 	}
     if (debugText == 1)
     {
-        printf("Threads Complete\n");
-        sleep(1);
+        printf("All Worker Threads Complete\n");
     }
     int updateRequired = 0;
     for (int c = 0; c < *numAcct; c++)
