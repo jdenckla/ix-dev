@@ -175,12 +175,12 @@ int main(int argc, char * argv[])
     printf("Outer Queue Freed\n");
     //free(processCounter);
     //printf("P Counter Freed\n");
-    free(updateCount);
-    printf("U Counter Freed\n");
-    free(numLines);
-    printf("L Counter Freed\n");
-    free(acct_ary);
-    printf("Acct Array Freed\n");
+    //free(updateCount);
+    //printf("U Counter Freed\n");
+    //free(numLines);
+    //printf("L Counter Freed\n");
+    //free(acct_ary);
+    //printf("Acct Array Freed\n");
     return 0;
 }
 
