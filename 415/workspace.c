@@ -154,3 +154,45 @@ when bank receives signal, when bank is waiting, and when threads complete. See 
 We will also want to know when a thread stops do to a lock... Does it know how to resume when an unlock occurs?
 
 */
+
+/*
+
+Segfaulting in Part 2 - opting to rewrite and cleanup
+
+First: Create array to hold threads. Possibly malloc this. Create output directory.
+
+Then: Parse accounts from input file. Create output files for each. 
+
+Next: Spin up ten threads to process a line each from the input file
+
+Note: Each needs to pause and wait for a signal after being created - this can be done later if needed
+
+Next: Wait for each thread to finish before spinning up ten more. Keep the 5k counter in mind here. 
+
+Note: When EOF is reached, we should join remaining threads and update one last time. 
+
+Finally: Output final balances
+
+*/
+
+/*
+
+Potential multi-thread solution - queue's:
+
+Set up n process queue's. These are char**, storing each process sentence from the input file. 
+
+These will need to be quite large - potentially too largel?
+
+Read every line of the file, placing each sentence in one of the n queue's. 
+
+Build a function to read and process a queue. 
+
+Create a pthread, pointing it to one of these process queue functions. Pass in the queue. 
+
+Later, make this thread pause after creation, waiting for a signal. 
+
+Solvable - the update thread. Are we making a new one every 5k processes, or do we restart the update process somehow?
+
+Solvable - pausing the threads. Storing variables to indicate deadlocks. 
+
+*/
