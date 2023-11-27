@@ -15,7 +15,7 @@
 #define _GNU_SOURCE
 #define SIZE 1024
 
-#define MAX_THREADS 1
+#define MAX_THREADS 10
 #define debugText 0
 
 
