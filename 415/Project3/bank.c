@@ -440,14 +440,18 @@ void process_transaction(command_line token_buffer)
     {
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0)
         {
+            printf("Accout Found\n");
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0)
             {
+                printf("Password Accepted\n");
                 if (strcmp("C",token_buffer.command_list[0]) == 0) 
                 {
+                    printf("Check Balance\n");
                     //printf("Check: %s\n",token_buffer.command_list[1]);
                     ;
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) 
                 {
+                    printf("Deposit\n");
                     double amount = atof(token_buffer.command_list[3]);
                     //pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Deposit: %s\n",token_buffer.command_list[1]);
@@ -457,6 +461,7 @@ void process_transaction(command_line token_buffer)
                     *processCounter++;
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) 
                 {
+                    printf("Withdrawal\n");
                     double amount = atof(token_buffer.command_list[3]);
                     //pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Withdraw: %s\n",token_buffer.command_list[1]);
@@ -466,6 +471,7 @@ void process_transaction(command_line token_buffer)
                     *processCounter++;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) 
                 {
+                    printf("Transfer\n");
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < *numAcct; j++) 
                     {
