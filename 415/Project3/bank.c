@@ -347,12 +347,12 @@ void parse_file(char *file)
             // accounts populated, proceed to create output files
             create_acct_outfiles(i);
         }
-        while (endOfFile == 0) 
-        {
-            if (debugText == 1)
+        if (debugText == 1)
             {
                 printf("Reading In File...\n");
             }
+        while (endOfFile == 0) 
+        {
             for (int a = 0; a < MAX_THREADS; a++) 
             {
                 if ((read = getline(&line, &len, fp)) != -1) 
