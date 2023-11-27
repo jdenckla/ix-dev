@@ -33,6 +33,7 @@ int *processCounter;
 int *updateCount;
 int *numAcct;
 int *numLines;
+int ready = 0;
 
 // helpers: tokenize strings, countlines, process input file, process queue (thread), process transaction (each line of queue), update balance (unique handler thread)
 
@@ -526,9 +527,11 @@ void process_transaction(command_line token_buffer)
 					}
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
-                    //printf("Deposit: %s\n",token_buffer.command_list[1]);
-                    while (condition)
+                    if (*processCounter >= 5000)
+                    {
                         pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
+                        update_balance();
+                    }
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
                     pthread_mutex_unlock(&acct_ary[i].ac_lock);
@@ -542,8 +545,11 @@ void process_transaction(command_line token_buffer)
 					}
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
-                    while (condition)
+                    if (*processCounter >= 5000)
+                    {
                         pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
+                        update_balance();
+                    }
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
                     pthread_mutex_unlock(&acct_ary[i].ac_lock);
@@ -561,15 +567,21 @@ void process_transaction(command_line token_buffer)
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0)
                         {
                             pthread_mutex_lock(&acct_ary[i].ac_lock);
-                            while (condition)
+                            if (*processCounter >= 5000)
+                            {
                                 pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
+                                update_balance();
+                            }
                             acct_ary[i].balance -= amount;
                             acct_ary[i].transaction_tracter += amount;
                             pthread_mutex_unlock(&acct_ary[i].ac_lock);
                             
                             pthread_mutex_lock(&acct_ary[j].ac_lock);
-                            while (condition)
-                                pthread_cond_wait(&condition, &acct_ary[j].ac_lock);
+                            if (*processCounter >= 5000)
+                            {
+                                pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
+                                update_balance();
+                            }
                             acct_ary[j].balance += amount;
                             pthread_mutex_unlock(&acct_ary[j].ac_lock);
 							*processCounter = *processCounter + 1;
@@ -604,6 +616,7 @@ void update_balance()
 {
     //int updateCounter = *updateCount;
     //*updateCount++;
+    
 	*updateCount = *updateCount + 1;
     //printf("Update %d\n",*updateCount);
     //int numberOfAccounts = *numAcct;
@@ -629,8 +642,9 @@ void update_balance()
             fprintf(afp,"Current Balance:\t");
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
-        pthread_mutex_unlock(&acct_ary[i].ac_lock);
+        *processCounter = 0;
         pthread_cond_broadcast(&condition);
+        pthread_mutex_unlock(&acct_ary[i].ac_lock);
         fclose(afp);
         free(filename);
     }
