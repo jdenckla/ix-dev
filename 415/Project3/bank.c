@@ -363,7 +363,7 @@ void parse_file(char *file)
             if (process_queue[b][q-1] == NULL)
             {
                 process_queue[b][q-1] = "\0";
-            } else if (process_queue[b][q] == NULL)strcmp
+            } else if (process_queue[b][q] == NULL)
             {
                 process_queue[b][q] = "\0";
             } else
@@ -372,7 +372,7 @@ void parse_file(char *file)
             }
         }
     }
-    printf("Q terminates at %d\n",q);
+    //printf("Q terminates at %d\n",q);
     sleep(1);
     fclose(fp);
     free(filename);
@@ -409,12 +409,12 @@ void outputBalance(account *acct_ary)
 void *process_worker_queue(void *i)
 {
     int id = *((int *)i);
-    printf("Process Started For Worker: %d\n",id);
+    //printf("Process Started For Worker: %d\n",id);
     // thread has started and been directed here. Tell it to pause and wait for signal.
     // upon signal, tokenize the next item in the workers queue.
     int job = 0;
     //int max = *numLines;
-    printf("Max at queue start: %d\n",*numLines);
+    //printf("Max at queue start: %d\n",*numLines);
     command_line token_buffer;
     //process_queue
     // using each worker's id (int i), grab sentence and tokenize it...
@@ -428,7 +428,7 @@ void *process_worker_queue(void *i)
             break;
         } else
         {
-            printf("Attempting job: %d\n",job);
+            //printf("Attempting job: %d\n",job);
             token_buffer = str_filler(process_queue[id][job], " ");
             process_transaction(token_buffer);
             job++;
@@ -437,7 +437,7 @@ void *process_worker_queue(void *i)
     //printf("Process Queue Complete, Freeing Mem\n");
     //free_command_line (token_buffer);
 	//memset (token_buffer, 0, 0);
-    printf("Process Queue Complete, Exiting Thread %d\n",id);
+    //printf("Process Queue Complete, Exiting Thread %d\n",id);
     free_command_line (&token_buffer);
 	memset (&token_buffer, 0, 0);
     free(i);
@@ -458,25 +458,25 @@ void process_transaction(command_line token_buffer)
     #error "SYS_gettid unavailable on this system"
     #endif
     printf("Processing tid: %d\n",tid);
-    printf("Against %d Accounts\n",*numAcct);
+    //printf("Against %d Accounts\n",*numAcct);
     for (int i = 0; i < *numAcct; i++) 
     {
-        printf("Compare acct: %s\n",acct_ary[i].account_number);
-        printf("Against buf.cmd: %s\n",token_buffer.command_list[1]);
+        //printf("Compare acct: %s\n",acct_ary[i].account_number);
+        //printf("Against buf.cmd: %s\n",token_buffer.command_list[1]);
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0)
         {
-            printf("Accout Found\n");
+            //printf("Accout Found\n");
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0)
             {
-                printf("Password Accepted\n");
+                //printf("Password Accepted\n");
                 if (strcmp("C",token_buffer.command_list[0]) == 0) 
                 {
-                    printf("Check Balance\n");
+                    //printf("Check Balance\n");
                     //printf("Check: %s\n",token_buffer.command_list[1]);
                     ;
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) 
                 {
-                    printf("Deposit\n");
+                    //printf("Deposit\n");
                     double amount = atof(token_buffer.command_list[3]);
                     //pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Deposit: %s\n",token_buffer.command_list[1]);
@@ -486,7 +486,7 @@ void process_transaction(command_line token_buffer)
                     *processCounter++;
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) 
                 {
-                    printf("Withdrawal\n");
+                    //printf("Withdrawal\n");
                     double amount = atof(token_buffer.command_list[3]);
                     //pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Withdraw: %s\n",token_buffer.command_list[1]);
@@ -496,7 +496,7 @@ void process_transaction(command_line token_buffer)
                     *processCounter++;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) 
                 {
-                    printf("Transfer\n");
+                    //printf("Transfer\n");
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < *numAcct; j++) 
                     {
@@ -529,7 +529,7 @@ void update_balance()
 {
     //int updateCounter = *updateCount;
     *updateCount++;
-    printf("update %d\n",*updateCount);
+    //printf("Update %d\n",*updateCount);
     //int numberOfAccounts = *numAcct;
     for (int i = 0; i < *numAcct; i++) 
     {
