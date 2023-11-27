@@ -75,7 +75,7 @@ int main(int argc, char * argv[])
     size_t len = 0;
     ssize_t read;
 
-    pthread_barrier_init(&barrier, NULL, MAX_THREADS);
+    pthread_barrier_init(&barrier, NULL, MAX_THREADS + 1);
 	
     processCounter = malloc(sizeof(int) * 10000);
     numLines = malloc(sizeof(int) * 10000);
@@ -163,11 +163,13 @@ int main(int argc, char * argv[])
     }
 
     //pthread_barrier_destroy(&barrier);
+    /*
     if (debugText == 1)
     {
         printf("Barrier Destroyed\n");
         sleep(1);
     }
+    */
 
     // generate another thread for updating accounts? aka bank/manager thread
     for (int b = 0; b < MAX_THREADS; b++){
