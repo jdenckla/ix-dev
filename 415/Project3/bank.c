@@ -358,6 +358,8 @@ void parse_file(char *file)
             process_queue[b][q] = "\0";
         }
     }
+    printf("Q terminates at %d\n",q);
+    sleep(1);
     fclose(fp);
     free(filename);
     return;
@@ -405,6 +407,7 @@ void *process_worker_queue(void *i)
     //command_line token_buffer[100];
     while (process_queue[id][job] != "\0")
     {
+        printf("Attempting job: %d\n",job);
         token_buffer = str_filler(process_queue[id][job], " ");
         process_transaction(token_buffer);
         job++;
@@ -438,7 +441,7 @@ void process_transaction(command_line token_buffer)
     #error "SYS_gettid unavailable on this system"
     #endif
     printf("Processing tid: %d\n",tid);
-    printf("Against %d Accounts",*numAcct);
+    printf("Against %d Accounts\n",*numAcct);
     for (int i = 0; i < *numAcct; i++) 
     {
         printf("Compare acct: %s\n",acct_ary[i].account_number);
