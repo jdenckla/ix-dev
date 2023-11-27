@@ -81,7 +81,7 @@ int main(int argc, char * argv[])
     size_t len = 0;
     ssize_t read;
 
-    command_line token_buffer[100];
+    command_line token_buffer;
 
     processCounter = malloc(sizeof(int) * 10000);
     numLines = malloc(sizeof(int) * 10000);
