@@ -7,11 +7,10 @@
 #include <sys/syscall.h>
 #include <sys/stat.h>
 #include "account.h"
-
-//#include <fcntl.h>
 #include <sys/wait.h>
-//#include <sys/types.h>
-//#include <dirent.h>
+
+#include <sys/types.h>
+#include <fcntl.h>
 
 #define _GNU_SOURCE
 #define SIZE 1024
