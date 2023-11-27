@@ -360,11 +360,13 @@ void parse_file(char *file)
                     endOfFile = 1;
                     for (b; b >= 0; b--)
                     {
-                        strcpy(process_queue[b][q],"\0");
+                        //strcpy(process_queue[b][q],"\0");
+                        process_queue[b][q] = "\0";
                     }
                     for (a; a < MAX_THREADS; a++)
                     {
-                        strcpy(process_queue[a][q],"\0");
+                        //strcpy(process_queue[a][q],"\0");
+                        process_queue[b][q] = "\0";
                     }
                     break;
                 }
