@@ -416,8 +416,8 @@ void *process_worker_queue(void *i)
     //free_command_line (token_buffer);
 	//memset (token_buffer, 0, 0);
     printf("Process Queue Complete, Exiting Thread %d\n",id);
-    free_command_line (token_buffer);
-	memset (token_buffer, 0, 0);
+    free_command_line (&token_buffer);
+	memset (&token_buffer, 0, 0);
     free(i);
     pthread_exit(NULL);
 }
