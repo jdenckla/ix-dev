@@ -218,17 +218,17 @@ void parse_file(char *file)
     {
         getline(&line, &len, fp);
         numAcct = atoi(line);
-        print("Num acct: %d\n",numAcct);
+        printf("Num acct: %d\n",numAcct);
         //acct_ary = (account*)malloc(sizeof(account) * numAcct);
         for (int i = 0; i < numAcct; i++) 
         {
             acct_ary[i].transaction_tracter = 0;
-            print("Tracter: %f\n",acct_ary[i].transaction_tracter);
+            printf("Tracter: %f\n",acct_ary[i].transaction_tracter);
             getline(&line, &len, fp);
             getline(&line, &len, fp);
             strcpy(acct_ary[i].account_number, line);
             acct_ary[i].account_number[strcspn(acct_ary[i].account_number,"\n")] = '\0';
-            print("Acct Num: %f\n",acct_ary[i].account_number);
+            printf("Acct Num: %f\n",acct_ary[i].account_number);
             char iter[64];
             strcpy(iter,"output/");
             strcat(iter,acct_ary[i].account_number);
