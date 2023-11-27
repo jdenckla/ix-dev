@@ -351,7 +351,7 @@ void parse_file(char *file)
         {
             if (debugText == 1)
             {
-                printf("Reading In File\n");
+                printf("Reading In File...\n");
             }
             for (int a = 0; a < MAX_THREADS; a++) 
             {
