@@ -99,6 +99,11 @@ int main(int argc, char * argv[])
         acct_ary = (account*)malloc(sizeof(account) * numAcct);
     }
     fclose(fp);
+    ***process_queue = (char ***)malloc(sizeof(char**) * MAX_THREADS);
+    for (int z = 0; z < MAX_THREADS; z++)
+    {
+        *process_queue[z] = (char **)malloc(sizeof(char*) * (1000000/MAX_THREADS));
+    }
     parse_file(filename);
     free(filename);
     for (int a = 0; a < MAX_THREADS; a++)
