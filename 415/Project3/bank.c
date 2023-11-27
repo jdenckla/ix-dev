@@ -351,11 +351,16 @@ void parse_file(char *file)
             }
             q++;
         }
-        q++;
         // place null character so we can denote end of queue
         for (int b = 0; b < MAX_THREADS; b++) 
         {
-            process_queue[b][q] = "\0";
+            if (process_queue[b][q] == NULL)
+            {
+                process_queue[b][q] = "\0";
+            } else 
+            {
+                process_queue[b][q+1] = "\0";
+            }
         }
     }
     printf("Q terminates at %d\n",q);
@@ -405,16 +410,14 @@ void *process_worker_queue(void *i)
     //process_queue
     // using each worker's id (int i), grab sentence and tokenize it...
     //command_line token_buffer[100];
-    while (process_queue[id][job] != "\0")
+    while (true)
     {
-        printf("Attempting job: %d\n",job);
-        token_buffer = str_filler(process_queue[id][job], " ");
-        process_transaction(token_buffer);
-        job++;
-        if (job > *numLines)
+        if (process_queue[id][job] != "\0")
         {
-            printf("Err - more jobs attempted than available\n");
-            break;
+            printf("Attempting job: %d\n",job);
+            token_buffer = str_filler(process_queue[id][job], " ");
+            process_transaction(token_buffer);
+            job++;
         }
     }
     //printf("Process Queue Complete, Freeing Mem\n");
