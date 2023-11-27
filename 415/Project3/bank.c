@@ -24,7 +24,7 @@
 
 pthread_t thread_id[MAX_THREADS];
 pthread_barrier_t barrier;
-pthread_cond_t condition;
+//pthread_cond_t condition;
 
 account *acct_ary;
 char ***process_queue;
@@ -458,7 +458,7 @@ void *process_worker_queue(void *i)
             if (*processCounter == 5000)
             {
 				//printf("//////// Update Triggered by Process Count /////////\n");
-                //*processCounter = 0;
+                *processCounter = 0;
                 update_balance();
             }
             
@@ -529,10 +529,12 @@ void process_transaction(command_line token_buffer)
 					}
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
+                    /*
                     if (*processCounter == 5000)
                     {
                         pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
                     }
+                    */
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
                     *processCounter = *processCounter + 1;
@@ -545,10 +547,6 @@ void process_transaction(command_line token_buffer)
 					}
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
-                    if (*processCounter == 5000)
-                    {
-                        pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
-                    }
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
                     *processCounter = *processCounter + 1;
@@ -565,19 +563,15 @@ void process_transaction(command_line token_buffer)
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0)
                         {
                             pthread_mutex_lock(&acct_ary[i].ac_lock);
-                            if (*processCounter == 5000)
-                            {
-                                pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
-                            }
                             acct_ary[i].balance -= amount;
                             acct_ary[i].transaction_tracter += amount;
                             pthread_mutex_unlock(&acct_ary[i].ac_lock);
                             pthread_mutex_lock(&acct_ary[j].ac_lock);
                             acct_ary[j].balance += amount;
+                            *processCounter = *processCounter + 1;
                             pthread_mutex_unlock(&acct_ary[j].ac_lock);
                         }
                     }
-                    *processCounter = *processCounter + 1;
                 } else 
                 {
 					if (debugText == 1)
@@ -629,8 +623,8 @@ void update_balance()
             fprintf(afp,"Current Balance:\t");
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
-        *processCounter = 0;
-        pthread_cond_broadcast(&condition);
+        //*processCounter = 0;
+        //pthread_cond_broadcast(&condition);
         pthread_mutex_unlock(&acct_ary[i].ac_lock);
         fclose(afp);
         free(filename);
