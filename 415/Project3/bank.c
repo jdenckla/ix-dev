@@ -101,10 +101,10 @@ int main(int argc, char * argv[])
     
     fp = fopen(filename, "r");
     getline(&line, &len, fp);
-    int numberOfAccounts = *numAcct;
-    numberOfAccounts = atoi(line);
+    //int numberOfAccounts = *numAcct;
+    *numAcct = atoi(line);
     //printf("Num acct: %d\n",numAcct);
-    acct_ary = (account*)malloc(sizeof(account) * numberOfAccounts);
+    acct_ary = (account*)malloc(sizeof(account) * *numAcct);
     if (acct_ary == NULL) 
     {
         printf("Failed to alloc memory for account array\n");
@@ -162,8 +162,8 @@ int main(int argc, char * argv[])
     update_balance();
     printf("Attempting Output\n");
     outputBalance(acct_ary);
-    int updateCounter = *updateCount;
-    printf("Update Count: %d\n", updateCounter);
+    //int updateCounter = *updateCount;
+    printf("Update Count: %d\n", *updateCount);
     for (int z = 0; z < MAX_THREADS; z++)
     {
         // number of processes each thread could have to run
@@ -294,7 +294,7 @@ void parse_file(char *file)
     int endOfFile = 0;
     int q = 0;
 
-    int numberOfAccounts = *numAcct;
+    //int numberOfAccounts = *numAcct;
     
     fp = fopen(filename, "r");
     if (fp == NULL) 
@@ -306,7 +306,7 @@ void parse_file(char *file)
     {
         getline(&line, &len, fp);
         // pass number of accounts line
-        for (int i = 0; i < numberOfAccounts; i++) 
+        for (int i = 0; i < *numAcct; i++) 
         {
             acct_ary[i].transaction_tracter = 0;
             getline(&line, &len, fp);
@@ -367,7 +367,7 @@ void outputBalance(account *acct_ary)
     char *filename;
     filename = "output.txt";
     FILE * afp = fopen(filename, "w");
-    int numberOfAccounts = *numAcct;
+    //int numberOfAccounts = *numAcct;
     if (afp == NULL) 
     {
         char *errOpenInput = "Error! Failed to open input file.";
@@ -377,7 +377,7 @@ void outputBalance(account *acct_ary)
         return;
     } else 
     {
-        for (int a = 0; a < numberOfAccounts; a++){
+        for (int a = 0; a < *numAcct; a++){
             fprintf(afp,"%d",a);
             fprintf(afp," balance:\t");
             fprintf(afp,"%.2f\n\n",acct_ary[a].balance);
@@ -425,15 +425,15 @@ void process_transaction(command_line *token_buf)
     // likely modify how these are passed
     command_line *token_buffr = (command_line *)token_buf;
     command_line token_buffer = *token_buffr;
-    int pctr = *processCounter;
-    int numberOfAccounts = *numAcct;
+    //int pctr = *processCounter;
+    //int numberOfAccounts = *numAcct;
     #ifdef SYS_gettid
     pid_t tid = syscall(SYS_gettid);
     #else
     #error "SYS_gettid unavailable on this system"
     #endif
     printf("Processing tid: %d\n",tid);
-    for (int i = 0; i < numberOfAccounts; i++) 
+    for (int i = 0; i < *numAcct; i++) 
     {
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0)
         {
@@ -451,7 +451,7 @@ void process_transaction(command_line *token_buf)
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
                     //pthread_mutex_unlock(&acct_ary[i].ac_lock);
-                    pctr++;
+                    *processCounter++;
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) 
                 {
                     double amount = atof(token_buffer.command_list[3]);
@@ -460,11 +460,11 @@ void process_transaction(command_line *token_buf)
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
                     //pthread_mutex_unlock(&acct_ary[i].ac_lock);
-                    pctr++;
+                    *processCounter++;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) 
                 {
                     double amount = atof(token_buffer.command_list[4]);
-                    for (int j = 0; j < numberOfAccounts; j++) 
+                    for (int j = 0; j < *numAcct; j++) 
                     {
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0)
                         {
@@ -477,7 +477,7 @@ void process_transaction(command_line *token_buf)
                             //printf("Transfer To: %s\n",token_buffer.command_list[3]);
                             acct_ary[j].balance += amount;
                             //pthread_mutex_unlock(&acct_ary[j].ac_lock);
-                            pctr++;
+                            *processCounter++;
                         }
                     }
                 } else 
@@ -493,11 +493,11 @@ void process_transaction(command_line *token_buf)
 
 void update_balance()
 {
-    int updateCounter = *updateCount;
-    updateCounter++;
-    printf("update %d\n",updateCounter);
-    int numberOfAccounts = *numAcct;
-    for (int i = 0; i < numberOfAccounts; i++) 
+    //int updateCounter = *updateCount;
+    *updateCount++;
+    printf("update %d\n",*updateCount);
+    //int numberOfAccounts = *numAcct;
+    for (int i = 0; i < *numAcct; i++) 
     {
         //pthread_mutex_lock(&acct_ary[i].ac_lock);
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
