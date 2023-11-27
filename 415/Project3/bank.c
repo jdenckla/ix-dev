@@ -340,8 +340,8 @@ void parse_file(char *file)
             acct_ary[i].balance = atof(line);
             getline(&line, &len, fp);
             acct_ary[i].reward_rate = atof(line);
-            //int c;
-            //c = pthread_mutex_init(&acct_ary[i].ac_lock, NULL);
+            int c;
+            c = pthread_mutex_init(&acct_ary[i].ac_lock, NULL);
             // accounts populated, proceed to create output files
             create_acct_outfiles(i);
         }
@@ -514,11 +514,11 @@ void process_transaction(command_line token_buffer)
 						printf(" - Deposit Accepted\n");
 					}
                     double amount = atof(token_buffer.command_list[3]);
-                    //pthread_mutex_lock(&acct_ary[i].ac_lock);
+                    pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Deposit: %s\n",token_buffer.command_list[1]);
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
-                    //pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
 					*processCounter = *processCounter + 1;
                     //*processCounter++;
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) 
@@ -528,11 +528,11 @@ void process_transaction(command_line token_buffer)
 						printf(" - Withdrawal Accepted\n");
 					}
                     double amount = atof(token_buffer.command_list[3]);
-                    //pthread_mutex_lock(&acct_ary[i].ac_lock);
+                    pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Withdraw: %s\n",token_buffer.command_list[1]);
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
-                    //pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                    pthread_mutex_unlock(&acct_ary[i].ac_lock);
 					*processCounter = *processCounter + 1;
                     //*processCounter++;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) 
@@ -546,15 +546,15 @@ void process_transaction(command_line token_buffer)
                     {
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0)
                         {
-                            //pthread_mutex_lock(&acct_ary[i].ac_lock);=
+                            pthread_mutex_lock(&acct_ary[i].ac_lock);
                             //printf("Transfer From: %s\n",token_buffer.command_list[1]);
                             acct_ary[i].balance -= amount;
                             acct_ary[i].transaction_tracter += amount;
-                            //pthread_mutex_unlock(&acct_ary[i].ac_lock);
-                            //pthread_mutex_lock(&acct_ary[j].ac_lock);
+                            pthread_mutex_unlock(&acct_ary[i].ac_lock);
+                            pthread_mutex_lock(&acct_ary[j].ac_lock);
                             //printf("Transfer To: %s\n",token_buffer.command_list[3]);
                             acct_ary[j].balance += amount;
-                            //pthread_mutex_unlock(&acct_ary[j].ac_lock);
+                            pthread_mutex_unlock(&acct_ary[j].ac_lock);
 							*processCounter = *processCounter + 1;
                             //*processCounter++;
 							if (debugText == 1)
@@ -591,7 +591,7 @@ void update_balance()
 	printf("Updating Balances... ");
     for (int i = 0; i < *numAcct; i++) 
     {
-        //pthread_mutex_lock(&acct_ary[i].ac_lock);
+        pthread_mutex_lock(&acct_ary[i].ac_lock);
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
         acct_ary[i].balance += temp;
         acct_ary[i].transaction_tracter = 0;
@@ -607,7 +607,7 @@ void update_balance()
             fprintf(afp,"Current Balance:\t");
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
-        //pthread_mutex_unlock(&acct_ary[i].ac_lock);
+        pthread_mutex_unlock(&acct_ary[i].ac_lock);
         fclose(afp);
         free(filename);
     }
