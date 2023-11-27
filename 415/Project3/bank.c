@@ -51,7 +51,7 @@ void parse_file(char *filename);
 void create_acct_outfiles(int i);
 void outputBalance(account *acct_ary);
 void * process_worker_queue(void* i);
-void process_transaction(command_line token_buffer);
+void process_transaction(command_line *token_buffer);
 void update_balance();
 
 // consider how we'll monitor the counter - an if within a while? should signal update thread, which pauses all workers, updates, then tells them to continue
@@ -317,7 +317,7 @@ void * process_worker_queue(void *i)
 }
 
 // for each process sentence, execute and update counter
-void process_transaction(command_line token_buffer)
+void process_transaction(command_line *token_buffer)
 {
     // likely modify how these are passed
     //command_line *token_buffr = (command_line *)token_buf;
