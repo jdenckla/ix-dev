@@ -51,7 +51,7 @@ void parse_file(char *filename);
 void create_acct_outfiles(int i);
 void outputBalance(account *acct_ary);
 void * process_worker_queue(void* i);
-void process_transaction(void *token_buf);
+void process_transaction(command_line token_buffer);
 void update_balance();
 
 // consider how we'll monitor the counter - an if within a while? should signal update thread, which pauses all workers, updates, then tells them to continue
@@ -175,13 +175,21 @@ void parse_file(char *filename)
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
+
     FILE *fp;
+
+    int EOF;
+    int q = 0;
+    EOF = 0;
+    
     fp = fopen(filename, "r");
-    if (fp == NULL) {
+    if (fp == NULL) 
+    {
 		printf("Error! Failed to open output file for account creation.\n");
 		free(filename);
 		return;
-    } else {
+    } else 
+    {
         getline(&line, &len, fp);
         numAcct = atoi(line);
         //acct_ary = (account*)malloc(sizeof(account) * numAcct);
@@ -209,8 +217,6 @@ void parse_file(char *filename)
             // accounts populated, proceed to create output files
             create_acct_outfiles(i);
         }
-        int EOF = 0;
-        int q = 0;
         while (EOF == 0) 
         {
             for (int a = 0; a < MAX_THREADS; a++) 
@@ -224,7 +230,8 @@ void parse_file(char *filename)
                     break;
                 }
             }
-            if (EOF == 1){
+            if (EOF == 1)
+            {
                 break;
             }
             q++;
@@ -284,17 +291,18 @@ void outputBalance(account *acct_ary)
 
 void * process_worker_queue(void *i)
 {
-    int id = &(int)i;
+    int id = *(int)i;
     // thread has started and been directed here. Tell it to pause and wait for signal.
     // upon signal, tokenize the next item in the workers queue.
     int job = 0;
     //process_queue
     // using each worker's id (int i), grab sentence and tokenize it...
-    command_line token_buffer[100];
+    command_line token_buffer;
     while (process_queue[id][job] != "\0")
     {
-        token_buffer[job] = str_filler(line, " ");
+        token_buffer = str_filler(process_queue[id][job], " ");
         process_transaction(token_buffer);
+        job++;
     }
     free_command_line (token_buffer);
 	memset (token_buffer, 0, 0);
@@ -302,7 +310,7 @@ void * process_worker_queue(void *i)
 }
 
 // for each process sentence, execute and update counter
-void process_transaction(command_line token_buf)
+void process_transaction(command_line token_buffer)
 {
     // likely modify how these are passed
     //command_line *token_buffr = (command_line *)token_buf;
@@ -369,9 +377,7 @@ void update_balance()
     printf("update %d\n",updateCount);
     for (int i = 0; i < numAcct; i++) 
     {
-        if (locks == 1) {
-            pthread_mutex_lock(&acct_ary[i].ac_lock);
-        }
+        //pthread_mutex_lock(&acct_ary[i].ac_lock);
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
         acct_ary[i].balance += temp;
         acct_ary[i].transaction_tracter = 0;
