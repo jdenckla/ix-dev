@@ -317,11 +317,11 @@ void * process_worker_queue(void *i)
 }
 
 // for each process sentence, execute and update counter
-void process_transaction(command_line *token_buffer)
+void process_transaction(command_line *token_buf)
 {
     // likely modify how these are passed
-    //command_line *token_buffr = (command_line *)token_buf;
-    //command_line token_buffer = *token_buffr;
+    command_line *token_buffr = (command_line *)token_buf;
+    command_line token_buffer = *token_buffr;
     #ifdef SYS_gettid
     pid_t tid = syscall(SYS_gettid);
     #else
