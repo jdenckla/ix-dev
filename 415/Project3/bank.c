@@ -62,10 +62,10 @@ int main(int argc, char * argv[])
         printf("Error - Usage: ./bank inputfile.txt\n");
         exit(1); 
     }
-    *processCounter = 0;
-    *updateCount = 0;
-    *numAcct = 0;
-    *numLines = 0;
+    //*processCounter = 0;
+    //*updateCount = 0;
+    //*numAcct = 0;
+    //*numLines = 0;
 
     int tid;
 
