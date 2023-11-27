@@ -420,11 +420,11 @@ void *process_worker_queue(void *i)
 }
 
 // for each process sentence, execute and update counter
-void process_transaction(command_line *token_buf)
+void process_transaction(command_line *token_buffer)
 {
     // likely modify how these are passed
-    command_line *token_buffr = (command_line *)token_buf;
-    command_line token_buffer = *token_buffr;
+    //command_line *token_buffr = (command_line *)token_buf;
+    //command_line token_buffer = *token_buffr;
     //int pctr = *processCounter;
     //int numberOfAccounts = *numAcct;
     #ifdef SYS_gettid
