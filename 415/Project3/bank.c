@@ -23,7 +23,7 @@
 
 // Includes + headers
 
-#define MAX_THREADS 1
+#define MAX_THREADS 10
 
 
 // globals: thread array, account array, process counter, update counter (bank), number of accounts, number of lines in file (for debug)
@@ -172,7 +172,7 @@ int main(int argc, char * argv[])
     }
     //printf("Inner Queue Freed\n");
     free(process_queue);
-    printf("Outer Queue Freed\n");
+    //printf("Outer Queue Freed\n");
     //free(processCounter);
     //printf("P Counter Freed\n");
     //free(updateCount);
