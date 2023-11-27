@@ -175,11 +175,12 @@ int count_lines(char *filename)
 }
 
 // read file, populate account array, create output file
-void parse_file(char *filename)
+void parse_file(char *file)
 {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
+    char *filename = strdup(file);
 
     FILE *fp;
 
@@ -248,6 +249,7 @@ void parse_file(char *filename)
         }
     }
     fclose(fp);
+    free(filename);
     return;
 }
 
