@@ -160,7 +160,10 @@ int main(int argc, char * argv[])
         tid = pthread_create(&thread_id[a], NULL, process_worker_queue, worker);
         // anticipate each pausing from inside worker_queue
     }
-    printf("Exited worker queue creation, awaiting completion\n");
+    if (debugTest == 1)
+    {
+        printf("Exited worker queue creation, awaiting completion\n");
+    }
     // generate another thread for updating accounts? aka bank/manager thread
     for (int b = 0; b < MAX_THREADS; b++){
 		pthread_join(thread_id[b], NULL);
