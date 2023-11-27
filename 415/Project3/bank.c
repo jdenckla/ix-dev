@@ -429,7 +429,8 @@ void *process_worker_queue(void *i)
     int processing = 1;
     while (processing == 1)
     {
-        if (strcmp(process_queue[id][job],'\0') == 0)
+        //if (strcmp(process_queue[id][job],'\0') == 0)
+        if (strlen(process_queue[id][job]) == 0)
         {
             processing = 0;
             break;
