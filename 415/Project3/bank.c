@@ -361,7 +361,7 @@ void parse_file(char *file)
                     //potentially cleanup newline and null characters...
 					//printf("%s added to queue\n",process_queue[a][q]);
 					
-                } else if (a > 0)
+                } else
                 {
                     endOfFile = 1;
                     break;
