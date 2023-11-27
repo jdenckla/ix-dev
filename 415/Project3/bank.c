@@ -166,6 +166,7 @@ int main(int argc, char * argv[])
     free(process_queue);
     free(processCounter);
     free(numLines);
+    free(acct_ary);
     return 0;
 }
 
