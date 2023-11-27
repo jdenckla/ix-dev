@@ -523,7 +523,6 @@ void process_transaction(command_line token_buffer)
                     //printf("Check: %s\n",token_buffer.command_list[1]);
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) 
                 {
-					*processCounter = *processCounter + 1;
 					if (debugText == 1) 
 					{
 						printf(" - Deposit Accepted\n");
@@ -536,11 +535,10 @@ void process_transaction(command_line token_buffer)
                     }
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
+                    *processCounter = *processCounter + 1;
                     pthread_mutex_unlock(&acct_ary[i].ac_lock);
-                    //*processCounter++;
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) 
                 {
-                    *processCounter = *processCounter + 1;
 					if (debugText == 1)
 					{
 						printf(" - Withdrawal Accepted\n");
@@ -553,8 +551,8 @@ void process_transaction(command_line token_buffer)
                     }
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
+                    *processCounter = *processCounter + 1;
                     pthread_mutex_unlock(&acct_ary[i].ac_lock);
-                    //*processCounter++;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) 
                 {
 					if (debugText == 1)
@@ -566,7 +564,6 @@ void process_transaction(command_line token_buffer)
                     {
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0)
                         {
-                            *processCounter = *processCounter + 1;
                             pthread_mutex_lock(&acct_ary[i].ac_lock);
                             if (*processCounter == 5000)
                             {
@@ -575,25 +572,12 @@ void process_transaction(command_line token_buffer)
                             acct_ary[i].balance -= amount;
                             acct_ary[i].transaction_tracter += amount;
                             pthread_mutex_unlock(&acct_ary[i].ac_lock);
-                            
                             pthread_mutex_lock(&acct_ary[j].ac_lock);
-                            /*
-                            if (*processCounter >= 5000)
-                            {
-                                pthread_cond_wait(&condition, &acct_ary[j].ac_lock);
-                            }
-                            */
                             acct_ary[j].balance += amount;
                             pthread_mutex_unlock(&acct_ary[j].ac_lock);
-							
-                            /*
-							if (debugText == 1)
-							{
-								printf(" Complete!\n");
-							}
-                            */
                         }
                     }
+                    *processCounter = *processCounter + 1;
                 } else 
                 {
 					if (debugText == 1)
