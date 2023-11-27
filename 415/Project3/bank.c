@@ -357,9 +357,10 @@ void parse_file(char *file)
 					
                 } else if (a > 0)
                 {
+                    /*
                     int b = MAX_THREADS - a;
                     printf("Max: %d | a: %d | b: %d\n",MAX_THREADS,a,b);
-                    endOfFile = 1;
+                    sleep(1);
                     for (b; b >= 0; b--)
                     {
                         //strcpy(process_queue[b][q],"\0");
@@ -370,6 +371,8 @@ void parse_file(char *file)
                         //strcpy(process_queue[a][q],"\0");
                         process_queue[a][q] = '\0';
                     }
+                    */
+                    endOfFile = 1;
                     break;
                 }
             }
@@ -430,8 +433,8 @@ void *process_worker_queue(void *i)
     int processing = 1;
     while (processing == 1)
     {
-        //if (strcmp(process_queue[id][job],'\0') == 0)
-        if (strlen(process_queue[id][job]) == 0)
+        //if (strlen(process_queue[id][job]) == 0)
+        if (strcmp(process_queue[id][job],"") == 0)
         {
             processing = 0;
             break;
