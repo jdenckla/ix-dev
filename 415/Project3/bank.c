@@ -359,10 +359,10 @@ void outputBalance(account *acct_ary)
     return;
 }
 
+// notice free of pointer here, may be useful elsewhere
 void * process_worker_queue(void *i)
 {
-    int *temp = (int *)i;
-    int id = *temp;
+    int id = *((int *)i);
     printf("Process Started For Worker: %d\n",id);
     // thread has started and been directed here. Tell it to pause and wait for signal.
     // upon signal, tokenize the next item in the workers queue.
@@ -378,6 +378,7 @@ void * process_worker_queue(void *i)
     }
     free_command_line (token_buffer);
 	memset (token_buffer, 0, 0);
+    free(i);
     pthread_exit(NULL);
 }
 
