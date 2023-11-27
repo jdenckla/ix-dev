@@ -104,6 +104,7 @@ int main(int argc, char * argv[])
     //int numberOfAccounts = *numAcct;
     *numAcct = atoi(line);
     //printf("Num acct: %d\n",numAcct);
+    printf("%d Accounts\n");
     acct_ary = (account*)malloc(sizeof(account) * *numAcct);
     if (acct_ary == NULL) 
     {
@@ -306,6 +307,7 @@ void parse_file(char *file)
     {
         getline(&line, &len, fp);
         // pass number of accounts line
+        printf("Filling Data For %d Accounts\n",*numAcct);
         for (int i = 0; i < *numAcct; i++) 
         {
             acct_ary[i].transaction_tracter = 0;
@@ -436,6 +438,7 @@ void process_transaction(command_line token_buffer)
     #error "SYS_gettid unavailable on this system"
     #endif
     printf("Processing tid: %d\n",tid);
+    printf("Against %d Accounts",*numAcct);
     for (int i = 0; i < *numAcct; i++) 
     {
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0)
