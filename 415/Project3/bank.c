@@ -104,7 +104,7 @@ int main(int argc, char * argv[])
     //int numberOfAccounts = *numAcct;
     *numAcct = atoi(line);
     //printf("Num acct: %d\n",numAcct);
-    printf("%d Accounts\n");
+    printf("%d Accounts\n",*numAcct);
     acct_ary = (account*)malloc(sizeof(account) * *numAcct);
     if (acct_ary == NULL) 
     {
