@@ -81,7 +81,7 @@ int main(int argc, char * argv[])
     size_t len = 0;
     ssize_t read;
 
-    command_line token_buffer;
+    command_line *token_buffer;
 
     processCounter = malloc(sizeof(int) * 10000);
     numLines = malloc(sizeof(int) * 10000);
@@ -171,8 +171,8 @@ int main(int argc, char * argv[])
         // number of processes each thread could have to run
         free(process_queue[z]);
     }
-    free_command_line (&token_buffer);
-	memset (&token_buffer, 0, 0);
+    free_command_line (token_buffer);
+	memset (token_buffer, 0, 0);
     free(process_queue);
     free(processCounter);
     free(updateCount);
@@ -406,7 +406,7 @@ void *process_worker_queue(void *i)
     //command_line token_buffer[100];
     while (process_queue[id][job] != "\0")
     {
-        token_buffer = str_filler(process_queue[id][job], " ");
+        *token_buffer = str_filler(process_queue[id][job], " ");
         process_transaction(token_buffer);
         job++;
         if (job > *numLines)
