@@ -33,7 +33,6 @@ int *processCounter;
 int *updateCount;
 int *numAcct;
 int *numLines;
-int ready = 0;
 
 // helpers: tokenize strings, countlines, process input file, process queue (thread), process transaction (each line of queue), update balance (unique handler thread)
 
@@ -63,6 +62,10 @@ int main(int argc, char * argv[])
         printf("Error - Usage: ./bank inputfile.txt\n");
         exit(1); 
     }
+    *processCounter = 0;
+    *updateCount = 0;
+    *numAcct = 0;
+    *numLines = 0;
 
     int tid;
 
