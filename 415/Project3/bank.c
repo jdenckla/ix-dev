@@ -62,10 +62,8 @@ int main(int argc, char * argv[])
         printf("Error - Usage: ./bank inputfile.txt\n");
         exit(1); 
     }
-    *processCounter = 0;
-    *updateCount = 0;
-    //*numAcct = 0;
-    //*numLines = 0;
+    
+    
 
     int tid;
 
@@ -90,9 +88,12 @@ int main(int argc, char * argv[])
         printf("Failed to alloc memory for initial counters (main)\n");
         return -1;
     }
-	
-	
 
+    *processCounter = 0;
+    *updateCount = 0;
+    *numAcct = 0;
+    *numLines = 0;
+	
     FILE *fp;
 
     int endOfFile = 0;
