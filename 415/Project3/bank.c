@@ -410,7 +410,8 @@ void *process_worker_queue(void *i)
     //process_queue
     // using each worker's id (int i), grab sentence and tokenize it...
     //command_line token_buffer[100];
-    while (true)
+    int processing = 1;
+    while (processing == 1)
     {
         if (process_queue[id][job] != "\0")
         {
@@ -418,6 +419,10 @@ void *process_worker_queue(void *i)
             token_buffer = str_filler(process_queue[id][job], " ");
             process_transaction(token_buffer);
             job++;
+        } else
+        {
+            processing = 0;
+            break;
         }
     }
     //printf("Process Queue Complete, Freeing Mem\n");
