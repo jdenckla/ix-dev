@@ -81,6 +81,14 @@ int main(int argc, char * argv[])
     size_t len = 0;
     ssize_t read;
 
+    processCounter = malloc(sizeof(int));
+    numLines = malloc(sizeof(int));
+    if ((processCounter == NULL) or (numLines == NULL))
+    {
+        printf("Failed to alloc memory for process counter\n");
+        return -1;
+    }
+
     FILE *fp;
 
     int endOfFile = 0;
@@ -156,6 +164,8 @@ int main(int argc, char * argv[])
         free(process_queue[z]);
     }
     free(process_queue);
+    free(processCounter);
+    free(numLines);
     return 0;
 }
 
