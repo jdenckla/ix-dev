@@ -487,7 +487,7 @@ void *process_transaction(void *token_buf){
             break;
         }
     }
-    pthread_exit();
+    pthread_exit(NULL);
     //return;
     
     // parse argument as a command, tokenizing it. Might do this as the argument instead
