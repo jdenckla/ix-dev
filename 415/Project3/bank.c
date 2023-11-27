@@ -161,16 +161,7 @@ int main(int argc, char * argv[])
         printf("Barrier Passed\n");
         sleep(1);
     }
-
-    //pthread_barrier_destroy(&barrier);
-    /*
-    if (debugText == 1)
-    {
-        printf("Barrier Destroyed\n");
-        sleep(1);
-    }
-    */
-
+    
     // generate another thread for updating accounts? aka bank/manager thread
     for (int b = 0; b < MAX_THREADS; b++){
 		pthread_join(thread_id[b], NULL);
@@ -201,6 +192,7 @@ int main(int argc, char * argv[])
     }
     //printf("Inner Queue Freed\n");
     free(process_queue);
+    pthread_barrier_destroy(&barrier);
 
     
     
