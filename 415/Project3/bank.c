@@ -140,15 +140,23 @@ int main(int argc, char * argv[])
         tid = pthread_create(&thread_id[a], NULL, process_worker_queue, worker);
         // anticipate each pausing from inside worker_queue
     }
+    printf("Exited worker queue, awaiting completion\n");
     // generate another thread for updating accounts? aka bank/manager thread
     for (int b = 0; b < MAX_THREADS; b++){
 		pthread_join(thread_id[b], NULL);
 	}
+    printf("Attempt Balance Update From Main\n");
     // figure out how we're going to update accounts / monitor counter
     update_balance();
     printf("Attempting Output\n");
     outputBalance(acct_ary);
     printf("Update Count: %d\n", updateCount);
+    for (int z = 0; z < MAX_THREADS; z++)
+    {
+        // number of processes each thread could have to run
+        free(process_queue[z]);
+    }
+    free(process_queue);
     return 0;
 }
 
@@ -375,9 +383,16 @@ void *process_worker_queue(void *i)
         token_buffer[id] = str_filler(process_queue[id][job], " ");
         process_transaction(token_buffer);
         job++;
+        if (job > numLines)
+        {
+            printf("Err - more jobs attempted than available\n");
+            break;
+        }
     }
+    printf("Process Queue Complete, Freeing Mem\n");
     free_command_line (token_buffer);
 	memset (token_buffer, 0, 0);
+    printf("Exiting Thread %d\n",id);
     free(i);
     pthread_exit(NULL);
 }
