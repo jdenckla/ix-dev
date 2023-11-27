@@ -23,7 +23,7 @@
 
 // Includes + headers
 
-#define MAX_THREADS 10
+#define MAX_THREADS 1
 
 
 // globals: thread array, account array, process counter, update counter (bank), number of accounts, number of lines in file (for debug)
@@ -432,6 +432,11 @@ void *process_worker_queue(void *i)
             token_buffer = str_filler(process_queue[id][job], " ");
             process_transaction(token_buffer);
             job++;
+            if (*processCounter == 5000)
+            {
+                *processCounter = 0;
+                update_balance();
+            }
         } 
     }
     //printf("Process Queue Complete, Freeing Mem\n");
