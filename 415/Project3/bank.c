@@ -26,14 +26,16 @@
 #define MAX_THREADS 1
 
 
-// globals: thread array, account array, process counter
+// globals: thread array, account array, process counter, update counter (bank), number of accounts
 
 pthread_t thread_id[MAX_THREADS];
 
 account *acct_ary;
-char **process_queue;
+char ***process_queue;
 
 int processCounter;
+int updateCount;
+int numAcct;
 
 // helpers: tokenize strings, countlines, ? build queue's / file read, process queue (thread), process transaction (each line of queue), update balance (unique handler thread)
 
@@ -170,6 +172,10 @@ int count_lines(char *filename)
 // read file, populate account array, create output file
 void parse_file(char *filename)
 {
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+    FILE *fp;
     fp = fopen(filename, "r");
     if (fp == NULL) {
 		printf("Error! Failed to open output file for account creation.\n");
@@ -201,7 +207,7 @@ void parse_file(char *filename)
             //int c;
             //c = pthread_mutex_init(&acct_ary[i].ac_lock, NULL);
             // accounts populated, proceed to create output files
-            create_acct_outfiles(int i);
+            create_acct_outfiles(i);
         }
         int EOF = 0;
         int q = 0;
