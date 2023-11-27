@@ -95,9 +95,9 @@ int main(int argc, char * argv[])
 
     int endOfFile = 0;
     int q = 0;
-    int max = *numLines;
-    max = count_lines(filename);
-    printf("Max at init: %d\n",max);
+    //int max = *numLines;
+    *numLines = count_lines(filename);
+    printf("Max at init: %d\n",*numLines);
     
     fp = fopen(filename, "r");
     getline(&line, &len, fp);
@@ -121,13 +121,13 @@ int main(int argc, char * argv[])
     for (int z = 0; z < MAX_THREADS; z++)
     {
         // number of processes each thread could have to run
-        process_queue[z] = (char **)malloc(sizeof(char*) * ((max/MAX_THREADS) + 1));
+        process_queue[z] = (char **)malloc(sizeof(char*) * ((*numLines/MAX_THREADS) + 1));
         if (acct_ary == NULL) 
         {
             printf("Failed to alloc memory for process queue (threads)\n");
             return -1;
         }
-        for (int y = 0; y < ((max/MAX_THREADS) + 1); y++) 
+        for (int y = 0; y < ((*numLines/MAX_THREADS) + 1); y++) 
         {
             // length of each process sentence
             process_queue[z][y] = (char *)malloc(sizeof(char) * 100);
@@ -395,8 +395,8 @@ void *process_worker_queue(void *i)
     // thread has started and been directed here. Tell it to pause and wait for signal.
     // upon signal, tokenize the next item in the workers queue.
     int job = 0;
-    int max = *numLines;
-    printf("Max at queue start: %d\n",max);
+    //int max = *numLines;
+    printf("Max at queue start: %d\n",*numLines);
     //process_queue
     // using each worker's id (int i), grab sentence and tokenize it...
     command_line token_buffer[100];
@@ -405,7 +405,7 @@ void *process_worker_queue(void *i)
         token_buffer[id] = str_filler(process_queue[id][job], " ");
         process_transaction(token_buffer);
         job++;
-        if (job > max)
+        if (job > *numLines)
         {
             printf("Err - more jobs attempted than available\n");
             break;
