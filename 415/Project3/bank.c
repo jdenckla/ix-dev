@@ -73,10 +73,32 @@ int main(int argc, char * argv[])
     //printf("attempt mkdir output\n");
     const char *name = "output";
     mkdir(name,S_IRWXU);
-
-    acct_ary = (account*)malloc(sizeof(account) * numAcct);
+    
 
     char *filename = strdup(argv[1]);
+    char *line = NULL;
+    size_t len = 0;
+    ssize_t read;
+
+    FILE *fp;
+
+    int endOfFile = 0;
+    int q = 0;
+    
+    fp = fopen(filename, "r");
+    if (fp == NULL) 
+    {
+		printf("Error! Failed to open output file for account creation.\n");
+		free(filename);
+		return -1;
+    } else 
+    {
+        getline(&line, &len, fp);
+        numAcct = atoi(line);
+        printf("Num acct: %d\n",numAcct);
+        acct_ary = (account*)malloc(sizeof(account) * numAcct);
+    }
+    fclose(fp);
     parse_file(filename);
     free(filename);
     for (int a = 0; a < MAX_THREADS; a++)
@@ -217,8 +239,7 @@ void parse_file(char *file)
     } else 
     {
         getline(&line, &len, fp);
-        numAcct = atoi(line);
-        printf("Num acct: %d\n",numAcct);
+        // pass number of accounts line
         //acct_ary = (account*)malloc(sizeof(account) * numAcct);
         for (int i = 0; i < numAcct; i++) 
         {
