@@ -1,4 +1,25 @@
+#include <sys/syscall.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include "account.h"
 
+#include <string.h>
+#include <signal.h>
+#include <errno.h>
+#include <time.h>
+#include <fcntl.h>
+#include <sys/wait.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+
+#define _GNU_SOURCE
+#define SIZE 1024
+
+// cleanup the above, remove unnecessary inclusions
 
 // Includes + headers
 
