@@ -97,14 +97,14 @@ int main(int argc, char * argv[])
     int q = 0;
     //int max = *numLines;
     *numLines = count_lines(filename);
-    printf("Max at init: %d\n",*numLines);
+    //printf("Max at init: %d\n",*numLines);
     
     fp = fopen(filename, "r");
     getline(&line, &len, fp);
     //int numberOfAccounts = *numAcct;
     *numAcct = atoi(line);
     //printf("Num acct: %d\n",numAcct);
-    printf("%d Accounts\n",*numAcct);
+    //printf("%d Accounts\n",*numAcct);
     acct_ary = (account*)malloc(sizeof(account) * *numAcct);
     if (acct_ary == NULL) 
     {
@@ -158,7 +158,7 @@ int main(int argc, char * argv[])
     for (int b = 0; b < MAX_THREADS; b++){
 		pthread_join(thread_id[b], NULL);
 	}
-    printf("Attempt Balance Update From Main\n");
+    printf("Threads Complete - Attempt Balance Update From Main\n");
     // figure out how we're going to update accounts / monitor counter
     update_balance();
     printf("Attempting Output\n");
@@ -170,11 +170,11 @@ int main(int argc, char * argv[])
         // number of processes each thread could have to run
         free(process_queue[z]);
     }
-    printf("Inner Queue Freed\n");
+    //printf("Inner Queue Freed\n");
     free(process_queue);
     printf("Outer Queue Freed\n");
-    free(processCounter);
-    printf("P Counter Freed\n");
+    //free(processCounter);
+    //printf("P Counter Freed\n");
     free(updateCount);
     printf("U Counter Freed\n");
     free(numLines);
@@ -313,7 +313,7 @@ void parse_file(char *file)
     {
         getline(&line, &len, fp);
         // pass number of accounts line
-        printf("Filling Data For %d Accounts\n",*numAcct);
+        //printf("Filling Data For %d Accounts\n",*numAcct);
         for (int i = 0; i < *numAcct; i++) 
         {
             acct_ary[i].transaction_tracter = 0;
@@ -373,7 +373,7 @@ void parse_file(char *file)
         }
     }
     //printf("Q terminates at %d\n",q);
-    sleep(1);
+    //sleep(1);
     fclose(fp);
     free(filename);
     return;
