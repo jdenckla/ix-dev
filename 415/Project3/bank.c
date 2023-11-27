@@ -83,7 +83,8 @@ int main(int argc, char * argv[])
 
     processCounter = malloc(sizeof(int));
     numLines = malloc(sizeof(int));
-    if ((processCounter == NULL) or (numLines == NULL))
+    updateCount = malloc(sizeof(int));
+    if ((processCounter == NULL) or (numLines == NULL) or (updateCount == NULL))
     {
         printf("Failed to alloc memory for process counter\n");
         return -1;
@@ -159,7 +160,8 @@ int main(int argc, char * argv[])
     update_balance();
     printf("Attempting Output\n");
     outputBalance(acct_ary);
-    printf("Update Count: %d\n", updateCount);
+    int updateCounter = *updateCount;
+    printf("Update Count: %d\n", updateCounter);
     for (int z = 0; z < MAX_THREADS; z++)
     {
         // number of processes each thread could have to run
@@ -167,6 +169,7 @@ int main(int argc, char * argv[])
     }
     free(process_queue);
     free(processCounter);
+    free(updateCount);
     free(numLines);
     free(acct_ary);
     return 0;
@@ -487,8 +490,9 @@ void process_transaction(command_line *token_buf)
 
 void update_balance()
 {
-    updateCount++;
-    printf("update %d\n",updateCount);
+    int updateCounter = *updateCount;
+    updateCounter++;
+    printf("update %d\n",updateCounter);
     int numberOfAccounts = *numAcct;
     for (int i = 0; i < numberOfAccounts; i++) 
     {
