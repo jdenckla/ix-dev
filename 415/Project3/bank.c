@@ -363,7 +363,7 @@ void * process_worker_queue(void *i)
 {
     int *temp = (int *)i;
     int id = *temp;
-    print("Process Started For Worker: %d\n",id);
+    printf("Process Started For Worker: %d\n",id);
     // thread has started and been directed here. Tell it to pause and wait for signal.
     // upon signal, tokenize the next item in the workers queue.
     int job = 0;
