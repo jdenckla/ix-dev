@@ -161,20 +161,14 @@ int main(int argc, char * argv[])
     for (int b = 0; b < MAX_THREADS; b++){
 		pthread_join(thread_id[b], NULL);
 	}
-    //printf("Threads Complete - Attempt Balance Update From Main\n");
-    // figure out how we're going to update accounts / monitor counter
     if (MAX_THREADS > 1)
     {
         update_balance();
     }
-    //update_balance();
-    //printf("Attempting Output\n");
     outputBalance(acct_ary);
-    //int updateCounter = *updateCount;
     printf("Update Count: %d\n", *updateCount);
     for (int z = 0; z < MAX_THREADS; z++)
     {
-        // number of processes each thread could have to run
         free(process_queue[z]);
     }
     //printf("Inner Queue Freed\n");
