@@ -52,7 +52,7 @@ void create_acct_outfiles(int i);
 void parse_file(char *filename);
 void outputBalance(account *acct_ary);
 void *process_worker_queue(void *i);
-void process_transaction(command_line *token_buffer);
+void process_transaction(command_line token_buffer);
 void update_balance();
 
 // consider how we'll monitor the counter - an if within a while? should signal update thread, which pauses all workers, updates, then tells them to continue
@@ -80,8 +80,6 @@ int main(int argc, char * argv[])
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
-
-    command_line *token_buffer;
 
     processCounter = malloc(sizeof(int) * 10000);
     numLines = malloc(sizeof(int) * 10000);
@@ -171,8 +169,6 @@ int main(int argc, char * argv[])
         // number of processes each thread could have to run
         free(process_queue[z]);
     }
-    free_command_line (token_buffer);
-	memset (token_buffer, 0, 0);
     free(process_queue);
     free(processCounter);
     free(updateCount);
@@ -401,12 +397,13 @@ void *process_worker_queue(void *i)
     int job = 0;
     //int max = *numLines;
     printf("Max at queue start: %d\n",*numLines);
+    command_line token_buffer;
     //process_queue
     // using each worker's id (int i), grab sentence and tokenize it...
     //command_line token_buffer[100];
     while (process_queue[id][job] != "\0")
     {
-        *token_buffer = str_filler(process_queue[id][job], " ");
+        token_buffer = str_filler(process_queue[id][job], " ");
         process_transaction(token_buffer);
         job++;
         if (job > *numLines)
@@ -419,6 +416,8 @@ void *process_worker_queue(void *i)
     //free_command_line (token_buffer);
 	//memset (token_buffer, 0, 0);
     printf("Process Queue Complete, Exiting Thread %d\n",id);
+    free_command_line (token_buffer);
+	memset (token_buffer, 0, 0);
     free(i);
     pthread_exit(NULL);
 }
