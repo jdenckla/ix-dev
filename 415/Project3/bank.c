@@ -46,7 +46,7 @@ int *numLines;
 
 int count_token (char* buf, const char* delim);
 command_line str_filler (char* buf, const char* delim);
-void free_command_line(command_line* command);
+void free_command_line(command_line command);
 int count_lines(char *filename);
 void create_acct_outfiles(int i);
 void parse_file(char *filename);
@@ -80,6 +80,8 @@ int main(int argc, char * argv[])
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
+
+    command_line token_buffer[100];
 
     processCounter = malloc(sizeof(int) * 10000);
     numLines = malloc(sizeof(int) * 10000);
@@ -169,6 +171,8 @@ int main(int argc, char * argv[])
         // number of processes each thread could have to run
         free(process_queue[z]);
     }
+    free_command_line (token_buffer);
+	memset (token_buffer, 0, 0);
     free(process_queue);
     free(processCounter);
     free(updateCount);
@@ -399,7 +403,7 @@ void *process_worker_queue(void *i)
     printf("Max at queue start: %d\n",*numLines);
     //process_queue
     // using each worker's id (int i), grab sentence and tokenize it...
-    command_line token_buffer[100];
+    //command_line token_buffer[100];
     while (process_queue[id][job] != "\0")
     {
         token_buffer[id] = str_filler(process_queue[id][job], " ");
@@ -411,16 +415,16 @@ void *process_worker_queue(void *i)
             break;
         }
     }
-    printf("Process Queue Complete, Freeing Mem\n");
-    free_command_line (token_buffer);
-	memset (token_buffer, 0, 0);
-    printf("Exiting Thread %d\n",id);
+    //printf("Process Queue Complete, Freeing Mem\n");
+    //free_command_line (token_buffer);
+	//memset (token_buffer, 0, 0);
+    printf("Process Queue Complete, Exiting Thread %d\n",id);
     free(i);
     pthread_exit(NULL);
 }
 
 // for each process sentence, execute and update counter
-void process_transaction(command_line *token_buffer)
+void process_transaction(command_line token_buffer)
 {
     // likely modify how these are passed
     //command_line *token_buffr = (command_line *)token_buf;
