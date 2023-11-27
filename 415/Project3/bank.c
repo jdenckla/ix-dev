@@ -1,33 +1,27 @@
-#include <sys/syscall.h>
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+#include <time.h>
+#include <pthread.h>
+#include <sys/syscall.h>
+#include <sys/stat.h>
 #include "account.h"
 
-#include <string.h>
-#include <signal.h>
-#include <errno.h>
-#include <time.h>
-#include <fcntl.h>
-#include <sys/wait.h>
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
+//#include <fcntl.h>
+//#include <sys/wait.h>
+//#include <sys/types.h>
+//#include <dirent.h>
 
 #define _GNU_SOURCE
 #define SIZE 1024
 
-// cleanup the above, remove unnecessary inclusions
-
-// Includes + headers
-
-#define MAX_THREADS 1
-#define debugText 1
+#define MAX_THREADS 10
+#define debugText 0
 
 
 // globals: thread array, account array, process counter, update counter (bank), number of accounts, number of lines in file (for debug)
+// use shared memory for the following instead
 
 pthread_t thread_id[MAX_THREADS];
 
