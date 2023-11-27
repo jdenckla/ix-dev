@@ -228,7 +228,7 @@ void parse_file(char *file)
             getline(&line, &len, fp);
             strcpy(acct_ary[i].account_number, line);
             acct_ary[i].account_number[strcspn(acct_ary[i].account_number,"\n")] = '\0';
-            printf("Acct Num: %f\n",acct_ary[i].account_number);
+            printf("Acct Num: %s\n",acct_ary[i].account_number);
             char iter[64];
             strcpy(iter,"output/");
             strcat(iter,acct_ary[i].account_number);
