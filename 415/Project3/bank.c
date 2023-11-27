@@ -417,6 +417,7 @@ void *process_worker_queue(void *i)
         printf("Worker %d Created, Signalling Barrier\n",id);
     }
     pthread_barrier_wait(&barrier);
+    command_line token_buffer;
     int processing = 1;
     while (processing == 1)
     {
