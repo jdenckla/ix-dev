@@ -15,8 +15,8 @@
 #define _GNU_SOURCE
 #define SIZE 1024
 
-#define MAX_THREADS 10
-#define debugText 0
+#define MAX_THREADS 20
+#define debugText 1
 
 
 // globals: thread array, account array, process counter, update counter (bank), number of accounts, number of lines in file (for debug)
