@@ -589,7 +589,10 @@ void update_balance()
 	*updateCount = *updateCount + 1;
     //printf("Update %d\n",*updateCount);
     //int numberOfAccounts = *numAcct;
-	printf("Updating Balances... ");
+    if (debugText == 1)
+    {
+        printf("Updating Balances... \n");
+    }
     for (int i = 0; i < *numAcct; i++) 
     {
         pthread_mutex_lock(&acct_ary[i].ac_lock);
@@ -612,6 +615,6 @@ void update_balance()
         fclose(afp);
         free(filename);
     }
-	printf("Done\n");
+	//printf("Done\n");
     return;
 }
