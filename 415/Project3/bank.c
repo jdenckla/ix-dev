@@ -38,7 +38,7 @@ int *updateCount;
 int *numAcct;
 int *numLines;
 
-#define debugText 1
+#define debugText 0
 
 // helpers: tokenize strings, countlines, ? build queue's / file read, process queue (thread), process transaction (each line of queue), update balance (unique handler thread)
 
@@ -573,7 +573,10 @@ void process_transaction(command_line token_buffer)
                 }
             } else 
 			{
-				printf(" - Password Rejected\n");
+				if (debugText == 1)
+				{
+					printf(" - Password Rejected\n");
+				}
 			}
             break;
         }
