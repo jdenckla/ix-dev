@@ -581,16 +581,18 @@ void process_transaction(command_line token_buffer)
                             pthread_mutex_lock(&acct_ary[j].ac_lock);
                             if (*processCounter >= 5000)
                             {
-                                pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
+                                pthread_cond_wait(&condition, &acct_ary[j].ac_lock);
                                 update_balance();
                             }
                             acct_ary[j].balance += amount;
                             pthread_mutex_unlock(&acct_ary[j].ac_lock);
 							*processCounter = *processCounter + 1;
+                            /*
 							if (debugText == 1)
 							{
 								printf(" Complete!\n");
 							}
+                            */
                         }
                     }
                 } else 
