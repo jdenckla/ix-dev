@@ -160,7 +160,7 @@ int main(int argc, char * argv[])
         tid = pthread_create(&thread_id[a], NULL, process_worker_queue, worker);
         // anticipate each pausing from inside worker_queue
     }
-    if (debugTest == 1)
+    if (debugText == 1)
     {
         printf("Exited worker queue creation, awaiting completion\n");
     }
