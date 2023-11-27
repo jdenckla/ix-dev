@@ -46,7 +46,7 @@ int *numLines;
 
 int count_token (char* buf, const char* delim);
 command_line str_filler (char* buf, const char* delim);
-void free_command_line(command_line command);
+void free_command_line(command_line *command);
 int count_lines(char *filename);
 void create_acct_outfiles(int i);
 void parse_file(char *filename);
