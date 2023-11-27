@@ -464,7 +464,7 @@ void *process_worker_queue(void *i)
     if (debugText == 1)
     {
         printf("Worker %d Done, Exiting\n",id);
-        sleep(1);
+        //sleep(1);
     }
     //printf("Process Queue Complete, Freeing Mem\n");
     //free_command_line (token_buffer);
