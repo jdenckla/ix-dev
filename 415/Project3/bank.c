@@ -151,9 +151,23 @@ int main(int argc, char * argv[])
     if (debugText == 1)
     {
         printf("All Workers Created, Awaiting Barrier\n");
+        sleep(1);
     }
 
     pthread_barrier_wait(&barrier);
+
+    if (debugText == 1)
+    {
+        printf("Barrier Passed\n");
+        sleep(1);
+    }
+
+    pthread_barrier_destroy(&barrier);
+    if (debugText == 1)
+    {
+        printf("Barrier Destroyed\n");
+        sleep(1);
+    }
 
     // generate another thread for updating accounts? aka bank/manager thread
     for (int b = 0; b < MAX_THREADS; b++){
@@ -180,7 +194,9 @@ int main(int argc, char * argv[])
     }
     //printf("Inner Queue Freed\n");
     free(process_queue);
-    pthread_barrier_destroy(&barrier);
+
+    
+    
     //printf("Outer Queue Freed\n");
     //free(processCounter);
     //printf("P Counter Freed\n");
@@ -348,9 +364,9 @@ void parse_file(char *file)
             create_acct_outfiles(i);
         }
         if (debugText == 1)
-            {
-                printf("Reading In File...\n");
-            }
+        {
+            printf("Reading In File...\n");
+        }
         while (endOfFile == 0) 
         {
             for (int a = 0; a < MAX_THREADS; a++) 
@@ -412,7 +428,7 @@ void *process_worker_queue(void *i)
 {
     int id = *((int *)i);
     int job = 0;
-        if (debugText == 1)
+    if (debugText == 1)
     {
         printf("Worker %d Created, Signalling Barrier\n",id);
     }
