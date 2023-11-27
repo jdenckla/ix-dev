@@ -149,10 +149,12 @@ int count_lines(char *filename)
 	fp = fopen(filename,"r");
 	char buffer[SIZE + 1], lastchar = '\n';
 	size_t bytes;
-	if (fp == NULL) {
+	if (fp == NULL) 
+    {
 		perror("Error opening file");
 		return -1;
-	} else {
+	} else 
+    {
 		while ((bytes = fread(buffer, 1, sizeof(buffer) - 1, fp))) 
         {
 			lastchar = buffer[bytes - 1];
@@ -161,7 +163,8 @@ int count_lines(char *filename)
 				counter++;
 			}
 		}
-		if (lastchar != '\n') {
+		if (lastchar != '\n') 
+        {
 			counter++; 
 		}
 	}
@@ -178,9 +181,8 @@ void parse_file(char *filename)
 
     FILE *fp;
 
-    int EOF;
+    int endOfFile = 0;
     int q = 0;
-    EOF = 0;
     
     fp = fopen(filename, "r");
     if (fp == NULL) 
@@ -217,7 +219,7 @@ void parse_file(char *filename)
             // accounts populated, proceed to create output files
             create_acct_outfiles(i);
         }
-        while (EOF == 0) 
+        while (endOfFile == 0) 
         {
             for (int a = 0; a < MAX_THREADS; a++) 
             {
@@ -226,11 +228,11 @@ void parse_file(char *filename)
                     strcpy(process_queue[a][q],line);
                     //potentially cleanup newline and null characters...
                 } else {
-                    EOF = 1;
+                    endOfFile = 1;
                     break;
                 }
             }
-            if (EOF == 1)
+            if (endOfFile == 1)
             {
                 break;
             }
@@ -252,11 +254,13 @@ void create_acct_outfiles(int i)
     char *filename;
     filename = strdup(acct_ary[i].out_file);
     FILE * afp = fopen(filename, "w+");
-    if (afp == NULL) {
+    if (afp == NULL) 
+    {
         printf("Failed to open file to create!\n");
         free(filename);
         return;
-    } else {
+    } else 
+    {
         fprintf(afp,"account ");
         fprintf(afp,"%d",i);
         fprintf(afp,":\n");
@@ -272,13 +276,15 @@ void outputBalance(account *acct_ary)
     char *filename;
     filename = "output.txt";
     FILE * afp = fopen(filename, "w");
-    if (afp == NULL) {
+    if (afp == NULL) 
+    {
         char *errOpenInput = "Error! Failed to open input file.";
         write(1,errOpenInput,strlen(errOpenInput));
         write(1,"\n",1);
         //free(filename);
         return;
-    } else {
+    } else 
+    {
         for (int a = 0; a < numAcct; a++){
             fprintf(afp,"%d",a);
             fprintf(afp," balance:\t");
@@ -291,13 +297,14 @@ void outputBalance(account *acct_ary)
 
 void * process_worker_queue(void *i)
 {
-    int id = *(int)i;
+    int *temp = (int *)i;
+    int id = *temp;
     // thread has started and been directed here. Tell it to pause and wait for signal.
     // upon signal, tokenize the next item in the workers queue.
     int job = 0;
     //process_queue
     // using each worker's id (int i), grab sentence and tokenize it...
-    command_line token_buffer;
+    command_line token_buffer[100];
     while (process_queue[id][job] != "\0")
     {
         token_buffer = str_filler(process_queue[id][job], " ");
@@ -323,12 +330,16 @@ void process_transaction(command_line token_buffer)
     printf("Processing tid: %d\n",tid);
     for (int i = 0; i < numAcct; i++) 
     {
-        if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0){
-            if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0){
-                if (strcmp("C",token_buffer.command_list[0]) == 0) {
+        if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0)
+        {
+            if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0)
+            {
+                if (strcmp("C",token_buffer.command_list[0]) == 0) 
+                {
                     //printf("Check: %s\n",token_buffer.command_list[1]);
                     ;
-                } else if (strcmp("D",token_buffer.command_list[0]) == 0) {
+                } else if (strcmp("D",token_buffer.command_list[0]) == 0) 
+                {
                     double amount = atof(token_buffer.command_list[3]);
                     //pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Deposit: %s\n",token_buffer.command_list[1]);
@@ -336,7 +347,8 @@ void process_transaction(command_line token_buffer)
                     acct_ary[i].transaction_tracter += amount;
                     //pthread_mutex_unlock(&acct_ary[i].ac_lock);
                     processCounter++;
-                } else if (strcmp("W",token_buffer.command_list[0]) == 0) {
+                } else if (strcmp("W",token_buffer.command_list[0]) == 0) 
+                {
                     double amount = atof(token_buffer.command_list[3]);
                     //pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Withdraw: %s\n",token_buffer.command_list[1]);
@@ -344,11 +356,13 @@ void process_transaction(command_line token_buffer)
                     acct_ary[i].transaction_tracter += amount;
                     //pthread_mutex_unlock(&acct_ary[i].ac_lock);
                     processCounter++;
-                } else if (strcmp("T",token_buffer.command_list[0]) == 0) {
+                } else if (strcmp("T",token_buffer.command_list[0]) == 0) 
+                {
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < numAcct; j++) 
                     {
-                        if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0){=
+                        if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0)
+                        {
                             //pthread_mutex_lock(&acct_ary[i].ac_lock);=
                             //printf("Transfer From: %s\n",token_buffer.command_list[1]);
                             acct_ary[i].balance -= amount;
@@ -361,7 +375,8 @@ void process_transaction(command_line token_buffer)
                             processCounter++;
                         }
                     }
-                } else {
+                } else 
+                {
                     break;
                 }
             }
@@ -381,24 +396,21 @@ void update_balance()
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
         acct_ary[i].balance += temp;
         acct_ary[i].transaction_tracter = 0;
-        //update file
         char *filename;
         filename = strdup(acct_ary[i].out_file);
         FILE * afp = fopen(filename, "a");
-        if (afp == NULL) {
+        if (afp == NULL) 
+        {
             printf("Failed to open file to update!\n");
             return;
-        } else {
+        } else 
+        {
             fprintf(afp,"Current Balance:\t");
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
-        if (locks == 1) {
-            pthread_mutex_unlock(&acct_ary[i].ac_lock);
-        }
+        //pthread_mutex_unlock(&acct_ary[i].ac_lock);
         fclose(afp);
         free(filename);
-        
-        //}
     }
     return;
 }
