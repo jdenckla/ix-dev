@@ -228,14 +228,10 @@ int main(int argc, char * argv[])
                         //process_transaction(token_buffer);
                         if (ctr == 5000){
                             ctr = 0;
+                            /*
                             printf("Joining Threads Prior to Update...\n");
                             for (int c = 0; c < MAX_THREADS; c++){
                                 //should probably be current thread count, need to check thread_id array
-                                /*
-                                if (endOfFile == 1){
-                                    break;
-                                }
-                                */
                                 #ifdef SYS_gettid
                                 pid_t tid = syscall(SYS_gettid);
                                 #else
@@ -244,6 +240,7 @@ int main(int argc, char * argv[])
                                 //printf("closing %ld from %d\n",thread_id[c],tid);
                                 pthread_join(thread_id[c], NULL);
                             }
+                            */
                             update_balance();
                             //balanceUpdated = 1;
                         }
