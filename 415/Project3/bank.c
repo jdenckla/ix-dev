@@ -97,6 +97,7 @@ int main(int argc, char * argv[])
     int q = 0;
     int max = *numLines;
     max = count_lines(filename);
+    printf("Max at init: %d\n",max);
     
     fp = fopen(filename, "r");
     getline(&line, &len, fp);
@@ -395,6 +396,7 @@ void *process_worker_queue(void *i)
     // upon signal, tokenize the next item in the workers queue.
     int job = 0;
     int max = *numLines;
+    printf("Max at queue start: %d\n",max);
     //process_queue
     // using each worker's id (int i), grab sentence and tokenize it...
     command_line token_buffer[100];
