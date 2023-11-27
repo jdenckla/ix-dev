@@ -163,7 +163,11 @@ int main(int argc, char * argv[])
 	}
     //printf("Threads Complete - Attempt Balance Update From Main\n");
     // figure out how we're going to update accounts / monitor counter
-    update_balance();
+    if (MAX_THREADS > 1)
+    {
+        update_balance();
+    }
+    //update_balance();
     //printf("Attempting Output\n");
     outputBalance(acct_ary);
     //int updateCounter = *updateCount;
