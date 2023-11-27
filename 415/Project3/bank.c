@@ -91,25 +91,52 @@ int main(int argc, char * argv[])
     fp = fopen(filename, "r");
     getline(&line, &len, fp);
     numAcct = atoi(line);
-    printf("Num acct: %d\n",numAcct);
+    //printf("Num acct: %d\n",numAcct);
     acct_ary = (account*)malloc(sizeof(account) * numAcct);
+    if (acct_ary == NULL) 
+    {
+        printf("Failed to alloc memory for account array\n");
+        return -1;
+    }
     fclose(fp);
     // number of threads to process requests
     process_queue = (char ***)malloc(sizeof(char**) * MAX_THREADS);
+    if (acct_ary == NULL) 
+    {
+        printf("Failed to alloc memory for process queue (pointer)\n");
+        return -1;
+    }
     for (int z = 0; z < MAX_THREADS; z++)
     {
         // number of processes each thread could have to run
         process_queue[z] = (char **)malloc(sizeof(char*) * ((numLines/MAX_THREADS) + 1));
+        if (acct_ary == NULL) 
+        {
+            printf("Failed to alloc memory for process queue (threads)\n");
+            return -1;
+        }
         for (int y = 0; y < ((numLines/MAX_THREADS) + 1); y++) 
         {
             // length of each process sentence
             process_queue[z][y] = (char *)malloc(sizeof(char) * 100);
+            if (acct_ary == NULL) 
+            {
+                printf("Failed to alloc memory for process queue (sentences)\n");
+                return -1;
+            }
         }
     }
     parse_file(filename);
     free(filename);
     for (int a = 0; a < MAX_THREADS; a++)
     {
+        int *worker = malloc(sizeof(int*));
+        if (worker == NULL) 
+        {
+            printf("Failed to alloc memory for worker ID\n");
+            return -1;
+        }
+        *worker = a;
         tid = pthread_create(&thread_id[a], NULL, process_worker_queue, (void *)a);
         // anticipate each pausing from inside worker_queue
     }
@@ -152,6 +179,11 @@ command_line str_filler (char* buf, const char* delim)
 	char* token;
 	char* string = buf;
 	var.command_list = (char **)malloc((var.num_token + 1) * (sizeof(char*)));
+    if (var.command_list == NULL) 
+        {
+            printf("Failed to alloc memory for command_line parser\n");
+            exit(0);
+        }
 	token = strtok_r(string, delim, &string);
 	for (int j = 0; j < var.num_token; j++) 
     {
@@ -247,16 +279,13 @@ void parse_file(char *file)
     {
         getline(&line, &len, fp);
         // pass number of accounts line
-        //acct_ary = (account*)malloc(sizeof(account) * numAcct);
         for (int i = 0; i < numAcct; i++) 
         {
             acct_ary[i].transaction_tracter = 0;
-            printf("Tracter: %f\n",acct_ary[i].transaction_tracter);
             getline(&line, &len, fp);
             getline(&line, &len, fp);
             strcpy(acct_ary[i].account_number, line);
             acct_ary[i].account_number[strcspn(acct_ary[i].account_number,"\n")] = '\0';
-            printf("Acct Num: %s\n",acct_ary[i].account_number);
             char iter[64];
             strcpy(iter,"output/");
             strcat(iter,acct_ary[i].account_number);
@@ -334,6 +363,7 @@ void * process_worker_queue(void *i)
 {
     int *temp = (int *)i;
     int id = *temp;
+    print("Process Started For Worker: %d\n",id);
     // thread has started and been directed here. Tell it to pause and wait for signal.
     // upon signal, tokenize the next item in the workers queue.
     int job = 0;
