@@ -161,10 +161,19 @@ int main(int argc, char * argv[])
     for (int b = 0; b < MAX_THREADS; b++){
 		pthread_join(thread_id[b], NULL);
 	}
-    if (MAX_THREADS > 1)
+    int updateRequired = 0;
+    for (int c = 0; c < *numAcct; c++)
+    {
+        if (acct_ary[c].transaction_tracter != 0)
+        {
+            updateRequired = 1;
+        }
+    }
+    if (updateRequired == 1)
     {
         update_balance();
     }
+    
     outputBalance(acct_ary);
     printf("Update Count: %d\n", *updateCount);
     for (int z = 0; z < MAX_THREADS; z++)
