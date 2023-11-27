@@ -17,13 +17,14 @@
 #define SIZE 1024
 
 #define MAX_THREADS 10
-#define debugText 0
+#define debugText 1
 
 
 // globals: thread array, account array, process counter, update counter (bank), number of accounts, number of lines in file (for debug)
 // use shared memory for the following instead
 
 pthread_t thread_id[MAX_THREADS];
+pthread_barrier_t barrier;
 
 account *acct_ary;
 char ***process_queue;
@@ -66,16 +67,15 @@ int main(int argc, char * argv[])
 
     struct stat st = {0};
     
-    //printf("attempt mkdir output\n");
     const char *name = "output";
     mkdir(name,S_IRWXU);
-    
 
     char *filename = strdup(argv[1]);
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
 
+    pthread_barrier_init(&barrier, NULL, MAX_THREADS);
 	
     processCounter = malloc(sizeof(int) * 10000);
     numLines = malloc(sizeof(int) * 10000);
@@ -93,16 +93,11 @@ int main(int argc, char * argv[])
 
     int endOfFile = 0;
     int q = 0;
-    //int max = *numLines;
     *numLines = count_lines(filename);
-    //printf("Max at init: %d\n",*numLines);
     
     fp = fopen(filename, "r");
     getline(&line, &len, fp);
-    //int numberOfAccounts = *numAcct;
     *numAcct = atoi(line);
-    //printf("Num acct: %d\n",numAcct);
-    //printf("%d Accounts\n",*numAcct);
 	
     acct_ary = (account*)malloc(sizeof(account) * *numAcct);
     if (acct_ary == NULL) 
@@ -155,8 +150,11 @@ int main(int argc, char * argv[])
     }
     if (debugText == 1)
     {
-        printf("Exited worker queue creation, awaiting completion\n");
+        printf("All Workers Created, Awaiting Barrier\n");
     }
+
+    pthread_barrier_wait(&barrier);
+
     // generate another thread for updating accounts? aka bank/manager thread
     for (int b = 0; b < MAX_THREADS; b++){
 		pthread_join(thread_id[b], NULL);
@@ -173,7 +171,7 @@ int main(int argc, char * argv[])
     {
         update_balance();
     }
-    
+
     outputBalance(acct_ary);
     printf("Update Count: %d\n", *updateCount);
     for (int z = 0; z < MAX_THREADS; z++)
@@ -182,6 +180,7 @@ int main(int argc, char * argv[])
     }
     //printf("Inner Queue Freed\n");
     free(process_queue);
+    pthread_barrier_destroy(&barrier);
     //printf("Outer Queue Freed\n");
     //free(processCounter);
     //printf("P Counter Freed\n");
@@ -412,21 +411,13 @@ void outputBalance(account *acct_ary)
 void *process_worker_queue(void *i)
 {
     int id = *((int *)i);
-    //printf("Process Started For Worker: %d\n",id);
-    // thread has started and been directed here. Tell it to pause and wait for signal.
-    // upon signal, tokenize the next item in the workers queue.
     int job = 0;
-    //int max = *numLines;
-    //printf("Max at queue start: %d\n",*numLines);
-    command_line token_buffer;
-    //process_queue
-    // using each worker's id (int i), grab sentence and tokenize it...
-    //command_line token_buffer[100];
-    int processing = 1;
-    if (debugText == 1)
+        if (debugText == 1)
     {
-        printf("Begin Worker Queue %d\n",id);
+        printf("Worker %d Created, Signalling Barrier\n",id);
     }
+    pthread_barrier_wait(&barrier);
+    int processing = 1;
     while (processing == 1)
     {
         //if (strlen(process_queue[id][job]) == 0)
