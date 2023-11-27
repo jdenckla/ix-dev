@@ -173,6 +173,11 @@ int main(int argc, char * argv[])
     for (int b = 0; b < MAX_THREADS; b++){
 		pthread_join(thread_id[b], NULL);
 	}
+    if (debugText == 1)
+    {
+        printf("Threads Complete\n");
+        sleep(1);
+    }
     int updateRequired = 0;
     for (int c = 0; c < *numAcct; c++)
     {
