@@ -23,7 +23,7 @@
 
 // Includes + headers
 
-#define MAX_THREADS 1
+#define MAX_THREADS 10
 
 
 // globals: thread array, account array, process counter, update counter (bank), number of accounts, number of lines in file (for debug)
@@ -37,6 +37,8 @@ int *processCounter;
 int *updateCount;
 int *numAcct;
 int *numLines;
+
+#define debugText 1
 
 // helpers: tokenize strings, countlines, ? build queue's / file read, process queue (thread), process transaction (each line of queue), update balance (unique handler thread)
 
@@ -81,6 +83,7 @@ int main(int argc, char * argv[])
     size_t len = 0;
     ssize_t read;
 
+	
     processCounter = malloc(sizeof(int) * 10000);
     numLines = malloc(sizeof(int) * 10000);
     updateCount = malloc(sizeof(int) * 10000);
@@ -90,6 +93,8 @@ int main(int argc, char * argv[])
         printf("Failed to alloc memory for initial counters (main)\n");
         return -1;
     }
+	
+	
 
     FILE *fp;
 
@@ -105,12 +110,14 @@ int main(int argc, char * argv[])
     *numAcct = atoi(line);
     //printf("Num acct: %d\n",numAcct);
     //printf("%d Accounts\n",*numAcct);
+	
     acct_ary = (account*)malloc(sizeof(account) * *numAcct);
     if (acct_ary == NULL) 
     {
         printf("Failed to alloc memory for account array\n");
         return -1;
     }
+	
     fclose(fp);
     // number of threads to process requests
     process_queue = (char ***)malloc(sizeof(char**) * MAX_THREADS);
@@ -158,10 +165,10 @@ int main(int argc, char * argv[])
     for (int b = 0; b < MAX_THREADS; b++){
 		pthread_join(thread_id[b], NULL);
 	}
-    printf("Threads Complete - Attempt Balance Update From Main\n");
+    //printf("Threads Complete - Attempt Balance Update From Main\n");
     // figure out how we're going to update accounts / monitor counter
     update_balance();
-    printf("Attempting Output\n");
+    //printf("Attempting Output\n");
     outputBalance(acct_ary);
     //int updateCounter = *updateCount;
     printf("Update Count: %d\n", *updateCount);
@@ -346,6 +353,8 @@ void parse_file(char *file)
                 {
                     strcpy(process_queue[a][q],line);
                     //potentially cleanup newline and null characters...
+					//printf("%s added to queue\n",process_queue[a][q]);
+					
                 } else {
                     endOfFile = 1;
                     break;
@@ -366,12 +375,17 @@ void parse_file(char *file)
             } else if (process_queue[b][q] == NULL)
             {
                 process_queue[b][q] = "\0";
+				q--;
             } else
             {
                 process_queue[b][q+1] = "\0";
+				q++;
             }
         }
     }
+	//printf("Debug - Q1L1: %s\n",process_queue[0][0]);
+	//printf("Debug - Q%dL%d: %s\n",MAX_THREADS-1,q,process_queue[MAX_THREADS-1][q-1]);
+	//sleep(5);
     //printf("Q terminates at %d\n",q);
     //sleep(1);
     fclose(fp);
@@ -432,8 +446,10 @@ void *process_worker_queue(void *i)
             token_buffer = str_filler(process_queue[id][job], " ");
             process_transaction(token_buffer);
             job++;
-            if (*processCounter == 5000)
+			//printf("Process Counter: %d\n",*processCounter);
+            if (*processCounter >= 5000)
             {
+				//printf("//////// Update Triggered by Process Count /////////\n");
                 *processCounter = 0;
                 update_balance();
             }
@@ -462,7 +478,11 @@ void process_transaction(command_line token_buffer)
     #else
     #error "SYS_gettid unavailable on this system"
     #endif
-    printf("Processing tid: %d\n",tid);
+	if (debugText == 1)
+	{
+		// add timestamp here
+		printf("Processing tid: %d",tid);
+	}
     //printf("Against %d Accounts\n",*numAcct);
     for (int i = 0; i < *numAcct; i++) 
     {
@@ -470,38 +490,57 @@ void process_transaction(command_line token_buffer)
         //printf("Against buf.cmd: %s\n",token_buffer.command_list[1]);
         if (strcmp(acct_ary[i].account_number,token_buffer.command_list[1]) == 0)
         {
-            //printf("Accout Found\n");
+			if (debugText == 1)
+			{
+				printf(" - Accout Found");
+			}
             if (strcmp(acct_ary[i].password,token_buffer.command_list[2]) == 0)
             {
-                //printf("Password Accepted\n");
+				if (debugText == 1)
+				{
+					printf(" - Password Accepted");
+				}
                 if (strcmp("C",token_buffer.command_list[0]) == 0) 
                 {
-                    //printf("Check Balance\n");
+					if (debugText == 1) 
+					{
+						printf(" - Check Balance\n");
+					}
                     //printf("Check: %s\n",token_buffer.command_list[1]);
-                    ;
                 } else if (strcmp("D",token_buffer.command_list[0]) == 0) 
                 {
-                    //printf("Deposit\n");
+					if (debugText == 1) 
+					{
+						printf(" - Deposit Accepted\n");
+					}
                     double amount = atof(token_buffer.command_list[3]);
                     //pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Deposit: %s\n",token_buffer.command_list[1]);
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
                     //pthread_mutex_unlock(&acct_ary[i].ac_lock);
-                    *processCounter++;
+					*processCounter = *processCounter + 1;
+                    //*processCounter++;
                 } else if (strcmp("W",token_buffer.command_list[0]) == 0) 
                 {
-                    //printf("Withdrawal\n");
+					if (debugText == 1)
+					{
+						printf(" - Withdrawal Accepted\n");
+					}
                     double amount = atof(token_buffer.command_list[3]);
                     //pthread_mutex_lock(&acct_ary[i].ac_lock);
                     //printf("Withdraw: %s\n",token_buffer.command_list[1]);
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
                     //pthread_mutex_unlock(&acct_ary[i].ac_lock);
-                    *processCounter++;
+					*processCounter = *processCounter + 1;
+                    //*processCounter++;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) 
                 {
-                    //printf("Transfer\n");
+					if (debugText == 1)
+					{
+						printf(" - Transfer Initiated...");
+					}
                     double amount = atof(token_buffer.command_list[4]);
                     for (int j = 0; j < *numAcct; j++) 
                     {
@@ -516,14 +555,26 @@ void process_transaction(command_line token_buffer)
                             //printf("Transfer To: %s\n",token_buffer.command_list[3]);
                             acct_ary[j].balance += amount;
                             //pthread_mutex_unlock(&acct_ary[j].ac_lock);
-                            *processCounter++;
+							*processCounter = *processCounter + 1;
+                            //*processCounter++;
+							if (debugText == 1)
+							{
+								printf(" Complete!\n");
+							}
                         }
                     }
                 } else 
                 {
+					if (debugText == 1)
+					{
+						printf(" - Command Not Recongized\n");
+					}
                     break;
                 }
-            }
+            } else 
+			{
+				printf(" - Password Rejected\n");
+			}
             break;
         }
     }
@@ -533,9 +584,11 @@ void process_transaction(command_line token_buffer)
 void update_balance()
 {
     //int updateCounter = *updateCount;
-    *updateCount++;
+    //*updateCount++;
+	*updateCount = *updateCount + 1;
     //printf("Update %d\n",*updateCount);
     //int numberOfAccounts = *numAcct;
+	printf("Updating Balances... ");
     for (int i = 0; i < *numAcct; i++) 
     {
         //pthread_mutex_lock(&acct_ary[i].ac_lock);
@@ -558,5 +611,6 @@ void update_balance()
         fclose(afp);
         free(filename);
     }
+	printf("Done\n");
     return;
 }
