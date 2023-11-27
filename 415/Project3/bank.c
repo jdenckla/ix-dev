@@ -74,6 +74,8 @@ int main(int argc, char * argv[])
     const char *name = "output";
     mkdir(name,S_IRWXU);
 
+    acct_ary = (account*)malloc(sizeof(account) * numAcct);
+
     char *filename = strdup(argv[1]);
     parse_file(filename);
     free(filename);
