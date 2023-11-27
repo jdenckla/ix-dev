@@ -47,8 +47,8 @@ int count_token (char* buf, const char* delim);
 command_line str_filler (char* buf, const char* delim);
 void free_command_line(command_line* command);
 int count_lines(char *filename);
-void parse_file(char *filename);
 void create_acct_outfiles(int i);
+void parse_file(char *filename);
 void outputBalance(account *acct_ary);
 void * process_worker_queue(void* i);
 void process_transaction(command_line *token_buffer);
@@ -174,6 +174,27 @@ int count_lines(char *filename)
 	return counter;
 }
 
+void create_acct_outfiles(int i)
+{
+    char *filename;
+    filename = strdup(acct_ary[i].out_file);
+    FILE * afp = fopen(filename, "w+");
+    if (afp == NULL) 
+    {
+        printf("Failed to open file to create!\n");
+        free(filename);
+        return;
+    } else 
+    {
+        fprintf(afp,"account ");
+        fprintf(afp,"%d",i);
+        fprintf(afp,":\n");
+    }
+    fclose(afp);
+    free(filename);
+    return;
+}
+
 // read file, populate account array, create output file
 void parse_file(char *file)
 {
@@ -197,14 +218,17 @@ void parse_file(char *file)
     {
         getline(&line, &len, fp);
         numAcct = atoi(line);
+        print("Num acct: %d\n",numAcct);
         //acct_ary = (account*)malloc(sizeof(account) * numAcct);
         for (int i = 0; i < numAcct; i++) 
         {
             acct_ary[i].transaction_tracter = 0;
+            print("Tracter: %f\n",acct_ary[i].transaction_tracter);
             getline(&line, &len, fp);
             getline(&line, &len, fp);
             strcpy(acct_ary[i].account_number, line);
             acct_ary[i].account_number[strcspn(acct_ary[i].account_number,"\n")] = '\0';
+            print("Acct Num: %f\n",acct_ary[i].account_number);
             char iter[64];
             strcpy(iter,"output/");
             strcat(iter,acct_ary[i].account_number);
@@ -249,27 +273,6 @@ void parse_file(char *file)
         }
     }
     fclose(fp);
-    free(filename);
-    return;
-}
-
-void create_acct_outfiles(int i)
-{
-    char *filename;
-    filename = strdup(acct_ary[i].out_file);
-    FILE * afp = fopen(filename, "w+");
-    if (afp == NULL) 
-    {
-        printf("Failed to open file to create!\n");
-        free(filename);
-        return;
-    } else 
-    {
-        fprintf(afp,"account ");
-        fprintf(afp,"%d",i);
-        fprintf(afp,":\n");
-    }
-    fclose(afp);
     free(filename);
     return;
 }
