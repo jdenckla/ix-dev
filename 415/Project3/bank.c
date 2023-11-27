@@ -80,29 +80,31 @@ int main(int argc, char * argv[])
     size_t len = 0;
     ssize_t read;
 
+    int numLines;
+
     FILE *fp;
 
     int endOfFile = 0;
     int q = 0;
+    numLines = countLines(filename);
     
     fp = fopen(filename, "r");
-    if (fp == NULL) 
-    {
-		printf("Error! Failed to open output file for account creation.\n");
-		free(filename);
-		return -1;
-    } else 
-    {
-        getline(&line, &len, fp);
-        numAcct = atoi(line);
-        printf("Num acct: %d\n",numAcct);
-        acct_ary = (account*)malloc(sizeof(account) * numAcct);
-    }
+    getline(&line, &len, fp);
+    numAcct = atoi(line);
+    printf("Num acct: %d\n",numAcct);
+    acct_ary = (account*)malloc(sizeof(account) * numAcct);
     fclose(fp);
+    // number of threads to process requests
     process_queue = (char ***)malloc(sizeof(char**) * MAX_THREADS);
     for (int z = 0; z < MAX_THREADS; z++)
     {
-        process_queue[z] = (char **)malloc(sizeof(char*) * (1000000/MAX_THREADS));
+        // number of processes each thread could have to run
+        process_queue[z] = (char **)malloc(sizeof(char*) * ((numLines/MAX_THREADS) + 1));
+        for (int y = 0; y < ((numLines/MAX_THREADS) + 1)) 
+        {
+            // length of each process sentence
+            process_queue[z][y] = (char *)malloc(sizeof(char) * 100);
+        }
     }
     parse_file(filename);
     free(filename);
