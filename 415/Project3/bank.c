@@ -171,10 +171,15 @@ int main(int argc, char * argv[])
         free(process_queue[z]);
     }
     free(process_queue);
+    printf("Queue Freed\n");
     free(processCounter);
+    printf("P Counter Freed\n");
     free(updateCount);
+    printf("U Counter Freed\n");
     free(numLines);
+    printf("L Counter Freed\n");
     free(acct_ary);
+    printf("Acct Array Freed\n");
     return 0;
 }
 
@@ -357,7 +362,7 @@ void parse_file(char *file)
             if (process_queue[b][q-1] == NULL)
             {
                 process_queue[b][q-1] = "\0";
-            } else if (process_queue[b][q] == NULL)
+            } else if (process_queue[b][q] == NULL)strcmp
             {
                 process_queue[b][q] = "\0";
             } else
