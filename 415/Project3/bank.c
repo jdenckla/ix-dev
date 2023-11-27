@@ -26,7 +26,7 @@
 #define MAX_THREADS 1
 
 
-// globals: thread array, account array, process counter, update counter (bank), number of accounts
+// globals: thread array, account array, process counter, update counter (bank), number of accounts, number of lines in file (for debug)
 
 pthread_t thread_id[MAX_THREADS];
 
@@ -36,6 +36,7 @@ char ***process_queue;
 int processCounter;
 int updateCount;
 int numAcct;
+int numLines;
 
 // helpers: tokenize strings, countlines, ? build queue's / file read, process queue (thread), process transaction (each line of queue), update balance (unique handler thread)
 
@@ -79,8 +80,6 @@ int main(int argc, char * argv[])
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
-
-    int numLines;
 
     FILE *fp;
 
