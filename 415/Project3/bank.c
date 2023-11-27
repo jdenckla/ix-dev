@@ -455,7 +455,7 @@ void *process_worker_queue(void *i)
             job++;
 			//printf("Process Counter: %d\n",*processCounter);
             
-            if (*processCounter >= 5000)
+            if (*processCounter == 5000)
             {
 				//printf("//////// Update Triggered by Process Count /////////\n");
                 //*processCounter = 0;
@@ -529,7 +529,7 @@ void process_transaction(command_line token_buffer)
 					}
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
-                    if (*processCounter >= 5000)
+                    if (*processCounter == 5000)
                     {
                         pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
                     }
@@ -546,7 +546,7 @@ void process_transaction(command_line token_buffer)
 					}
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
-                    if (*processCounter >= 5000)
+                    if (*processCounter == 5000)
                     {
                         pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
                     }
@@ -567,7 +567,7 @@ void process_transaction(command_line token_buffer)
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0)
                         {
                             pthread_mutex_lock(&acct_ary[i].ac_lock);
-                            if (*processCounter >= 5000)
+                            if (*processCounter == 5000)
                             {
                                 pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
                             }
