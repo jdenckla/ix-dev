@@ -170,8 +170,9 @@ int main(int argc, char * argv[])
         // number of processes each thread could have to run
         free(process_queue[z]);
     }
+    printf("Inner Queue Freed\n");
     free(process_queue);
-    printf("Queue Freed\n");
+    printf("Outer Queue Freed\n");
     free(processCounter);
     printf("P Counter Freed\n");
     free(updateCount);
