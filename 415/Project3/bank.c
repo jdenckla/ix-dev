@@ -84,9 +84,10 @@ int main(int argc, char * argv[])
     processCounter = malloc(sizeof(int));
     numLines = malloc(sizeof(int));
     updateCount = malloc(sizeof(int));
-    if ((processCounter == NULL) || (numLines == NULL) || (updateCount == NULL))
+    numAcct = malloc(sizeof(int));
+    if ((processCounter == NULL) || (numLines == NULL) || (updateCount == NULL) || (numAcct == NULL))
     {
-        printf("Failed to alloc memory for process counter\n");
+        printf("Failed to alloc memory for initial counters (main)\n");
         return -1;
     }
 
