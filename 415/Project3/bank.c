@@ -23,7 +23,8 @@
 
 // Includes + headers
 
-#define MAX_THREADS 10
+#define MAX_THREADS 1
+#define debugText 1
 
 
 // globals: thread array, account array, process counter, update counter (bank), number of accounts, number of lines in file (for debug)
@@ -38,9 +39,7 @@ int *updateCount;
 int *numAcct;
 int *numLines;
 
-#define debugText 0
-
-// helpers: tokenize strings, countlines, ? build queue's / file read, process queue (thread), process transaction (each line of queue), update balance (unique handler thread)
+// helpers: tokenize strings, countlines, process input file, process queue (thread), process transaction (each line of queue), update balance (unique handler thread)
 
 // predefine / declare helpers: 
 
@@ -350,6 +349,10 @@ void parse_file(char *file)
         }
         while (endOfFile == 0) 
         {
+            if (debugText == 1)
+            {
+                printf("Reading In File\n");
+            }
             for (int a = 0; a < MAX_THREADS; a++) 
             {
                 if ((read = getline(&line, &len, fp)) != -1) 
@@ -360,21 +363,6 @@ void parse_file(char *file)
 					
                 } else if (a > 0)
                 {
-                    /*
-                    int b = MAX_THREADS - a;
-                    printf("Max: %d | a: %d | b: %d\n",MAX_THREADS,a,b);
-                    sleep(1);
-                    for (b; b >= 0; b--)
-                    {
-                        //strcpy(process_queue[b][q],"\0");
-                        process_queue[b][q] = '\0';
-                    }
-                    for (a; a < MAX_THREADS; a++)
-                    {
-                        //strcpy(process_queue[a][q],"\0");
-                        process_queue[a][q] = '\0';
-                    }
-                    */
                     endOfFile = 1;
                     break;
                 }
@@ -434,6 +422,10 @@ void *process_worker_queue(void *i)
     // using each worker's id (int i), grab sentence and tokenize it...
     //command_line token_buffer[100];
     int processing = 1;
+    if (debugText == 1)
+    {
+        printf("Begin Worker Queue %d\n",id);
+    }
     while (processing == 1)
     {
         //if (strlen(process_queue[id][job]) == 0)
