@@ -354,10 +354,13 @@ void parse_file(char *file)
         // place null character so we can denote end of queue
         for (int b = 0; b < MAX_THREADS; b++) 
         {
-            if (process_queue[b][q] == NULL)
+            if (process_queue[b][q-1] == NULL)
+            {
+                process_queue[b][q-1] = "\0";
+            } else if (process_queue[b][q] == NULL)
             {
                 process_queue[b][q] = "\0";
-            } else 
+            } else
             {
                 process_queue[b][q+1] = "\0";
             }
@@ -413,17 +416,17 @@ void *process_worker_queue(void *i)
     int processing = 1;
     while (processing == 1)
     {
-        if (process_queue[id][job] != "\0")
+        if (strcmp(process_queue[id][job],"\0") == 0)
+        {
+            processing = 0;
+            break;
+        } else
         {
             printf("Attempting job: %d\n",job);
             token_buffer = str_filler(process_queue[id][job], " ");
             process_transaction(token_buffer);
             job++;
-        } else
-        {
-            processing = 0;
-            break;
-        }
+        } 
     }
     //printf("Process Queue Complete, Freeing Mem\n");
     //free_command_line (token_buffer);
