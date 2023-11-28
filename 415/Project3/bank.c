@@ -14,7 +14,7 @@
 #include <err.h>
 
 #define _GNU_SOURCE
-#define SIZE 1024
+#define SIZE 4096
 
 #define MAX_THREADS 200
 #define debugText 0
