@@ -772,6 +772,8 @@ void update_balance()
             fprintf(afp,"Current Balance:\t");
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
+        fclose(afp);
+        free(filename);
         char *savefile;
         savefile = strdup(save_ary[i].out_file);
         FILE * sfp = fopen(savefile, "a");
