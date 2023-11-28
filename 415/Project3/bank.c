@@ -188,7 +188,7 @@ int main(int argc, char * argv[])
     if (debugText > 0)
     {
         printf("Monitor Thread Created, Creating Workers...\n");
-        sleep(1);
+        //sleep(1);
     }
     for (int a = 0; a < MAX_THREADS; a++)
     {
@@ -205,7 +205,7 @@ int main(int argc, char * argv[])
     if (debugText > 0)
     {
         printf("All Workers Created, Awaiting Barrier\n");
-        sleep(1);
+        //sleep(1);
     }
 
     pthread_barrier_wait(&startupBarrier);
@@ -213,7 +213,7 @@ int main(int argc, char * argv[])
     if (debugText > 0)
     {
         printf("Barrier Passed\n");
-        sleep(1);
+        //sleep(1);
     }
     
     // generate another thread for updating accounts? aka bank/manager thread
