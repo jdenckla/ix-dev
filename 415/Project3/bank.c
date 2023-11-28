@@ -263,8 +263,8 @@ int main(int argc, char * argv[])
     munmap(numLines,SIZE);
     munmap(updateCount,SIZE);
     munmap(numAcct,SIZE);
-    munmap(acct_ary,(sizeof(account) * *numAcct));
-    munmap(save_ary,(sizeof(account) * *numAcct));
+    //munmap(acct_ary,(sizeof(account) * *numAcct));
+    //munmap(save_ary,(sizeof(account) * *numAcct));
     return 0;
 }
 
