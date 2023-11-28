@@ -17,7 +17,7 @@
 #define SIZE 4096
 
 #define MAX_THREADS 10
-#define processThreshold 200
+#define processThreshold 5000
 #define debugText 0
 
 
