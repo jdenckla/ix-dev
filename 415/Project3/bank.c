@@ -53,6 +53,7 @@ int count_lines(char *filename);
 void create_acct_outfiles(int i);
 void parse_file(char *filename);
 void outputBalance(account *acct_ary);
+void *monitor_transactions();
 void *process_worker_queue(void *i);
 void process_transaction(command_line token_buffer);
 void update_balance();
