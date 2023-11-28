@@ -117,6 +117,8 @@ int main(int argc, char * argv[])
     }
     */
 
+    *monitoring = 1;
+    *allowWork = 1;
     *processCounter = 0;
     *numLines = 0;
     *updateCount = 0;
@@ -623,6 +625,10 @@ void process_transaction(command_line token_buffer)
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
                     if (*allowWork == 0)
                     {
+                        if (debugText == 1)
+                        {
+                            printf("Wait Triggered on Worker Thread\n");
+                        }
                         pthread_cond_wait(&working, &acct_ary[i].ac_lock);
                     }
                     acct_ary[i].balance += amount;
@@ -639,6 +645,10 @@ void process_transaction(command_line token_buffer)
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
                     if (*allowWork == 0)
                     {
+                        if (debugText == 1)
+                        {
+                            printf("Wait Triggered on Worker Thread\n");
+                        }
                         pthread_cond_wait(&working, &acct_ary[i].ac_lock);
                     }
                     acct_ary[i].balance -= amount;
@@ -659,6 +669,10 @@ void process_transaction(command_line token_buffer)
                             pthread_mutex_lock(&acct_ary[i].ac_lock);
                             if (*allowWork == 0)
                             {
+                                if (debugText == 1)
+                                {
+                                    printf("Wait Triggered on Worker Thread\n");
+                                }
                                 pthread_cond_wait(&working, &acct_ary[i].ac_lock);
                             }
                             acct_ary[i].balance -= amount;
@@ -667,6 +681,10 @@ void process_transaction(command_line token_buffer)
                             pthread_mutex_lock(&acct_ary[j].ac_lock);
                             if (*allowWork == 0)
                             {
+                                if (debugText == 1)
+                                {
+                                    printf("Wait Triggered on Worker Thread\n");
+                                }
                                 pthread_cond_wait(&working, &acct_ary[j].ac_lock);
                             }
                             acct_ary[j].balance += amount;
