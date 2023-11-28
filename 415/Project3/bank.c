@@ -18,7 +18,7 @@
 
 #define MAX_THREADS 10
 #define processThreshold 5000
-#define debugText 0
+#define debugText 2
 
 
 // globals: thread array, account array, process counter, update counter (bank), number of accounts, number of lines in file (for debug)
