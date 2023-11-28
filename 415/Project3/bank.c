@@ -690,9 +690,9 @@ void process_transaction(command_line token_buffer)
                             }
                             acct_ary[j].balance += amount;
                             pthread_mutex_unlock(&acct_ary[j].ac_lock);
-                            *processCounter = *processCounter + 1;
                         }
                     }
+                    *processCounter = *processCounter + 1;
                 } else 
                 {
 					if (debugText == 1)
