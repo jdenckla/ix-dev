@@ -156,7 +156,7 @@ int main(int argc, char * argv[])
         for (int y = 0; y < ((*numLines/MAX_THREADS) + 1); y++) 
         {
             // length of each process sentence
-            process_queue[z][y] = (char *)mmap(NULL, (sizeof(char) * SIZE), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+            process_queue[z][y] = (char *)mmap(NULL, (sizeof(char) * 100), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
             //process_queue[z][y] = (char *)malloc(sizeof(char) * 100);
             if (acct_ary == MAP_FAILED) 
             {
