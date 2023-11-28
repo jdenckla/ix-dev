@@ -427,7 +427,7 @@ void parse_file(char *file)
             getline(&line, &len, fp);
             strcpy(acct_ary[i].account_number, line);
             acct_ary[i].account_number[strcspn(acct_ary[i].account_number,"\n")] = '\0';
-            memcpy(save_ary[i].account_number,acct_ary[i].account_number);
+            memcpy(save_ary[i].account_number,acct_ary[i].account_number,strlen(acct_ary[i].account_number)+1);
             char iter[64];
             strcpy(iter,"output/");
             strcat(iter,acct_ary[i].account_number);
@@ -442,7 +442,7 @@ void parse_file(char *file)
             getline(&line, &len, fp);
             strcpy(acct_ary[i].password, line);
             acct_ary[i].password[strcspn(acct_ary[i].password,"\n")] = '\0';
-            memcpy(save_ary[i].password,acct_ary[i].password);
+            memcpy(save_ary[i].password,acct_ary[i].password,strlen(acct_ary[i].password)+1);
             getline(&line, &len, fp);
             acct_ary[i].balance = atof(line);
             save_ary[i].balance = acct_ary[i].balance * 0.2;
@@ -770,6 +770,7 @@ void update_balance()
             fprintf(afp,"Current Balance:\t");
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
+        char *savefile;
         savefile = strdup(save_ary[i].out_file);
         FILE * sfp = fopen(savefile, "a");
         if (sfp == NULL) 
