@@ -8,7 +8,7 @@
 #include <sys/stat.h>
 #include "account.h"
 #include <sys/wait.h>
-
+#include <sys/mman.h>
 #include <sys/types.h>
 #include <fcntl.h>
 
@@ -79,6 +79,19 @@ int main(int argc, char * argv[])
 
     pthread_barrier_init(&barrier, NULL, MAX_THREADS + 1);
 	
+    // mmap ex 1: (char *)mmap(NULL, filestat.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
+    // ex 2: int *x = mmap(0, 4, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0);
+    // ex 3: anon = (char*)mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_ANON|MAP_SHARED, -1, 0);
+    processCounter = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS, -1, 0);
+    numLines = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS, -1, 0);
+    updateCount = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS, -1, 0);
+    numAcct = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS, -1, 0);
+    if ((processCounter == MAP_FAILED) || (numLines == MAP_FAILED) || (updateCount == MAP_FAILED) || (numAcct == MAP_FAILED))
+    {
+        printf("Failed to alloc memory for initial counters (main)\n");
+        return -1;
+    }
+    /*
     processCounter = malloc(sizeof(int) * 10000);
     numLines = malloc(sizeof(int) * 10000);
     updateCount = malloc(sizeof(int) * 10000);
@@ -88,6 +101,7 @@ int main(int argc, char * argv[])
         printf("Failed to alloc memory for initial counters (main)\n");
         return -1;
     }
+    */
 
     *processCounter = 0;
     *updateCount = 0;
