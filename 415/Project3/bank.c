@@ -758,7 +758,7 @@ void update_balance()
     {
         //pthread_mutex_lock(&acct_ary[i].ac_lock);
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
-        double savings = (acct_ary[i].transaction_tracter * save_ary[i].reward_rate);
+        double savings = (acct_ary[i].transaction_tracter * 0.02);
         acct_ary[i].balance += temp;
         save_ary[i].balance += savings;
         acct_ary[i].transaction_tracter = 0;
