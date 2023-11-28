@@ -452,7 +452,7 @@ void parse_file(char *file)
             save_ary[i].balance = initSavings;
             getline(&line, &len, fp);
             acct_ary[i].reward_rate = atof(line);
-            save_ary[i].reward_rate = 0.02;
+            save_ary[i].reward_rate = 0.02f;
             int c;
             c = pthread_mutex_init(&acct_ary[i].ac_lock, NULL);
             // accounts populated, proceed to create output files
