@@ -153,6 +153,7 @@ int main(int argc, char * argv[])
             printf("Failed to alloc memory for process queue (threads)\n");
             return -1;
         }
+        /*
         for (int y = 0; y < ((*numLines/MAX_THREADS) + 1); y++) 
         {
             // length of each process sentence
@@ -164,6 +165,7 @@ int main(int argc, char * argv[])
                 return -1;
             }
         }
+        */
     }
     parse_file(filename);
     free(filename);
