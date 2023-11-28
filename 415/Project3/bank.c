@@ -479,7 +479,7 @@ void *monitor_transactions()
         {
             if (debugText == 1)
             {
-                printf("Monitor Triggered - Locking Accounts For Update\n",id);
+                printf("Monitor Triggered - Locking Accounts For Update\n");
                 sleep(1);
             }
             *allowWork = 0;
@@ -489,7 +489,7 @@ void *monitor_transactions()
             }
             if (debugText == 1)
             {
-                printf("Monitor Locks Acquired - Updating Accounts\n",id);
+                printf("Monitor Locks Acquired - Updating Accounts\n");
                 sleep(1);
             }
             update_balance();
@@ -499,7 +499,7 @@ void *monitor_transactions()
             }
             if (debugText == 1)
             {
-                printf("Monitor Locks Released - Signalling Continue\n",id);
+                printf("Monitor Locks Released - Signalling Continue\n");
                 sleep(1);
             }
             *processCounter = 0;
