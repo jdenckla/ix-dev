@@ -17,6 +17,7 @@
 #define SIZE 4096
 
 #define MAX_THREADS 10
+#define processThreshold 5000
 #define debugText 0
 
 
@@ -477,7 +478,7 @@ void *monitor_transactions()
 {
     for(;;)
     {
-        if (*processCounter >= 5000)
+        if (*processCounter >= processThreshold)
         {
             if (debugText == 1)
             {
