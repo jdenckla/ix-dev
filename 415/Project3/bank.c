@@ -446,7 +446,7 @@ void parse_file(char *file)
             getline(&line, &len, fp);
             acct_ary[i].balance = atof(line);
             float initSavings = 0;
-            initSavings = *acct_ary[i].balance * 0.2;
+            initSavings = acct_ary[i].balance * 0.2;
             save_ary[i].balance = initSavings;
             getline(&line, &len, fp);
             acct_ary[i].reward_rate = atof(line);
