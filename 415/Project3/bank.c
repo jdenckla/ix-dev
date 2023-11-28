@@ -683,7 +683,7 @@ void process_transaction(command_line token_buffer)
                     }
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
-                    //save_ary[i].transaction_tracter += amount;
+                    save_ary[i].transaction_tracter += amount;
                     pthread_mutex_unlock(&acct_ary[i].ac_lock);
                     *processCounter = *processCounter + 1;
                 } else if (strcmp("T",token_buffer.command_list[0]) == 0) 
@@ -708,7 +708,7 @@ void process_transaction(command_line token_buffer)
                             }
                             acct_ary[i].balance -= amount;
                             acct_ary[i].transaction_tracter += amount;
-                            save_ary[i].transaction_tracter += amount;
+                            //save_ary[i].transaction_tracter += amount;
                             pthread_mutex_unlock(&acct_ary[i].ac_lock);
                             *processCounter = *processCounter + 1;
                             pthread_mutex_lock(&acct_ary[j].ac_lock);
