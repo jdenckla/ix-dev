@@ -146,7 +146,7 @@ int main(int argc, char * argv[])
     for (int z = 0; z < MAX_THREADS; z++)
     {
         // number of processes each thread could have to run
-        process_queue[z] = (char **)mmap(NULL, (sizeof(char*) * ((*numLines/MAX_THREADS) + 1)), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+        process_queue[z] = (char **)mmap(NULL, (sizeof(char*) * ((*numLines/MAX_THREADS))), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
         //process_queue[z] = (char **)malloc(sizeof(char*) * ((*numLines/MAX_THREADS) + 1));
         if (process_queue[z] == MAP_FAILED) 
         {
@@ -155,11 +155,11 @@ int main(int argc, char * argv[])
         }
         printf("NumLines: %d\n",*numLines);
         
-        for (int y = 0; y < ((*numLines/MAX_THREADS) + 1); y++) 
+        for (int y = 0; y < ((*numLines/MAX_THREADS)); y++) 
         {
-            printf("NumLines/MAX_THREADS + 1: %d\n",((*numLines/MAX_THREADS) + 1));
+            printf("NumLines/MAX_THREADS + 1: %d\n",((*numLines/MAX_THREADS)));
             // length of each process sentence
-            process_queue[z][y] = (char *)mmap(NULL, (sizeof(char) * 100), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+            process_queue[z][y] = (char *)mmap(NULL, (sizeof(char) * SIZE), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
             //process_queue[z][y] = (char *)malloc(sizeof(char) * 100);
             if (process_queue[z][y] == MAP_FAILED) 
             {
