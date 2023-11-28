@@ -197,7 +197,7 @@ int main(int argc, char * argv[])
         tid = pthread_create(&thread_id[a], NULL, process_worker_queue, worker);
         // anticipate each pausing from inside worker_queue
     }
-    if (debugText == 1)
+    if (debugText > 0)
     {
         printf("All Workers Created, Awaiting Barrier\n");
         sleep(1);
@@ -205,7 +205,7 @@ int main(int argc, char * argv[])
 
     pthread_barrier_wait(&startupBarrier);
 
-    if (debugText == 1)
+    if (debugText > 0)
     {
         printf("Barrier Passed\n");
         sleep(1);
@@ -215,7 +215,7 @@ int main(int argc, char * argv[])
     for (int b = 0; b < MAX_THREADS; b++){
 		pthread_join(thread_id[b], NULL);
 	}
-    if (debugText == 1)
+    if (debugText > 0)
     {
         printf("All Worker Threads Complete\n");
     }
@@ -480,7 +480,7 @@ void *monitor_transactions()
     {
         if (*processCounter >= processThreshold)
         {
-            if (debugText == 1)
+            if (debugText > 0)
             {
                 printf("Monitor Triggered - Locking Accounts For Update\n");
                 //sleep(1);
@@ -490,7 +490,7 @@ void *monitor_transactions()
             {
                 pthread_mutex_lock(&acct_ary[i].ac_lock);
             }
-            if (debugText == 1)
+            if (debugText > 0)
             {
                 printf("Monitor Locks Acquired - Updating Accounts\n");
                 //sleep(1);
@@ -500,7 +500,7 @@ void *monitor_transactions()
             {
                 pthread_mutex_unlock(&acct_ary[i].ac_lock);
             }
-            if (debugText == 1)
+            if (debugText > 0)
             {
                 printf("Monitor Locks Released - Signalling Continue\n");
                 //sleep(1);
@@ -522,16 +522,14 @@ void *process_worker_queue(void *i)
 {
     int id = *((int *)i);
     int job = 0;
-    if (debugText == 1)
+    if (debugText > 0)
     {
         printf("Worker %d Created, Signalling Barrier\n",id);
-        sleep(1);
     }
     pthread_barrier_wait(&startupBarrier);
-    if (debugText == 1)
+    if (debugText > 0)
     {
-        printf("Signal Received, Beginning Process\n");
-        sleep(1);
+        printf("Startup Signal Received, Beginning Process\n");
     }
     command_line token_buffer;
     int processing = 1;
@@ -544,31 +542,15 @@ void *process_worker_queue(void *i)
             break;
         } else
         {
-            //printf("Attempting job: %d\n",job);
             token_buffer = str_filler(process_queue[id][job], " ");
             process_transaction(token_buffer);
             job++;
-			//printf("Process Counter: %d\n",*processCounter);
-            /*
-            if (*processCounter == 5000)
-            {
-				//printf("//////// Update Triggered by Process Count /////////\n");
-                *processCounter = 0;
-                update_balance();
-            }
-            */
-            
         } 
     }
-    if (debugText == 1)
+    if (debugText > 0)
     {
         printf("Worker %d Done, Exiting\n",id);
-        //sleep(1);
     }
-    //printf("Process Queue Complete, Freeing Mem\n");
-    //free_command_line (token_buffer);
-	//memset (token_buffer, 0, 0);
-    //printf("Process Queue Complete, Exiting Thread %d\n",id);
     free_command_line (&token_buffer);
 	memset (&token_buffer, 0, 0);
     free(i);
@@ -698,7 +680,7 @@ void process_transaction(command_line token_buffer)
                 {
 					if (debugText == 1)
 					{
-						printf(" - Command Not Recongized\n");
+						printf(" - Command Not Recognized\n");
 					}
                     break;
                 }
@@ -723,7 +705,7 @@ void update_balance()
 	*updateCount = *updateCount + 1;
     //printf("Update %d\n",*updateCount);
     //int numberOfAccounts = *numAcct;
-    if (debugText == 1)
+    if (debugText > 0)
     {
         printf("Updating Balances... \n");
     }
