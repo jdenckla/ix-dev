@@ -230,8 +230,6 @@ int main(int argc, char * argv[])
     //printf("Inner Queue Freed\n");
     free(process_queue);
     pthread_barrier_destroy(&barrier);
-
-    
     
     //printf("Outer Queue Freed\n");
     //free(processCounter);
