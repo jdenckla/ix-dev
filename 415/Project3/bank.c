@@ -24,8 +24,11 @@
 // use shared memory for the following instead
 
 pthread_t thread_id[MAX_THREADS];
-pthread_barrier_t barrier;
-//pthread_cond_t condition;
+pthread_t monitorTID;
+pthread_barrier_t startupBarrier;
+pthread_cond_t working;
+int *allowWork;
+int *monitoring;
 
 account *acct_ary;
 char ***process_queue;
@@ -85,11 +88,12 @@ int main(int argc, char * argv[])
     size_t len = 0;
     ssize_t read;
 
-    pthread_barrier_init(&barrier, NULL, MAX_THREADS + 1);
+    pthread_barrier_init(&startupBarrier, NULL, MAX_THREADS + 1);
 	
     // mmap ex 1: (char *)mmap(NULL, filestat.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
     // ex 2: int *x = mmap(0, 4, PROT_READ | PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0);
     // ex 3: anon = (char*)mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_ANON|MAP_SHARED, -1, 0);
+    allowWork = (int *)mmap(NULL, SIZE, PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     processCounter = (int *)mmap(NULL, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     numLines = (int *)mmap(NULL, SIZE, PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     updateCount = (int *)mmap(NULL, SIZE, PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
@@ -174,6 +178,8 @@ int main(int argc, char * argv[])
     }
     parse_file(filename);
     free(filename);
+    int mon;
+    mon = pthread_create(&monitorTID,NULL,monitor_transactions,NULL);
     for (int a = 0; a < MAX_THREADS; a++)
     {
         int *worker = malloc(sizeof(int*));
@@ -192,7 +198,7 @@ int main(int argc, char * argv[])
         sleep(1);
     }
 
-    pthread_barrier_wait(&barrier);
+    pthread_barrier_wait(&startupBarrier);
 
     if (debugText == 1)
     {
@@ -220,6 +226,7 @@ int main(int argc, char * argv[])
     {
         update_balance();
     }
+    *monitoring = 0;
 
     outputBalance(acct_ary);
     printf("Update Count: %d\n", *updateCount);
@@ -229,7 +236,9 @@ int main(int argc, char * argv[])
     }
     //printf("Inner Queue Freed\n");
     free(process_queue);
-    pthread_barrier_destroy(&barrier);
+    pthread_barrier_destroy(&startupBarrier);
+    munmap(allowWork,SIZE);
+    munmap(monitoring,SIZE);
     munmap(processCounter,SIZE);
     munmap(numLines,SIZE);
     munmap(updateCount,SIZE);
@@ -460,6 +469,34 @@ void outputBalance(account *acct_ary)
     return;
 }
 
+void *monitor_transactions()
+{
+    for(;;)
+    {
+        if (*processCounter == 5000)
+        {
+            *allowWork = 0;
+            for (int i = 0; i < *numAcct; i++) 
+            {
+                pthread_mutex_lock(&acct_ary[i].ac_lock);
+            }
+            update_balance();
+            for (int i = 0; i < *numAcct; i++) 
+            {
+                pthread_mutex_unlock(&acct_ary[i].ac_lock);
+            }
+            *processCounter = 0;
+            *allowWork = 1;
+            pthread_cond_broadcast(&working);
+        }
+        else if (*monitoring == 0)
+        {
+            break;
+        }
+    }
+    pthread_exit(NULL);
+}
+
 // notice free of pointer here, may be useful elsewhere
 void *process_worker_queue(void *i)
 {
@@ -470,7 +507,7 @@ void *process_worker_queue(void *i)
         printf("Worker %d Created, Signalling Barrier\n",id);
         sleep(1);
     }
-    pthread_barrier_wait(&barrier);
+    pthread_barrier_wait(&startupBarrier);
     if (debugText == 1)
     {
         printf("Signal Received, Beginning Process\n");
@@ -567,12 +604,10 @@ void process_transaction(command_line token_buffer)
 					}
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
-                    /*
-                    if (*processCounter == 5000)
+                    if (*allowWork == 0)
                     {
-                        pthread_cond_wait(&condition, &acct_ary[i].ac_lock);
+                        pthread_cond_wait(&working, &acct_ary[i].ac_lock);
                     }
-                    */
                     acct_ary[i].balance += amount;
                     acct_ary[i].transaction_tracter += amount;
                     *processCounter = *processCounter + 1;
@@ -585,6 +620,10 @@ void process_transaction(command_line token_buffer)
 					}
                     double amount = atof(token_buffer.command_list[3]);
                     pthread_mutex_lock(&acct_ary[i].ac_lock);
+                    if (*allowWork == 0)
+                    {
+                        pthread_cond_wait(&working, &acct_ary[i].ac_lock);
+                    }
                     acct_ary[i].balance -= amount;
                     acct_ary[i].transaction_tracter += amount;
                     *processCounter = *processCounter + 1;
@@ -601,10 +640,18 @@ void process_transaction(command_line token_buffer)
                         if (strcmp(acct_ary[j].account_number, token_buffer.command_list[3]) == 0)
                         {
                             pthread_mutex_lock(&acct_ary[i].ac_lock);
+                            if (*allowWork == 0)
+                            {
+                                pthread_cond_wait(&working, &acct_ary[i].ac_lock);
+                            }
                             acct_ary[i].balance -= amount;
                             acct_ary[i].transaction_tracter += amount;
                             pthread_mutex_unlock(&acct_ary[i].ac_lock);
                             pthread_mutex_lock(&acct_ary[j].ac_lock);
+                            if (*allowWork == 0)
+                            {
+                                pthread_cond_wait(&working, &acct_ary[j].ac_lock);
+                            }
                             acct_ary[j].balance += amount;
                             *processCounter = *processCounter + 1;
                             pthread_mutex_unlock(&acct_ary[j].ac_lock);
@@ -645,7 +692,7 @@ void update_balance()
     }
     for (int i = 0; i < *numAcct; i++) 
     {
-        pthread_mutex_lock(&acct_ary[i].ac_lock);
+        //pthread_mutex_lock(&acct_ary[i].ac_lock);
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
         acct_ary[i].balance += temp;
         acct_ary[i].transaction_tracter = 0;
@@ -662,8 +709,7 @@ void update_balance()
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
         //*processCounter = 0;
-        //pthread_cond_broadcast(&condition);
-        pthread_mutex_unlock(&acct_ary[i].ac_lock);
+        //pthread_mutex_unlock(&acct_ary[i].ac_lock);
         fclose(afp);
         free(filename);
     }

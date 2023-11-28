@@ -27,7 +27,7 @@ mutexLock
 (fights race conditions)
 -> to work on a bank account, apply lock, do your account operations, then release lock
 
-pthread_conwait?
+pthread_cond_wait
 (make a conditional object)
 -> two arguments, a condition (new object) and a mutex lock 
 -> how to achieve no deadlocks...
