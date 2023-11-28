@@ -126,8 +126,9 @@ int main(int argc, char * argv[])
     getline(&line, &len, fp);
     *numAcct = atoi(line);
 	
-    acct_ary = (account*)malloc(sizeof(account) * *numAcct);
-    if (acct_ary == NULL) 
+    acct_ary = (account*)mmap(NULL, (sizeof(account) * *numAcct), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    //acct_ary = (account*)malloc(sizeof(account) * *numAcct);
+    if (acct_ary == MAP_FAILED) 
     {
         printf("Failed to alloc memory for account array\n");
         return -1;
@@ -135,8 +136,9 @@ int main(int argc, char * argv[])
 	
     fclose(fp);
     // number of threads to process requests
-    process_queue = (char ***)malloc(sizeof(char**) * MAX_THREADS);
-    if (acct_ary == NULL) 
+    process_queue = (char ***)mmap(NULL, (sizeof(char**) * MAX_THREADS), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    //process_queue = (char ***)malloc(sizeof(char**) * MAX_THREADS);
+    if (acct_ary == MAP_FAILED) 
     {
         printf("Failed to alloc memory for process queue (pointer)\n");
         return -1;
@@ -144,8 +146,9 @@ int main(int argc, char * argv[])
     for (int z = 0; z < MAX_THREADS; z++)
     {
         // number of processes each thread could have to run
-        process_queue[z] = (char **)malloc(sizeof(char*) * ((*numLines/MAX_THREADS) + 1));
-        if (acct_ary == NULL) 
+        process_queue[z] = (char **)mmap(NULL, (sizeof(char*) * ((*numLines/MAX_THREADS) + 1)), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+        //process_queue[z] = (char **)malloc(sizeof(char*) * ((*numLines/MAX_THREADS) + 1));
+        if (acct_ary == MAP_FAILED) 
         {
             printf("Failed to alloc memory for process queue (threads)\n");
             return -1;
@@ -153,8 +156,9 @@ int main(int argc, char * argv[])
         for (int y = 0; y < ((*numLines/MAX_THREADS) + 1); y++) 
         {
             // length of each process sentence
-            process_queue[z][y] = (char *)malloc(sizeof(char) * 100);
-            if (acct_ary == NULL) 
+            process_queue[z][y] = (char *)mmap(NULL, (sizeof(char) * SIZE), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+            //process_queue[z][y] = (char *)malloc(sizeof(char) * 100);
+            if (acct_ary == MAP_FAILED) 
             {
                 printf("Failed to alloc memory for process queue (sentences)\n");
                 return -1;
