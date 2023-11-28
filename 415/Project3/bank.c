@@ -30,12 +30,12 @@ pthread_barrier_t barrier;
 account *acct_ary;
 char ***process_queue;
 
-/*
+
 int *processCounter;
 int *updateCount;
 int *numAcct;
 int *numLines;
-*/
+
 
 // helpers: tokenize strings, countlines, process input file, process queue (thread), process transaction (each line of queue), update balance (unique handler thread)
 
@@ -66,10 +66,12 @@ int main(int argc, char * argv[])
         exit(1); 
     }
 
+    /*
     int *processCounter;
     int *updateCount;
     int *numAcct;
     int *numLines;
+    */
     
     int tid;
 
@@ -88,10 +90,10 @@ int main(int argc, char * argv[])
     // mmap ex 1: (char *)mmap(NULL, filestat.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, file, 0);
     // ex 2: int *x = mmap(0, 4, PROT_READ|PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0);
     // ex 3: anon = (char*)mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_ANON|MAP_SHARED, -1, 0);
-    processCounter = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS, -1, 0);
-    numLines = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS, -1, 0);
-    updateCount = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS, -1, 0);
-    numAcct = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_ANONYMOUS, -1, 0);
+    processCounter = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    numLines = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    updateCount = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    numAcct = (int *)mmap(NULL, SIZE, PROT_READ|PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     if ((processCounter == MAP_FAILED) || (numLines == MAP_FAILED) || (updateCount == MAP_FAILED) || (numAcct == MAP_FAILED))
     {
         printf("Failed to alloc memory for initial counters (main)\n");
@@ -110,10 +112,10 @@ int main(int argc, char * argv[])
     */
 
     *processCounter = 0;
+    *numLines = 0;
     *updateCount = 0;
     *numAcct = 0;
-    *numLines = 0;
-	
+    
     FILE *fp;
 
     int endOfFile = 0;
