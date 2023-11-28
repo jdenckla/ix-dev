@@ -95,6 +95,7 @@ int main(int argc, char * argv[])
     // ex 2: int *x = mmap(0, 4, PROT_READ | PROT_WRITE, MAP_SHARED|MAP_ANONYMOUS, -1, 0);
     // ex 3: anon = (char*)mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_ANON|MAP_SHARED, -1, 0);
     allowWork = (int *)mmap(NULL, SIZE, PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    monitoring = (int *)mmap(NULL, SIZE, PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     processCounter = (int *)mmap(NULL, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     numLines = (int *)mmap(NULL, SIZE, PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     updateCount = (int *)mmap(NULL, SIZE, PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
