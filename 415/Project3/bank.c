@@ -477,15 +477,30 @@ void *monitor_transactions()
     {
         if (*processCounter == 5000)
         {
+            if (debugText == 1)
+            {
+                printf("Monitor Triggered - Locking Accounts For Update\n",id);
+                sleep(1);
+            }
             *allowWork = 0;
             for (int i = 0; i < *numAcct; i++) 
             {
                 pthread_mutex_lock(&acct_ary[i].ac_lock);
             }
+            if (debugText == 1)
+            {
+                printf("Monitor Locks Acquired - Updating Accounts\n",id);
+                sleep(1);
+            }
             update_balance();
             for (int i = 0; i < *numAcct; i++) 
             {
                 pthread_mutex_unlock(&acct_ary[i].ac_lock);
+            }
+            if (debugText == 1)
+            {
+                printf("Monitor Locks Released - Signalling Continue\n",id);
+                sleep(1);
             }
             *processCounter = 0;
             *allowWork = 1;
