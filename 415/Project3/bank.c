@@ -230,7 +230,10 @@ int main(int argc, char * argv[])
     //printf("Inner Queue Freed\n");
     free(process_queue);
     pthread_barrier_destroy(&barrier);
-    
+    munmap(processCounter,SIZE);
+    munmap(numLines,SIZE);
+    munmap(updateCount,SIZE);
+    munmap(numAcct,SIZE);
     //printf("Outer Queue Freed\n");
     //free(processCounter);
     //printf("P Counter Freed\n");
