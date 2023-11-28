@@ -32,6 +32,7 @@ int *allowWork;
 int *monitoring;
 
 account *acct_ary;
+account *save_ary;
 char ***process_queue;
 
 
@@ -52,6 +53,7 @@ command_line str_filler (char* buf, const char* delim);
 void free_command_line(command_line *command);
 int count_lines(char *filename);
 void create_acct_outfiles(int i);
+void create_save_outfiles(int i);
 void parse_file(char *filename);
 void outputBalance(account *acct_ary);
 void *monitor_transactions();
@@ -84,6 +86,8 @@ int main(int argc, char * argv[])
     
     const char *name = "output";
     mkdir(name,S_IRWXU);
+    const char *oname = "savings";
+    mkdir(oname,S_IRWXU);
 
     char *filename = strdup(argv[1]);
     char *line = NULL;
@@ -138,6 +142,12 @@ int main(int argc, char * argv[])
     acct_ary = (account*)mmap(NULL, (sizeof(account) * *numAcct), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     //acct_ary = (account*)malloc(sizeof(account) * *numAcct);
     if (acct_ary == MAP_FAILED) 
+    {
+        printf("Failed to alloc memory for account array\n");
+        return -1;
+    }
+    save_ary = (account*)mmap(NULL, (sizeof(account) * *numAcct), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if (save_ary == MAP_FAILED) 
     {
         printf("Failed to alloc memory for account array\n");
         return -1;
@@ -253,15 +263,8 @@ int main(int argc, char * argv[])
     munmap(numLines,SIZE);
     munmap(updateCount,SIZE);
     munmap(numAcct,SIZE);
-    //printf("Outer Queue Freed\n");
-    //free(processCounter);
-    //printf("P Counter Freed\n");
-    //free(updateCount);
-    //printf("U Counter Freed\n");
-    //free(numLines);
-    //printf("L Counter Freed\n");
-    //free(acct_ary);
-    //printf("Acct Array Freed\n");
+    munmap(acct_ary,(sizeof(account) * *numAcct));
+    munmap(save_ary,(sizeof(account) * *numAcct));
     return 0;
 }
 
@@ -369,6 +372,27 @@ void create_acct_outfiles(int i)
     return;
 }
 
+void create_save_outfiles(int i)
+{
+    char *filename;
+    filename = strdup(save_ary[i].out_file);
+    FILE * afp = fopen(filename, "w+");
+    if (afp == NULL) 
+    {
+        printf("Failed to open file to create!\n");
+        free(filename);
+        return;
+    } else 
+    {
+        fprintf(afp,"account ");
+        fprintf(afp,"%d",i);
+        fprintf(afp,":\n");
+    }
+    fclose(afp);
+    free(filename);
+    return;
+}
+
 // read file, populate account array, create output file
 void parse_file(char *file)
 {
@@ -398,26 +422,38 @@ void parse_file(char *file)
         for (int i = 0; i < *numAcct; i++) 
         {
             acct_ary[i].transaction_tracter = 0;
+            save_ary[i].transaction_tracter = 0;
             getline(&line, &len, fp);
             getline(&line, &len, fp);
             strcpy(acct_ary[i].account_number, line);
             acct_ary[i].account_number[strcspn(acct_ary[i].account_number,"\n")] = '\0';
+            memcpy(save_ary[i].account_number,acct_ary[i].account_number);
             char iter[64];
             strcpy(iter,"output/");
             strcat(iter,acct_ary[i].account_number);
             strcat(iter,".txt");
             strcpy(acct_ary[i].out_file,iter);
+            // differing directories
+            char oter[64];
+            strcpy(oter,"savings/");
+            strcat(oter,save_ary[i].account_number);
+            strcat(oter,".txt");
+            strcpy(save_ary[i].out_file,oter);
             getline(&line, &len, fp);
             strcpy(acct_ary[i].password, line);
             acct_ary[i].password[strcspn(acct_ary[i].password,"\n")] = '\0';
+            memcpy(save_ary[i].password,acct_ary[i].password);
             getline(&line, &len, fp);
             acct_ary[i].balance = atof(line);
+            save_ary[i].balance = acct_ary[i].balance * 0.2;
             getline(&line, &len, fp);
             acct_ary[i].reward_rate = atof(line);
+            save_ary[i].reward_rate = 0.02;
             int c;
             c = pthread_mutex_init(&acct_ary[i].ac_lock, NULL);
             // accounts populated, proceed to create output files
             create_acct_outfiles(i);
+            create_save_outfiles(i);
         }
         if (debugText == 1)
         {
@@ -718,24 +754,37 @@ void update_balance()
     {
         //pthread_mutex_lock(&acct_ary[i].ac_lock);
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
+        double savings = (acct_ary[i].transaction_tracter * save_ary[i].reward_rate);
         acct_ary[i].balance += temp;
+        save_ary[i].balance += savings;
         acct_ary[i].transaction_tracter = 0;
         char *filename;
         filename = strdup(acct_ary[i].out_file);
         FILE * afp = fopen(filename, "a");
         if (afp == NULL) 
         {
-            printf("Failed to open file to update!\n");
+            printf("Failed to open account file to update!\n");
             return;
         } else 
         {
             fprintf(afp,"Current Balance:\t");
             fprintf(afp,"%.2f\n",acct_ary[i].balance);
         }
+        savefile = strdup(save_ary[i].out_file);
+        FILE * sfp = fopen(savefile, "a");
+        if (sfp == NULL) 
+        {
+            printf("Failed to open savings file to update!\n");
+            return;
+        } else 
+        {
+            fprintf(afp,"Current Savings Balance:\t");
+            fprintf(afp,"%.2f\n",save_ary[i].balance);
+        }
         //*processCounter = 0;
         //pthread_mutex_unlock(&acct_ary[i].ac_lock);
-        fclose(afp);
-        free(filename);
+        fclose(sfp);
+        free(savefile);
     }
 	//printf("Done\n");
     return;
