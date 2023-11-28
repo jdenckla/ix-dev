@@ -11,6 +11,7 @@
 #include <sys/mman.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <err.h>
 
 #define _GNU_SOURCE
 #define SIZE 1024
