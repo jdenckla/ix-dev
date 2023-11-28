@@ -445,7 +445,9 @@ void parse_file(char *file)
             memcpy(save_ary[i].password,acct_ary[i].password,strlen(acct_ary[i].password)+1);
             getline(&line, &len, fp);
             acct_ary[i].balance = atof(line);
-            save_ary[i].balance = acct_ary[i].balance * 0.2;
+            float initSavings = 0;
+            initSavings = *acct_ary[i].balance * 0.2;
+            save_ary[i].balance = initSavings;
             getline(&line, &len, fp);
             acct_ary[i].reward_rate = atof(line);
             save_ary[i].reward_rate = 0.02;
