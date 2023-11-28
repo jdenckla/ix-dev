@@ -30,10 +30,12 @@ pthread_barrier_t barrier;
 account *acct_ary;
 char ***process_queue;
 
+/*
 int *processCounter;
 int *updateCount;
 int *numAcct;
 int *numLines;
+*/
 
 // helpers: tokenize strings, countlines, process input file, process queue (thread), process transaction (each line of queue), update balance (unique handler thread)
 
@@ -63,9 +65,12 @@ int main(int argc, char * argv[])
         printf("Error - Usage: ./bank inputfile.txt\n");
         exit(1); 
     }
-    
-    
 
+    int *processCounter;
+    int *updateCount;
+    int *numAcct;
+    int *numLines;
+    
     int tid;
 
     struct stat st = {0};
