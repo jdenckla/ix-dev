@@ -185,11 +185,6 @@ int main(int argc, char * argv[])
     free(filename);
     int mon;
     mon = pthread_create(&monitorTID,NULL,monitor_transactions,NULL);
-    if (mon == NULL) 
-    {
-        printf("Failed to alloc memory for monitor thread\n");
-        return -1;
-    }
     if (debugText > 0)
     {
         printf("Monitor Thread Created, Creating Workers...\n");
