@@ -834,6 +834,7 @@ void puddles()
     {
         if(*updateSavings == 1)
         {
+            printf("puddles triggered\n");
             kill(pid_array[0],SIGSTOP);
             update_savings();
             *updateSavings = 0;
