@@ -773,7 +773,7 @@ void update_balance()
 {
     *updateSavings = 1;
     kill(pid_array[1],SIGCONT);
-    printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
+    //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
     if (debugText > 0)
     {
         printf("Updating Balances... \n");
@@ -836,9 +836,10 @@ void puddles()
 {
     while(1)
     {
+        printf("puddles waiting...\n");
         if(*updateSavings == 1)
         {
-            printf("puddles triggered\n");
+            printf("------ puddles triggered ------\n");
             kill(pid_array[0],SIGSTOP);
             sleep(1);
             update_savings();
