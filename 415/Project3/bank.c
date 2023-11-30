@@ -238,7 +238,7 @@ int main(int argc, char * argv[])
     {
         pid_array[0] = getpid();
         printf("Puddles Savings Process Started\n");
-        printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
+        //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
         puddles();
         printf("Puddles Savings Process Ended\n");
         return 1;
@@ -248,6 +248,7 @@ int main(int argc, char * argv[])
         perror("Forking Failed");
         exit(1);
     }
+    printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
     kill(pid_array[1],SIGSTOP);
     
     // generate another thread for updating accounts? aka bank/manager thread
