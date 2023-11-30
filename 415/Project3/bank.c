@@ -837,10 +837,10 @@ void puddles()
 {
     while(1)
     {
-        printf("puddles waiting...\n");
+        //printf("puddles waiting...\n");
         if(*updateSavings == 1)
         {
-            printf("------ puddles triggered ------\n");
+            //printf("------ puddles triggered ------\n");
             kill(pid_array[0],SIGSTOP);
             sleep(1);
             update_savings();
