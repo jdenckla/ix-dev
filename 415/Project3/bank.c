@@ -41,6 +41,9 @@ int *updateCount;
 int *numAcct;
 int *numLines;
 
+pid_t *pid_array;
+int *updateSavings;
+int *killSavings;
 
 // helpers: tokenize strings, countlines, process input file, process queue (thread), process transaction (each line of queue), update balance (unique handler thread)
 
@@ -60,6 +63,8 @@ void *monitor_transactions();
 void *process_worker_queue(void *i);
 void process_transaction(command_line *token_buffer);
 void update_balance();
+void update_savings();
+void puddles();
 
 // consider how we'll monitor the counter - an if within a while? should signal update thread, which pauses all workers, updates, then tells them to continue
 
@@ -110,17 +115,15 @@ int main(int argc, char * argv[])
         printf("Failed to alloc memory for initial counters (main)\n");
         return -1;
     }
-    /*
-    processCounter = malloc(sizeof(int) * 10000);
-    numLines = malloc(sizeof(int) * 10000);
-    updateCount = malloc(sizeof(int) * 10000);
-    numAcct = malloc(sizeof(int) * 10000);
-    if ((processCounter == NULL) || (numLines == NULL) || (updateCount == NULL) || (numAcct == NULL))
+    updateSavings = (int *)mmap(NULL, SIZE, PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    killSavings = (int *)mmap(NULL, SIZE, PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    if ((updateSavings == MAP_FAILED) || (killSavings == MAP_FAILED))
     {
-        printf("Failed to alloc memory for initial counters (main)\n");
+        printf("Failed to alloc memory for process trackers\n");
         return -1;
     }
-    */
+    *updateSavings = 0;
+    *killSavings = 0;
 
     *monitoring = 1;
     *allowWork = 1;
@@ -225,6 +228,25 @@ int main(int argc, char * argv[])
         printf("Barrier Passed\n");
         //sleep(1);
     }
+
+    int pid = 0;
+    pid_array = (pid_t*)malloc(sizeof(pid_t) * 3);
+    pid_array[1] = fork()
+    pid = pid_array[1];
+
+    if(pid == 0)
+    {
+        pid_array[0] = getpid();
+        printf("Puddles Savings Process Started\n");
+        puddles();
+        return 1;
+    }
+    if (pid < 0) {
+        // fork failed error
+        perror("Forking Failed");
+        exit(1);
+    }
+    kill(pid_array[1],SIGSTOP);
     
     // generate another thread for updating accounts? aka bank/manager thread
     for (int b = 0; b < MAX_THREADS; b++){
@@ -234,6 +256,8 @@ int main(int argc, char * argv[])
     {
         printf("All Worker Threads Complete\n");
     }
+    killSavings = 1;
+    kill(pid_array[1],SIGCONT);
     int updateRequired = 0;
     for (int c = 0; c < *numAcct; c++)
     {
@@ -744,24 +768,18 @@ void process_transaction(command_line *token_buffr)
 
 void update_balance()
 {
-    //int updateCounter = *updateCount;
-    //*updateCount++;
-    
-	*updateCount = *updateCount + 1;
-    //printf("Update %d\n",*updateCount);
-    //int numberOfAccounts = *numAcct;
+    *updateSavings = 1;
+    kill(pid_array[1],SIGCONT);
     if (debugText > 0)
     {
         printf("Updating Balances... \n");
     }
+    kill(pid_array[1],SIGSTOP);
+    *updateCount = *updateCount + 1;
     for (int i = 0; i < *numAcct; i++) 
     {
-        //pthread_mutex_lock(&acct_ary[i].ac_lock);
         double temp = (acct_ary[i].transaction_tracter * acct_ary[i].reward_rate);
-        //double savings = (save_ary[i].transaction_tracter * save_ary[i].reward_rate);
-        double savings = (save_ary[i].balance * save_ary[i].reward_rate);
         acct_ary[i].balance += temp;
-        save_ary[i].balance += savings;
         acct_ary[i].transaction_tracter = 0;
         char *filename;
         filename = strdup(acct_ary[i].out_file);
@@ -777,6 +795,20 @@ void update_balance()
         }
         fclose(afp);
         free(filename);
+    }
+    return;
+}
+
+void update_savings()
+{
+    if (debugText > 0)
+    {
+        printf("Updating Savings... \n");
+    }
+    for (int i = 0; i < *numAcct; i++) 
+    {
+        double savings = (save_ary[i].balance * save_ary[i].reward_rate);
+        save_ary[i].balance += savings;
         char *savefile;
         savefile = strdup(save_ary[i].out_file);
         FILE * sfp = fopen(savefile, "a");
@@ -789,11 +821,30 @@ void update_balance()
             fprintf(afp,"Current Savings Balance:\t");
             fprintf(afp,"%.2f\n",save_ary[i].balance);
         }
-        //*processCounter = 0;
-        //pthread_mutex_unlock(&acct_ary[i].ac_lock);
         fclose(sfp);
         free(savefile);
     }
-	//printf("Done\n");
+    // signal update to continue
+    return;
+}
+
+void puddles()
+{
+    while(1)
+    {
+        if(*updateSavings == 1)
+        {
+            kill(pid_array[0],SIGSTOP);
+            update_savings();
+            *updateSavings = 0;
+            kill(pid_array[0],SIGCONT);
+        } else if (*killSavings == 1)
+        {
+            return;
+        } else
+        {
+            kill(pid_array[0],SIGCONT);
+        }
+    }
     return;
 }
