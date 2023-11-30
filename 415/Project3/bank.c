@@ -58,7 +58,7 @@ void parse_file(char *filename);
 void outputBalance(account *acct_ary);
 void *monitor_transactions();
 void *process_worker_queue(void *i);
-void process_transaction(command_line token_buffer);
+void process_transaction(command_line *token_buffer);
 void update_balance();
 
 // consider how we'll monitor the counter - an if within a while? should signal update thread, which pauses all workers, updates, then tells them to continue
@@ -588,7 +588,7 @@ void *process_worker_queue(void *i)
         } else
         {
             token_buffer = str_filler(process_queue[id][job], " ");
-            process_transaction(token_buffer);
+            process_transaction(&token_buffer);
             job++;
         } 
     }
@@ -603,11 +603,11 @@ void *process_worker_queue(void *i)
 }
 
 // for each process sentence, execute and update counter
-void process_transaction(command_line token_buffer)
+void process_transaction(command_line *token_buffr)
 {
     // likely modify how these are passed
     //command_line *token_buffr = (command_line *)token_buf;
-    //command_line token_buffer = *token_buffr;
+    command_line token_buffer = *token_buffr;
     //int pctr = *processCounter;
     //int numberOfAccounts = *numAcct;
     #ifdef SYS_gettid
