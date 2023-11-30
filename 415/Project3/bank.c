@@ -239,6 +239,7 @@ int main(int argc, char * argv[])
         pid_array[0] = getpid();
         printf("Puddles Savings Process Started\n");
         puddles();
+        printf("Puddles Savings Process Ended\n");
         return 1;
     }
     if (pid < 0) {
