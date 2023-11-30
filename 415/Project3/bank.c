@@ -248,7 +248,7 @@ int main(int argc, char * argv[])
         perror("Forking Failed");
         exit(1);
     }
-    printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
+    //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
     kill(pid_array[1],SIGSTOP);
     
     // generate another thread for updating accounts? aka bank/manager thread
@@ -773,6 +773,7 @@ void update_balance()
 {
     *updateSavings = 1;
     kill(pid_array[1],SIGCONT);
+    printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
     if (debugText > 0)
     {
         printf("Updating Balances... \n");
