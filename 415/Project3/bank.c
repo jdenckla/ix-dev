@@ -778,7 +778,7 @@ void update_balance()
     *updateSavings = 1;
     kill(pid_array[1],SIGCONT);
     sched_yield();
-    kill(pid_array[1],SIGSTOP);
+    //kill(pid_array[1],SIGSTOP);
     //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
     *updateCount = *updateCount + 1;
     for (int i = 0; i < *numAcct; i++) 
@@ -841,7 +841,7 @@ void puddles()
         if(*updateSavings == 1)
         {
             //printf("------ puddles triggered ------\n");
-            kill(pid_array[0],SIGSTOP);
+            //kill(pid_array[0],SIGSTOP);
             update_savings();
             *updateSavings = 0;
             kill(pid_array[0],SIGCONT);
