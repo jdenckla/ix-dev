@@ -772,9 +772,6 @@ void process_transaction(command_line *token_buffr)
 void update_balance()
 {
     *updateSavings = 1;
-    kill(pid_array[1],SIGCONT);
-    sleep(1);
-    kill(pid_array[1],SIGSTOP);
     //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
     if (debugText > 0)
     {
@@ -801,6 +798,9 @@ void update_balance()
         fclose(afp);
         free(filename);
     }
+    kill(pid_array[1],SIGCONT);
+    sleep(1);
+    kill(pid_array[1],SIGSTOP);
     return;
 }
 
@@ -848,9 +848,6 @@ void puddles()
         } else if (*killSavings == 1)
         {
             return;
-        } else
-        {
-            kill(pid_array[0],SIGCONT);
         }
     }
     return;
