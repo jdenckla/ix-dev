@@ -237,10 +237,10 @@ int main(int argc, char * argv[])
     if(pid == 0)
     {
         pid_array[0] = getpid();
-        printf("Puddles Savings Process Started\n");
+        //printf("Puddles Savings Process Started\n");
         //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
         puddles();
-        printf("Puddles Savings Process Ended\n");
+        //printf("Puddles Savings Process Ended\n");
         return 1;
     }
     if (pid < 0) {
@@ -259,8 +259,6 @@ int main(int argc, char * argv[])
     {
         printf("All Worker Threads Complete\n");
     }
-    *killSavings = 1;
-    kill(pid_array[1],SIGCONT);
     int updateRequired = 0;
     for (int c = 0; c < *numAcct; c++)
     {
@@ -273,6 +271,8 @@ int main(int argc, char * argv[])
     {
         update_balance();
     }
+    *killSavings = 1;
+    kill(pid_array[1],SIGCONT);
     *monitoring = 0;
 
     outputBalance(acct_ary);
@@ -415,7 +415,7 @@ void create_save_outfiles(int i)
         fprintf(afp,"account ");
         fprintf(afp,"%d",i);
         fprintf(afp,":\n");
-        fprintf(afp,"Current Savings Balance:\t");
+        fprintf(afp,"Current Savings Balance  ");
         fprintf(afp,"%.2f\n",save_ary[i].balance);
     }
     fclose(afp);
