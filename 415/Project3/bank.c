@@ -231,7 +231,7 @@ int main(int argc, char * argv[])
 
     int pid = 0;
     pid_array = (pid_t*)malloc(sizeof(pid_t) * 3);
-    pid_array[1] = fork()
+    pid_array[1] = fork();
     pid = pid_array[1];
 
     if(pid == 0)
