@@ -842,7 +842,6 @@ void puddles()
         {
             //printf("------ puddles triggered ------\n");
             kill(pid_array[0],SIGSTOP);
-            sleep(1);
             update_savings();
             *updateSavings = 0;
             kill(pid_array[0],SIGCONT);
