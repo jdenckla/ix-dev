@@ -771,13 +771,15 @@ void process_transaction(command_line *token_buffr)
 
 void update_balance()
 {
-    *updateSavings = 1;
-    kill(pid_array[1],SIGCONT);
-    //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
     if (debugText > 0)
     {
         printf("Updating Balances... \n");
     }
+    *updateSavings = 1;
+    kill(pid_array[1],SIGCONT);
+    sleep(0);
+    kill(pid_array[1],SIGSTOP);
+    //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
     *updateCount = *updateCount + 1;
     for (int i = 0; i < *numAcct; i++) 
     {
@@ -799,7 +801,6 @@ void update_balance()
         fclose(afp);
         free(filename);
     }
-    kill(pid_array[1],SIGSTOP);
     return;
 }
 
