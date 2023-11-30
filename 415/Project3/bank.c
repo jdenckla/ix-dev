@@ -412,9 +412,8 @@ void create_save_outfiles(int i)
         return;
     } else 
     {
-        fprintf(afp,"account ");
-        fprintf(afp,"%d",i);
-        fprintf(afp,":\n");
+        fprintf(afp,"account: ");
+        fprintf(afp,"%d\n",i);
         fprintf(afp,"Current Savings Balance  ");
         fprintf(afp,"%.2f\n",save_ary[i].balance);
     }
