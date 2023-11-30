@@ -778,7 +778,6 @@ void update_balance()
     {
         printf("Updating Balances... \n");
     }
-    kill(pid_array[1],SIGSTOP);
     *updateCount = *updateCount + 1;
     for (int i = 0; i < *numAcct; i++) 
     {
@@ -800,6 +799,7 @@ void update_balance()
         fclose(afp);
         free(filename);
     }
+    kill(pid_array[1],SIGSTOP);
     return;
 }
 
