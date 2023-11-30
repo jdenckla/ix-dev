@@ -276,6 +276,7 @@ int main(int argc, char * argv[])
     *monitoring = 0;
 
     outputBalance(acct_ary);
+    sleep(1);
     printf("Update Count: %d\n", *updateCount);
     for (int z = 0; z < MAX_THREADS; z++)
     {
