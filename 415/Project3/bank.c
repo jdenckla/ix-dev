@@ -818,8 +818,8 @@ void update_savings()
             return;
         } else 
         {
-            fprintf(afp,"Current Savings Balance:\t");
-            fprintf(afp,"%.2f\n",save_ary[i].balance);
+            fprintf(sfp,"Current Savings Balance:\t");
+            fprintf(sfp,"%.2f\n",save_ary[i].balance);
         }
         fclose(sfp);
         free(savefile);
