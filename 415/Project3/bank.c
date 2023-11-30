@@ -256,7 +256,7 @@ int main(int argc, char * argv[])
     {
         printf("All Worker Threads Complete\n");
     }
-    killSavings = 1;
+    *killSavings = 1;
     kill(pid_array[1],SIGCONT);
     int updateRequired = 0;
     for (int c = 0; c < *numAcct; c++)
