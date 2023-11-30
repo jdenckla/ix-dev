@@ -823,7 +823,7 @@ void update_savings()
             return;
         } else 
         {
-            fprintf(sfp,"Current Savings Balance:\t");
+            fprintf(sfp,"Current Savings Balance:  ");
             fprintf(sfp,"%.2f\n",save_ary[i].balance);
         }
         fclose(sfp);
