@@ -138,6 +138,7 @@ int main(int argc, char * argv[])
     fp = fopen(filename, "r");
     getline(&line, &len, fp);
     *numAcct = atoi(line);
+	free(line);
 	
     acct_ary = (account*)mmap(NULL, (sizeof(account) * *numAcct), PROT_READ | PROT_WRITE,  MAP_SHARED | MAP_ANONYMOUS, -1, 0);
     //acct_ary = (account*)malloc(sizeof(account) * *numAcct);
@@ -154,6 +155,29 @@ int main(int argc, char * argv[])
     }
 	
     fclose(fp);
+
+	int pid = 0;
+    pid_array = (pid_t*)malloc(sizeof(pid_t) * 3);
+    pid_array[1] = fork();
+    pid = pid_array[1];
+
+    if(pid == 0)
+    {
+        pid_array[0] = getpid();
+        //printf("Puddles Savings Process Started\n");
+        //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
+        puddles();
+        //printf("Puddles Savings Process Ended\n");
+        return 1;
+    }
+    if (pid < 0) {
+        // fork failed error
+        perror("Forking Failed");
+        exit(1);
+    }
+    //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
+    kill(pid_array[1],SIGSTOP);
+
     process_queue = (char ***)malloc(sizeof(char**) * MAX_THREADS);
     if (process_queue == NULL) 
     {
@@ -215,27 +239,7 @@ int main(int argc, char * argv[])
         //sleep(1);
     }
 
-    int pid = 0;
-    pid_array = (pid_t*)malloc(sizeof(pid_t) * 3);
-    pid_array[1] = fork();
-    pid = pid_array[1];
-
-    if(pid == 0)
-    {
-        pid_array[0] = getpid();
-        //printf("Puddles Savings Process Started\n");
-        //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
-        puddles();
-        //printf("Puddles Savings Process Ended\n");
-        return 1;
-    }
-    if (pid < 0) {
-        // fork failed error
-        perror("Forking Failed");
-        exit(1);
-    }
-    //printf("PID 0: %d\nPID 1: %d\n",pid_array[0],pid_array[1]);
-    kill(pid_array[1],SIGSTOP);
+    
     
     // generate another thread for updating accounts? aka bank/manager thread
     for (int b = 0; b < MAX_THREADS; b++){
@@ -267,10 +271,14 @@ int main(int argc, char * argv[])
     printf("Update Count: %d\n", *updateCount);
     for (int z = 0; z < MAX_THREADS; z++)
     {
+		for (int y = 0; y < ((*numLines/MAX_THREADS) + 1); y++) 
+        {
+            free(process_queue[z][y]);
+        }
         free(process_queue[z]);
     }
-    //printf("Inner Queue Freed\n");
     free(process_queue);
+	free(pid_array);
     pthread_barrier_destroy(&startupBarrier);
     munmap(allowWork,SIZE);
     munmap(monitoring,SIZE);
